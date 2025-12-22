@@ -79,8 +79,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('products', AdminProductController::class);
 
     // Category Routes
+    // Categories Routes
     Route::resource('categories', CategoryController::class);
-
+    Route::post('/categories/{category}/status', [CategoryController::class, 'updateStatus'])->name('categories.update-status');
+    Route::post('/categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
+    Route::post('/categories/bulk-action', [CategoryController::class, 'bulkAction'])->name('categories.bulk-action');
+    Route::get('/categories/data', [CategoryController::class, 'getCategories'])->name('categories.data');
+    Route::get('/categories/check-slug', [CategoryController::class, 'checkSlug'])->name('categories.check-slug');
     // Order Routes
     Route::resource('orders', OrderController::class);
     Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
