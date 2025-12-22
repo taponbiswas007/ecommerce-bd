@@ -389,34 +389,51 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
     <script>
-        // Toggle sidebar on mobile
-        document.querySelector('.toggle-sidebar').addEventListener('click', function() {
-            document.querySelector('.admin-sidebar').classList.toggle('show');
-        });
-
-        // Toggle submenus
+        // Toggle submenus on all screen sizes
         document.querySelectorAll('.has-submenu > a').forEach(function(item) {
             item.addEventListener('click', function(e) {
-                if (window.innerWidth <= 992) {
-                    e.preventDefault();
-                    const submenu = this.nextElementSibling;
-                    const parent = this.parentElement;
+                e.preventDefault();
+                const submenu = this.nextElementSibling;
+                const parent = this.parentElement;
 
-                    if (submenu.classList.contains('show')) {
-                        submenu.classList.remove('show');
-                        parent.classList.remove('open');
-                    } else {
-                        // Close other open submenus
-                        document.querySelectorAll('.submenu.show').forEach(function(menu) {
-                            menu.classList.remove('show');
-                            menu.parentElement.classList.remove('open');
-                        });
+                // Close all other open submenus in the same sidebar
+                const allSubmenus = document.querySelectorAll('.submenu.show');
+                const allParents = document.querySelectorAll('.has-submenu.open');
 
-                        submenu.classList.add('show');
-                        parent.classList.add('open');
+                allSubmenus.forEach(function(menu) {
+                    if (menu !== submenu) {
+                        menu.classList.remove('show');
                     }
+                });
+
+                allParents.forEach(function(p) {
+                    if (p !== parent) {
+                        p.classList.remove('open');
+                    }
+                });
+
+                // Toggle current submenu
+                if (submenu.classList.contains('show')) {
+                    submenu.classList.remove('show');
+                    parent.classList.remove('open');
+                } else {
+                    submenu.classList.add('show');
+                    parent.classList.add('open');
                 }
             });
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const toggleBtn = document.querySelector('.toggle-sidebar');
+
+            if (window.innerWidth <= 992 &&
+                sidebar.classList.contains('show') &&
+                !sidebar.contains(e.target) &&
+                !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
         });
 
         // Initialize SweetAlert
