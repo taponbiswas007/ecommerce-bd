@@ -74,4 +74,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+    // Add this method to your User model
+    public function cart()
+    {
+        return $this->hasMany(Cart::class);
+    }
 }

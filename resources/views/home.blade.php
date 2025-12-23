@@ -1,71 +1,440 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Mega Home - ElectroHub')
 
 @section('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+
     <style>
+        /* Custom Styles for Mega Homepage */
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6f42c1;
+            --accent-color: #20c997;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--dark-color) 0%, #343a40 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
         .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Mega Slider */
+        .mega-slider {
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .mega-slider img {
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 40px;
+            color: white;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
         }
 
         .category-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
         .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+        }
+
+        /* Product Cards */
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--danger-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--warning-color);
+            color: var(--dark-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* Flash Sale Timer */
+        .flash-sale-timer {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .timer-number {
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .timer-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Features Section */
+        .feature-box {
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-box:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .product-image {
-            height: 200px;
-            object-fit: cover;
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 30px;
         }
 
+        /* Deal of the Day */
+        .deal-of-the-day {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            color: white;
+        }
+
+        .deal-timer {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        /* Brands Section */
+        .brand-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .brand-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-img {
+            height: 50px;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .brand-card:hover .brand-img {
+            filter: grayscale(0%);
+        }
+
+        /* Newsletter */
+        .newsletter-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 20px;
+            padding: 50px;
+            color: white;
+        }
+
+        .newsletter-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            padding: 15px 25px;
+        }
+
+        .newsletter-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .newsletter-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+            box-shadow: none;
+            color: white;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .product-image {
+            .mega-slider {
+                height: 300px;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .timer-box {
+                min-width: 45px;
+            }
+
+            .timer-number {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product-img {
                 height: 150px;
             }
+        }
+
+        /* Animation Classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Quick View Modal */
+        .quick-view-modal .modal-dialog {
+            max-width: 900px;
+        }
+
+        /* Rating Stars */
+        .rating-stars {
+            color: var(--warning-color);
+        }
+
+        .rating-count {
+            color: #6c757d;
+            font-size: 0.9rem;
         }
     </style>
 @endsection
 
 @section('content')
     <!-- Hero Section -->
-    <section class="hero-gradient text-white py-16 md:py-24">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-10 md:mb-0">
-                    <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-                        Shop The Best Products <br>
-                        <span class="text-yellow-300">From Bangladesh</span>
-                    </h1>
-                    <p class="text-xl mb-8 opacity-90">
-                        Discover amazing products with best prices. Fast delivery across Bangladesh.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="{{ route('shop') }}"
-                            class="bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold text-lg transition duration-300">
-                            Shop Now
-                        </a>
-                        <a href="#featured"
-                            class="border-2 border-white text-white hover:bg-white hover:text-primary-600 px-8 py-3 rounded-lg font-semibold text-lg transition duration-300">
-                            View Featured
-                        </a>
+    <section class="hero-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="text-white">
+                        <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill">🔥 Limited Time Offer</span>
+                        <h1 class="display-4 fw-bold mb-4">Get Up to <span class="text-warning">50% OFF</span> on Electronics
+                        </h1>
+                        <p class="lead mb-4">Discover the latest gadgets and electronics at unbeatable prices. Shop now and
+                            experience premium quality with amazing discounts!</p>
+                        <div class="d-flex flex-wrap gap-3">
+                            <a href="#featured-products" class="btn btn-light btn-lg px-4 py-3">
+                                <i class="fas fa-shopping-cart me-2"></i> Shop Now
+                            </a>
+                            <a href="#flash-sale" class="btn btn-outline-light btn-lg px-4 py-3">
+                                <i class="fas fa-bolt me-2"></i> Flash Sale
+                            </a>
+                        </div>
+                        <div class="mt-5">
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="text-center">
+                                    <h3 class="fw-bold mb-0">10K+</h3>
+                                    <p class="mb-0 opacity-75">Happy Customers</p>
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="fw-bold mb-0">5K+</h3>
+                                    <p class="mb-0 opacity-75">Products</p>
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="fw-bold mb-0">24/7</h3>
+                                    <p class="mb-0 opacity-75">Support</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="md:w-1/2">
-                    <div class="relative">
-                        <div
-                            class="absolute -top-6 -left-6 w-72 h-72 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob">
+                <div class="col-lg-6">
+                    <div class="position-relative">
+                        <!-- Swiper Slider -->
+                        <div class="swiper mega-slider">
+                            <div class="swiper-wrapper">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <div class="swiper-slide position-relative">
+                                        <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                                            alt="Slider {{ $i }}" class="img-fluid">
+                                        <div class="slider-overlay">
+                                            <h3 class="fw-bold">Smart Home Collection</h3>
+                                            <p>Transform your home with our latest smart devices</p>
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                            <div class="swiper-pagination"></div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
                         </div>
-                        <div
-                            class="absolute -bottom-8 -right-4 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000">
-                        </div>
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                                alt="Hero Image" class="rounded-2xl shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flash Sale Timer -->
+    <section id="flash-sale" class="py-5">
+        <div class="container">
+            <div class="flash-sale-timer">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 mb-4 mb-lg-0">
+                        <h2 class="fw-bold mb-0"><i class="fas fa-bolt me-2"></i> FLASH SALE</h2>
+                        <p class="mb-0 opacity-75">Ends in:</p>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="d-flex justify-content-center justify-content-lg-end gap-3">
+                            <div class="timer-box">
+                                <div class="timer-number" id="days">00</div>
+                                <div class="timer-label">DAYS</div>
+                            </div>
+                            <div class="timer-box">
+                                <div class="timer-number" id="hours">00</div>
+                                <div class="timer-label">HOURS</div>
+                            </div>
+                            <div class="timer-box">
+                                <div class="timer-number" id="minutes">00</div>
+                                <div class="timer-label">MINUTES</div>
+                            </div>
+                            <div class="timer-box">
+                                <div class="timer-number" id="seconds">00</div>
+                                <div class="timer-label">SECONDS</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -74,31 +443,42 @@
     </section>
 
     <!-- Categories Section -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">Shop By Categories</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold mb-3">Shop by Categories</h2>
+                    <p class="text-muted">Browse products by categories</p>
+                </div>
+            </div>
+            <div class="category-grid">
                 @php
-                    $categories = \App\Models\Category::whereNull('parent_id')
-                        ->where('is_active', true)
-                        ->withCount('products')
-                        ->orderBy('order')
-                        ->limit(12)
-                        ->get();
+                    $categories = [
+                        ['icon' => 'fas fa-mobile-alt', 'name' => 'Smartphones', 'count' => 245],
+                        ['icon' => 'fas fa-laptop', 'name' => 'Laptops', 'count' => 189],
+                        ['icon' => 'fas fa-headphones', 'name' => 'Audio', 'count' => 312],
+                        ['icon' => 'fas fa-tv', 'name' => 'TVs', 'count' => 156],
+                        ['icon' => 'fas fa-camera', 'name' => 'Cameras', 'count' => 98],
+                        ['icon' => 'fas fa-gamepad', 'name' => 'Gaming', 'count' => 267],
+                        ['icon' => 'fas fa-watch', 'name' => 'Wearables', 'count' => 134],
+                        ['icon' => 'fas fa-home', 'name' => 'Smart Home', 'count' => 211],
+                        ['icon' => 'fas fa-car-battery', 'name' => 'Accessories', 'count' => 456],
+                        ['icon' => 'fas fa-plug', 'name' => 'Chargers', 'count' => 178],
+                        ['icon' => 'fas fa-hdd', 'name' => 'Storage', 'count' => 89],
+                        ['icon' => 'fas fa-ellipsis-h', 'name' => 'More', 'count' => '+500'],
+                    ];
                 @endphp
 
                 @foreach ($categories as $category)
-                    <a href="{{ route('category.show', $category->slug) }}"
-                        class="category-card bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
-                                    clip-rule="evenodd" />
-                            </svg>
+                    <a href="{{ route('category.show', strtolower(str_replace(' ', '-', $category['name']))) }}"
+                        class="text-decoration-none">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="{{ $category['icon'] }}"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">{{ $category['name'] }}</h5>
+                            <p class="text-muted mb-0">{{ $category['count'] }} items</p>
                         </div>
-                        <h3 class="font-semibold text-gray-800 mb-2">{{ $category->name }}</h3>
-                        <p class="text-sm text-gray-600">{{ $category->products_count }} products</p>
                     </a>
                 @endforeach
             </div>
@@ -106,103 +486,198 @@
     </section>
 
     <!-- Featured Products -->
-    <section id="featured" class="py-16">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-10">
-                <div>
-                    <h2 class="text-3xl font-bold">Featured Products</h2>
-                    <p class="text-gray-600 mt-2">Most popular products this week</p>
+    <section id="featured-products" class="py-5">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold mb-2">Featured Products</h2>
+                            <p class="text-muted">Most popular items this week</p>
+                        </div>
+                        <a href="{{ route('shop') }}" class="btn btn-outline-primary">
+                            View All <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
                 </div>
-                <a href="{{ route('shop') }}" class="text-primary-600 hover:text-primary-800 font-semibold">
-                    View All →
-                </a>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div class="row">
                 @php
                     $featuredProducts = \App\Models\Product::with('images')
                         ->where('is_featured', true)
                         ->where('is_active', true)
                         ->where('stock_quantity', '>', 0)
                         ->orderBy('created_at', 'desc')
-                        ->limit(10)
+                        ->limit(8)
                         ->get();
                 @endphp
 
                 @foreach ($featuredProducts as $product)
-                    <div
-                        class="product-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300">
-                        <div class="relative">
-                            <a href="{{ route('product.show', $product->slug) }}">
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="product-card h-100">
+                            <div class="position-relative">
                                 <img src="{{ $product->primary_image ? asset('storage/' . $product->primary_image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                    alt="{{ $product->name }}" class="product-image w-full">
-                            </a>
-                            @if ($product->has_discount)
-                                <span
-                                    class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                                    -{{ $product->discount_percentage }}%
-                                </span>
-                            @endif
-                            <button class="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                            </button>
+                                    alt="{{ $product->name }}" class="product-img">
+                                @if ($product->has_discount)
+                                    <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
+                                @endif
+                                <span class="featured-badge">Featured</span>
+                                <div class="position-absolute bottom-0 start-0 end-0 p-3 bg-dark bg-opacity-50">
+                                    <button class="btn btn-sm btn-light w-100 quick-view-btn"
+                                        data-product-id="{{ $product->id }}">
+                                        <i class="fas fa-eye me-2"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h5 class="fw-bold mb-2">
+                                    <a href="{{ route('product.show', $product->slug) }}"
+                                        class="text-decoration-none text-dark">
+                                        {{ Str::limit($product->name, 40) }}
+                                    </a>
+                                </h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="rating-stars">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= $product->average_rating)
+                                                <i class="fas fa-star"></i>
+                                            @else
+                                                <i class="far fa-star"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="rating-count ms-2">({{ $product->total_reviews }})</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        @if ($product->has_discount)
+                                            <span class="price">৳{{ number_format($product->discount_price, 2) }}</span>
+                                            <span
+                                                class="old-price ms-2">৳{{ number_format($product->base_price, 2) }}</span>
+                                        @else
+                                            <span class="price">৳{{ number_format($product->base_price, 2) }}</span>
+                                        @endif
+                                    </div>
+                                    <button class="btn btn-primary btn-sm add-to-cart"
+                                        data-product-id="{{ $product->id }}">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <!-- Deal of the Day -->
+    <section class="py-5">
+        <div class="container">
+            <div class="deal-of-the-day">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 p-5">
+                        <span class="badge bg-warning text-dark mb-3 px-3 py-2">Deal of the Day</span>
+                        <h2 class="fw-bold mb-3">Apple iPhone 14 Pro Max</h2>
+                        <p class="mb-4">Get the latest iPhone with amazing camera features and premium performance.</p>
+
+                        <div class="deal-timer mb-4">
+                            <p class="mb-2">Hurry up! Offer ends in:</p>
+                            <div class="d-flex gap-2">
+                                <div class="text-center">
+                                    <div class="bg-dark px-3 py-2 rounded">
+                                        <h4 class="mb-0 fw-bold" id="deal-hours">12</h4>
+                                    </div>
+                                    <small>Hours</small>
+                                </div>
+                                <div class="text-center">
+                                    <div class="bg-dark px-3 py-2 rounded">
+                                        <h4 class="mb-0 fw-bold" id="deal-minutes">45</h4>
+                                    </div>
+                                    <small>Minutes</small>
+                                </div>
+                                <div class="text-center">
+                                    <div class="bg-dark px-3 py-2 rounded">
+                                        <h4 class="mb-0 fw-bold" id="deal-seconds">30</h4>
+                                    </div>
+                                    <small>Seconds</small>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="p-4">
-                            <a href="{{ route('product.show', $product->slug) }}">
-                                <h3 class="font-semibold text-gray-800 mb-2 hover:text-primary-600 line-clamp-2">
-                                    {{ $product->name }}
-                                </h3>
-                            </a>
+                        <div class="d-flex align-items-center mb-4">
+                            <h3 class="fw-bold mb-0 me-3">৳119,999</h3>
+                            <h5 class="text-decoration-line-through mb-0 opacity-75">৳149,999</h5>
+                            <span class="badge bg-danger ms-3">Save 20%</span>
+                        </div>
 
-                            <div class="flex items-center mb-3">
-                                <div class="star-rating">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        @if ($i <= $product->average_rating)
-                                            <svg class="star w-4 h-4 text-yellow-400" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        @else
-                                            <svg class="star-empty w-4 h-4 text-gray-300" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                <path
-                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <span class="text-sm text-gray-600 ml-2">({{ $product->total_reviews }})</span>
-                            </div>
+                        <div class="d-flex gap-3">
+                            <button class="btn btn-light btn-lg">
+                                <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                            </button>
+                            <button class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-heart me-2"></i> Wishlist
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                            alt="Deal of the Day" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    @if ($product->has_discount)
-                                        <span
-                                            class="text-xl font-bold text-gray-900">৳{{ number_format($product->discount_price, 2) }}</span>
-                                        <span
-                                            class="text-sm text-gray-500 line-through ml-2">৳{{ number_format($product->base_price, 2) }}</span>
-                                    @else
-                                        <span
-                                            class="text-xl font-bold text-gray-900">৳{{ number_format($product->base_price, 2) }}</span>
-                                    @endif
-                                </div>
+    <!-- Brands Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold mb-3">Top Brands</h2>
+                    <p class="text-muted">Shop from trusted brands</p>
+                </div>
+            </div>
+            <div class="row">
+                @php
+                    $brands = [
+                        [
+                            'name' => 'Apple',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+                        ],
+                        [
+                            'name' => 'Samsung',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg',
+                        ],
+                        [
+                            'name' => 'Sony',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg',
+                        ],
+                        ['name' => 'LG', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/20/LG_symbol.svg'],
+                        [
+                            'name' => 'Dell',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg',
+                        ],
+                        [
+                            'name' => 'HP',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/29/HP_New_Logo_2D.svg',
+                        ],
+                        [
+                            'name' => 'Lenovo',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Lenovo_Global_logo.svg',
+                        ],
+                        [
+                            'name' => 'Xiaomi',
+                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/29/Xiaomi_logo.svg',
+                        ],
+                    ];
+                @endphp
 
-                                <button
-                                    class="add-to-cart bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition duration-300"
-                                    data-product-id="{{ $product->id }}">
-                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    Add
-                                </button>
-                            </div>
+                @foreach ($brands as $brand)
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="brand-card h-100">
+                            <img src="{{ $brand['logo'] }}" alt="{{ $brand['name'] }}" class="brand-img mb-3">
+                            <h5 class="fw-bold mb-0">{{ $brand['name'] }}</h5>
                         </div>
                     </div>
                 @endforeach
@@ -211,40 +686,69 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Free Shipping</h4>
+                        <p class="text-muted">Free delivery on orders above $99</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Secure Payment</h3>
-                    <p class="text-gray-600">100% secure payment with SSL encryption</p>
                 </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Secure Payment</h4>
+                        <p class="text-muted">100% secure payment options</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Fast Delivery</h3>
-                    <p class="text-gray-600">Quick delivery across Bangladesh</p>
                 </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">24/7 Support</h4>
+                        <p class="text-muted">Dedicated customer support</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">24/7 Support</h3>
-                    <p class="text-gray-600">Dedicated customer support team</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-undo-alt"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Easy Returns</h4>
+                        <p class="text-muted">30-day return policy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-5">
+        <div class="container">
+            <div class="newsletter-section">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <h2 class="fw-bold mb-3">Subscribe to Newsletter</h2>
+                        <p class="mb-4">Get the latest updates on new products and upcoming sales</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <form id="newsletterForm">
+                            <div class="input-group">
+                                <input type="email" class="form-control newsletter-input"
+                                    placeholder="Enter your email" required>
+                                <button class="btn btn-light px-4" type="submit">
+                                    Subscribe <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -252,31 +756,153 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Add to cart functionality
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                    button.addEventListener('click', function() {
-                            const productId = this.getAttribute('data-product-id');
-
-                            @auth
-                            addToCart(productId, 1);
-                        @else
-                            showLoginModal(() => {
-                                addToCart(productId, 1);
-                            });
-                        @endauth
-                    });
+            // Initialize Swiper
+            const swiper = new Swiper('.mega-slider', {
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                },
             });
 
+            // Flash Sale Timer
+            function updateFlashSaleTimer() {
+                const endDate = new Date();
+                endDate.setDate(endDate.getDate() + 3); // 3 days from now
+
+                const countdown = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = endDate - now;
+
+                    if (distance < 0) {
+                        clearInterval(countdown);
+                        return;
+                    }
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+                }, 1000);
+            }
+
+            // Deal of the Day Timer
+            function updateDealTimer() {
+                const countdown = setInterval(() => {
+                    const hours = document.getElementById('deal-hours');
+                    const minutes = document.getElementById('deal-minutes');
+                    const seconds = document.getElementById('deal-seconds');
+
+                    let h = parseInt(hours.textContent);
+                    let m = parseInt(minutes.textContent);
+                    let s = parseInt(seconds.textContent);
+
+                    if (s > 0) {
+                        s--;
+                    } else {
+                        if (m > 0) {
+                            m--;
+                            s = 59;
+                        } else {
+                            if (h > 0) {
+                                h--;
+                                m = 59;
+                                s = 59;
+                            } else {
+                                clearInterval(countdown);
+                                return;
+                            }
+                        }
+                    }
+
+                    hours.textContent = h.toString().padStart(2, '0');
+                    minutes.textContent = m.toString().padStart(2, '0');
+                    seconds.textContent = s.toString().padStart(2, '0');
+                }, 1000);
+            }
+
+            // Add to Cart Functionality
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    addToCart(productId, 1);
+                });
+            });
+
+            // Quick View Functionality
+            document.querySelectorAll('.quick-view-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    showQuickView(productId);
+                });
+            });
+
+            // Newsletter Form
+            document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+
+                // Simulate API call
+                setTimeout(() => {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Successfully subscribed to newsletter!'
+                    });
+                    this.reset();
+                }, 1000);
+            });
+
+            // Initialize timers
+            updateFlashSaleTimer();
+            updateDealTimer();
+
+            // Scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
         function addToCart(productId, quantity) {
+            @auth
             fetch('/cart/add', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
                         product_id: productId,
@@ -290,8 +916,6 @@
                             icon: 'success',
                             title: 'Product added to cart!'
                         });
-
-                        // Update cart count
                         updateCartCount(data.cart_count);
                     } else {
                         Toast.fire({
@@ -299,53 +923,30 @@
                             title: data.message || 'Failed to add to cart'
                         });
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'An error occurred'
-                    });
                 });
+        @else
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+
+            Toast.fire({
+                icon: 'warning',
+                title: 'Please login to add items to cart'
+            });
+        @endauth
+        }
+
+        function showQuickView(productId) {
+            // Here you would typically fetch product details via AJAX
+            // For now, we'll redirect to the product page
+            window.location.href = `/products/${productId}`;
         }
 
         function updateCartCount(count) {
             const cartCountElement = document.querySelector('.cart-count');
             if (cartCountElement) {
                 cartCountElement.textContent = count;
+                cartCountElement.style.display = count > 0 ? 'flex' : 'none';
             }
         }
-
-        function showLoginModal(callback) {
-            Swal.fire({
-                title: 'Login Required',
-                text: 'You need to login to add items to cart',
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Login',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/login?redirect=' + encodeURIComponent(window.location.href);
-                }
-            });
-        }
-
-        // Initialize Swiper
-        const swiper = new Swiper('.hero-swiper', {
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            autoplay: {
-                delay: 5000,
-            },
-        });
-        });
     </script>
 @endsection
