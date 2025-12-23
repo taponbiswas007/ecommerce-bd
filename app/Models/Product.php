@@ -37,12 +37,13 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'base_price' => 'decimal:2',
-        'discount_price' => 'decimal:2',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
-        'attributes' => 'array',
+        'base_price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
         'average_rating' => 'decimal:2',
+        'attributes' => 'array',
     ];
 
     // Relationships
@@ -58,90 +59,76 @@ class Product extends Model
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class)->orderBy('display_order');
+        return $this->hasMany(ProductImage::class);
     }
 
+    // Accessors
+    public function getFeaturedImageAttribute()
+    {
+        return $this->images()->where('is_featured', true)->first()
+            ?: $this->images()->first();
+    }
+
+    public function getFinalPriceAttribute()
+    {
+        return $this->discount_price ?? $this->base_price;
+    }
+
+    public function getDiscountPercentageAttribute()
+    {
+        if (!$this->discount_price || $this->discount_price >= $this->base_price) {
+            return 0;
+        }
+
+        return round((($this->base_price - $this->discount_price) / $this->base_price) * 100);
+    }
+
+    public function getIsInStockAttribute()
+    {
+        return $this->stock_quantity > 0;
+    }
+
+    public function getIsOnSaleAttribute()
+    {
+        return !is_null($this->discount_price) && $this->discount_price < $this->base_price;
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    public function scopeInStock($query)
+    {
+        return $query->where('stock_quantity', '>', 0);
+    }
+
+    public function scopeOnSale($query)
+    {
+        return $query->whereNotNull('discount_price')
+            ->whereColumn('discount_price', '<', 'base_price');
+    }
+    // In Product.php
     public function prices()
     {
         return $this->hasMany(ProductPrice::class)->orderBy('min_quantity');
     }
 
-    public function carts()
-    {
-        return $this->hasMany(Cart::class);
-    }
-
-    public function wishlists()
-    {
-        return $this->hasMany(Wishlist::class);
-    }
-
-    public function reviews()
-    {
-        return $this->hasMany(Review::class)->where('status', 'approved');
-    }
-
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    // Accessors
-    public function getPrimaryImageAttribute()
-    {
-        return $this->images->firstWhere('is_primary', true) ?? $this->images->first();
-    }
-
-    public function getDisplayPriceAttribute()
-    {
-        if ($this->discount_price && $this->discount_price < $this->base_price) {
-            return $this->discount_price;
-        }
-        return $this->base_price;
-    }
-
-    public function getHasDiscountAttribute()
-    {
-        return $this->discount_price && $this->discount_price < $this->base_price;
-    }
-
-    public function getDiscountPercentageAttribute()
-    {
-        if (!$this->has_discount) return 0;
-
-        $percentage = (($this->base_price - $this->discount_price) / $this->base_price) * 100;
-        return round($percentage);
-    }
-
-    // Methods
     public function getPriceForQuantity($quantity)
     {
-        $price = $this->prices()
+        return $this->prices()
             ->where('min_quantity', '<=', $quantity)
-            ->where(function ($query) use ($quantity) {
-                $query->where('max_quantity', '>=', $quantity)
+            ->where(function ($q) use ($quantity) {
+                $q->where('max_quantity', '>=', $quantity)
                     ->orWhereNull('max_quantity');
             })
             ->orderBy('min_quantity', 'desc')
             ->first();
-
-        return $price ? $price->price : $this->display_price;
-    }
-
-    public function incrementViewCount()
-    {
-        $this->increment('view_count');
-    }
-
-    public function updateRating()
-    {
-        $reviews = $this->reviews()->where('status', 'approved');
-        $averageRating = $reviews->avg('rating');
-        $totalReviews = $reviews->count();
-
-        $this->update([
-            'average_rating' => $averageRating ?? 0,
-            'total_reviews' => $totalReviews,
-        ]);
     }
 }

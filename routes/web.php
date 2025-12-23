@@ -6,12 +6,14 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeliveryChargeController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductImageController;
+use App\Http\Controllers\Admin\ProductPriceController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\UnitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\CheckoutController;
@@ -75,8 +77,55 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Customers
     Route::resource('customers', CustomerController::class);
-    // Product Routes
-    Route::resource('products', AdminProductController::class);
+
+    // Units Routes
+    Route::resource('units', UnitController::class);
+    Route::post('/units/{unit}/status', [UnitController::class, 'updateStatus'])->name('units.update-status');
+    Route::post('/units/bulk-action', [UnitController::class, 'bulkAction'])->name('units.bulk-action');
+    // Product routes
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::get('/create', [ProductController::class, 'create'])->name('create');
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+
+        // Bulk actions
+        Route::post('/bulk-action', [ProductController::class, 'bulkAction'])->name('bulk-action');
+        Route::post('/{product}/status', [ProductController::class, 'updateStatus'])->name('update-status');
+        Route::prefix('{product}/images')->name('images.')->group(function () {
+            Route::get('/', [ProductImageController::class, 'index'])->name('index');
+            Route::get('/create', [ProductImageController::class, 'create'])->name('create');
+            Route::post('/', [ProductImageController::class, 'store'])->name('store');
+            Route::get('/{image}', [ProductImageController::class, 'show'])->name('show');
+            Route::get('/{image}/edit', [ProductImageController::class, 'edit'])->name('edit');
+            Route::put('/{image}', [ProductImageController::class, 'update'])->name('update');
+            Route::delete('/{image}', [ProductImageController::class, 'destroy'])->name('destroy');
+
+            // Bulk actions
+            Route::post('/bulk-action', [ProductImageController::class, 'bulkAction'])->name('bulk-action');
+
+            // AJAX actions
+            Route::post('/reorder', [ProductImageController::class, 'reorder'])->name('reorder');
+            Route::post('/{image}/set-primary', [ProductImageController::class, 'setPrimary'])->name('set-primary');
+            Route::post('/{image}/set-featured', [ProductImageController::class, 'setFeatured'])->name('set-featured');
+        });
+
+        Route::prefix('{product}/prices')->name('prices.')->group(function () {
+            Route::get('/', [ProductPriceController::class, 'index'])->name('index');
+            Route::get('/create', [ProductPriceController::class, 'create'])->name('create');
+            Route::post('/', [ProductPriceController::class, 'store'])->name('store');
+            Route::get('/{price}', [ProductPriceController::class, 'show'])->name('show');
+            Route::get('/{price}/edit', [ProductPriceController::class, 'edit'])->name('edit');
+            Route::put('/{price}', [ProductPriceController::class, 'update'])->name('update');
+            Route::delete('/{price}', [ProductPriceController::class, 'destroy'])->name('destroy');
+
+            // Bulk actions
+            Route::post('/bulk-action', [ProductPriceController::class, 'bulkAction'])->name('bulk-action');
+        });
+    });
 
     // Category Routes
     // Categories Routes

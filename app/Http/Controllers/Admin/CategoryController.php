@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 
 
+
 class CategoryController extends Controller
 {
     /**
@@ -92,7 +93,10 @@ class CategoryController extends Controller
 
                 // Create thumbnail (300x300)
                 $thumbnailPath = $path . '/thumb_' . $imageName;
-                $thumbnail = Image::make($image)->fit(300, 300)->encode();
+                // $thumbnail = Image::make($image)->fit(300, 300)->encode();
+                $thumbnail = Image::read($image)
+                    ->cover(300, 300)
+                    ->toJpeg();
                 Storage::disk('public')->put($thumbnailPath, $thumbnail);
 
                 $category->image = $imagePath;
@@ -208,7 +212,10 @@ class CategoryController extends Controller
 
                 // Create thumbnail (300x300)
                 $thumbnailPath = $path . '/thumb_' . $imageName;
-                $thumbnail = Image::make($image)->fit(300, 300)->encode();
+                $thumbnail = Image::read($image)
+                    ->cover(300, 300)
+                    ->toJpeg();
+
                 Storage::disk('public')->put($thumbnailPath, $thumbnail);
 
                 $category->image = $imagePath;

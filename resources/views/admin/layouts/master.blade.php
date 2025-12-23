@@ -61,8 +61,26 @@
                             <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
                                 <a href="{{ route('admin.products.create') }}">Add New</a>
                             </li>
+                            <!-- Product Images Submenu -->
+                            <li class="{{ request()->routeIs('admin.products.images.*') ? 'mm-active' : '' }}">
+                                <a href="javascript:void(0)" class="has-arrow">
+                                    <i class="fas fa-images"></i>
+                                    <span class="menu-text">Product Images</span>
+                                </a>
+                                <ul class="submenu {{ request()->routeIs('admin.products.images.*') ? 'show' : '' }}">
+                                    <li
+                                        class="{{ request()->routeIs('admin.products.images.index') ? 'active' : '' }}">
+                                        <a href="#">
+                                            <i class="fas fa-search"></i>
+                                            <span class="menu-text">Browse by Product</span>
+                                        </a>
+                                    </li>
+                                    <!-- Dynamic list or search would go here -->
+                                </ul>
+                            </li>
                             <li><a href="#">Categories</a></li>
                             <li><a href="#">Brands</a></li>
+
                         </ul>
                     </li>
 
@@ -96,6 +114,12 @@
                                 <a href="{{ route('admin.categories.create') }}">Add New</a>
                             </li>
                         </ul>
+                    </li>
+                    <li class="{{ request()->routeIs('admin.units.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.units.index') }}">
+                            <i class="fas fa-balance-scale"></i>
+                            <span class="menu-text">Units</span>
+                        </a>
                     </li>
 
                     <li class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
