@@ -38,7 +38,7 @@ class SocialLoginController extends Controller
 
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Google login failed');
+            return redirect()->route('/')->with('error', 'Google login failed');
         }
     }
 
@@ -71,7 +71,7 @@ class SocialLoginController extends Controller
 
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Facebook login failed');
+            return redirect()->route('/')->with('error', 'Facebook login failed');
         }
     }
 }
