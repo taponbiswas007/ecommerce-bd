@@ -697,13 +697,14 @@
                             <i class="far fa-heart"></i>
                             @auth
                                 @php
-                                    $wishlistCount = auth()->user()->wishlist()->count();
+                                    $wishlistCount = auth()->user()->wishlists()->count();
                                 @endphp
                                 @if ($wishlistCount > 0)
                                     <span class="wishlist-count">{{ $wishlistCount }}</span>
                                 @endif
                             @endauth
                         </a>
+
 
                         <!-- Cart -->
                         <a href="{{ route('cart.index') }}" class="header-icon position-relative">
@@ -1159,6 +1160,7 @@
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @yield('scripts')
     <script>
         // Handle add to cart with login check
         function addToCart(productId, quantity = 1) {

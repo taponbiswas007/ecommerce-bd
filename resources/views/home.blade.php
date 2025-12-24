@@ -3,10 +3,7 @@
 @section('title', 'Mega Home - ElectroHub')
 
 @section('styles')
-
-
     <style>
-        /* Custom Styles for Mega Homepage */
         :root {
             --primary-color: #0d6efd;
             --secondary-color: #6f42c1;
@@ -17,46 +14,21 @@
             --warning-color: #ffc107;
         }
 
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(135deg, var(--dark-color) 0%, #343a40 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-gradient {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        }
-
-        .floating-element {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Mega Slider */
-        .mega-slider {
-            height: 500px;
+        /* Hero Slider */
+        .hero-slider {
+            height: 600px;
             border-radius: 20px;
             overflow: hidden;
+            position: relative;
         }
 
-        .mega-slider img {
+        .hero-slider img {
             height: 100%;
             object-fit: cover;
+            width: 100%;
         }
 
-        .slider-overlay {
+        .slider-content {
             position: absolute;
             bottom: 0;
             left: 0;
@@ -64,13 +36,258 @@
             background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
             padding: 40px;
             color: white;
+            z-index: 2;
+        }
+
+        .hero-slider .swiper-button-next,
+        .hero-slider .swiper-button-prev {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .hero-slider .swiper-button-next:hover,
+        .hero-slider .swiper-button-prev:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .hero-slider .swiper-button-next:after,
+        .hero-slider .swiper-button-prev:after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Improved Product Cards */
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .product-img-container {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+            background: #f8f9fa;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+            padding: 20px;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .product-badges {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, var(--danger-color), #ff6b6b);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .featured-badge {
+            background: linear-gradient(135deg, var(--warning-color), #ffd166);
+            color: var(--dark-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
+        }
+
+        .new-badge {
+            background: linear-gradient(135deg, var(--accent-color), #20c997);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(32, 201, 151, 0.3);
+        }
+
+        .product-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .product-actions {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .wishlist-btn.active {
+            color: var(--danger-color);
+            background: #ffe6e6;
+        }
+
+        .product-content {
+            padding: 20px;
+            background: white;
+        }
+
+        .product-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-category {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+            font-size: 14px;
+        }
+
+        .rating-count {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .current-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .old-price {
+            font-size: 14px;
+            color: #6c757d;
+            text-decoration: line-through;
+        }
+
+        .save-percent {
+            background: var(--danger-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .add-to-cart-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
         }
 
         /* Category Cards */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+        .category-slider .swiper-slide {
+            width: 200px;
         }
 
         .category-card {
@@ -78,9 +295,16 @@
             border-radius: 15px;
             padding: 25px 15px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
 
         .category-card:hover {
@@ -90,8 +314,8 @@
         }
 
         .category-icon {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border-radius: 50%;
             display: flex;
@@ -100,118 +324,15 @@
             margin: 0 auto 15px;
             color: white;
             font-size: 24px;
-        }
-
-        /* Product Cards */
-        .product-card {
-            border: none;
-            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            background: white;
+            position: relative;
+            z-index: 1;
         }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .product-img {
-            height: 200px;
-            object-fit: cover;
+        .category-icon img {
             width: 100%;
-        }
-
-        .discount-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: var(--danger-color);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .featured-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--warning-color);
-            color: var(--dark-color);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .price {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .old-price {
-            text-decoration: line-through;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        /* Flash Sale Timer */
-        .flash-sale-timer {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            border-radius: 15px;
-            padding: 20px;
-            color: white;
-        }
-
-        .timer-box {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 10px;
-            text-align: center;
-            min-width: 60px;
-        }
-
-        .timer-number {
-            font-size: 2rem;
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        .timer-label {
-            font-size: 0.8rem;
-            opacity: 0.9;
-        }
-
-        /* Features Section */
-        .feature-box {
-            text-align: center;
-            padding: 30px;
-            border-radius: 15px;
-            background: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .feature-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 30px;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Deal of the Day */
@@ -220,39 +341,260 @@
             border-radius: 20px;
             overflow: hidden;
             color: white;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deal-of-the-day::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
         }
 
         .deal-timer {
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
             border-radius: 10px;
-            padding: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Brands Section */
+        .timer-unit {
+            text-align: center;
+        }
+
+        .timer-value {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 2rem;
+            font-weight: bold;
+            min-width: 70px;
+            display: inline-block;
+            margin-bottom: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timer-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Quick View Modal */
+        .quick-view-modal .modal-dialog {
+            max-width: 900px;
+            margin: 1rem auto;
+        }
+
+        .quick-view-modal .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+        }
+
+        .product-gallery-slider {
+            height: 400px;
+            position: relative;
+        }
+
+        .product-gallery-slider img,
+        .product-gallery-slider video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f8f9fa;
+        }
+
+        .gallery-thumbs {
+            margin-top: 10px;
+            padding: 10px 0;
+        }
+
+        .gallery-thumbs .swiper-slide {
+            opacity: 0.4;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 80px;
+        }
+
+        .gallery-thumbs .swiper-slide-thumb-active {
+            opacity: 1;
+            border-color: var(--primary-color);
+        }
+
+        .gallery-thumbs img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-thumb {
+            position: relative;
+        }
+
+        .video-thumb::after {
+            content: '\f144';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-weight: 700;
+            margin: 0;
+            font-size: 28px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .view-all-btn {
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        }
+
+        /* Swiper Navigation */
+        .swiper-button-next,
+        .swiper-button-prev {
+            background: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 16px;
+            color: var(--dark-color);
+            font-weight: bold;
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: var(--primary-color);
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
+        }
+
+        .swiper-button-next:hover:after,
+        .swiper-button-prev:hover:after {
+            color: white;
+        }
+
+        /* Category Wise Sections */
+        .category-wise-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 60px 0;
+            margin: 40px 0;
+            border-radius: 20px;
+        }
+
+        /* Best Deals */
+        .best-deals-section {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 60px 0;
+            border-radius: 20px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .best-deals-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+
+        /* Brand Slider */
+        .brand-slider .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .brand-card {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            width: 100%;
+            border: 2px solid transparent;
         }
 
         .brand-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
         }
 
         .brand-img {
             height: 50px;
             object-fit: contain;
             filter: grayscale(100%);
-            transition: filter 0.3s ease;
+            opacity: 0.7;
+            transition: all 0.3s ease;
         }
 
         .brand-card:hover .brand-img {
             filter: grayscale(0%);
+            opacity: 1;
         }
 
         /* Newsletter */
@@ -261,6 +603,20 @@
             border-radius: 20px;
             padding: 50px;
             color: white;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .newsletter-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
         }
 
         .newsletter-input {
@@ -269,6 +625,8 @@
             color: white;
             border-radius: 50px;
             padding: 15px 25px;
+            width: 100%;
+            transition: all 0.3s ease;
         }
 
         .newsletter-input::placeholder {
@@ -278,288 +636,247 @@
         .newsletter-input:focus {
             background: rgba(255, 255, 255, 0.2);
             border-color: white;
-            box-shadow: none;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
             color: white;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .mega-slider {
+            .hero-slider {
+                height: 400px;
+            }
+
+            .category-slider .swiper-slide {
+                width: 150px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .product-img-container {
+                height: 200px;
+            }
+
+            .quick-view-modal .modal-dialog {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+
+            .product-gallery-slider {
                 height: 300px;
-            }
-
-            .category-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .hero-section h1 {
-                font-size: 2rem;
-            }
-
-            .timer-box {
-                min-width: 45px;
-            }
-
-            .timer-number {
-                font-size: 1.5rem;
             }
         }
 
         @media (max-width: 576px) {
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .hero-slider {
+                height: 300px;
             }
 
-            .product-img {
-                height: 150px;
+            .category-slider .swiper-slide {
+                width: 120px;
+            }
+
+            .newsletter-section {
+                padding: 30px 20px;
+            }
+
+            .deal-of-the-day {
+                text-align: center;
+            }
+
+            .product-actions {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
 
-        /* Animation Classes */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
+        /* Stock Status */
+        .stock-status {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 12px;
+            display: inline-block;
         }
 
-        .animate-on-scroll.animated {
-            opacity: 1;
-            transform: translateY(0);
+        .in-stock {
+            background: #d1e7dd;
+            color: #0f5132;
         }
 
-        /* Quick View Modal */
-        .quick-view-modal .modal-dialog {
-            max-width: 900px;
+        .low-stock {
+            background: #fff3cd;
+            color: #664d03;
         }
 
-        /* Rating Stars */
-        .rating-stars {
-            color: var(--warning-color);
-        }
-
-        .rating-count {
-            color: #6c757d;
-            font-size: 0.9rem;
+        .out-of-stock {
+            background: #f8d7da;
+            color: #842029;
         }
     </style>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 @endsection
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="hero-section py-5">
+    <!-- Hero Slider Section -->
+    <section class="py-4">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <div class="text-white">
-                        <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill">🔥 Limited Time Offer</span>
-                        <h1 class="display-4 fw-bold mb-4">Get Up to <span class="text-warning">50% OFF</span> on Electronics
-                        </h1>
-                        <p class="lead mb-4">Discover the latest gadgets and electronics at unbeatable prices. Shop now and
-                            experience premium quality with amazing discounts!</p>
-                        <div class="d-flex flex-wrap gap-3">
-                            <a href="#featured-products" class="btn btn-light btn-lg px-4 py-3">
-                                <i class="fas fa-shopping-cart me-2"></i> Shop Now
-                            </a>
-                            <a href="#flash-sale" class="btn btn-outline-light btn-lg px-4 py-3">
-                                <i class="fas fa-bolt me-2"></i> Flash Sale
-                            </a>
-                        </div>
-                        <div class="mt-5">
-                            <div class="d-flex align-items-center gap-4">
-                                <div class="text-center">
-                                    <h3 class="fw-bold mb-0">10K+</h3>
-                                    <p class="mb-0 opacity-75">Happy Customers</p>
-                                </div>
-                                <div class="text-center">
-                                    <h3 class="fw-bold mb-0">5K+</h3>
-                                    <p class="mb-0 opacity-75">Products</p>
-                                </div>
-                                <div class="text-center">
-                                    <h3 class="fw-bold mb-0">24/7</h3>
-                                    <p class="mb-0 opacity-75">Support</p>
-                                </div>
+            <div class="swiper hero-slider">
+                <div class="swiper-wrapper">
+                    @for ($i = 1; $i <= 5; $i++)
+                        <div class="swiper-slide position-relative">
+                            <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                                alt="Hero Slide {{ $i }}">
+                            <div class="slider-content">
+                                <h1 class="display-4 fw-bold">Electronic Deals {{ $i }}</h1>
+                                <p class="lead">Up to 50% OFF on selected items</p>
+                                <a href="{{ route('shop') }}" class="btn btn-primary btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
-                    </div>
+                    @endfor
                 </div>
-                <div class="col-lg-6">
-                    <div class="position-relative">
-                        <!-- Swiper Slider -->
-                        <div class="swiper mega-slider">
-                            <div class="swiper-wrapper">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <div class="swiper-slide position-relative">
-                                        <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                                            alt="Slider {{ $i }}" class="img-fluid">
-                                        <div class="slider-overlay">
-                                            <h3 class="fw-bold">Smart Home Collection</h3>
-                                            <p>Transform your home with our latest smart devices</p>
-                                        </div>
-                                    </div>
-                                @endfor
-                            </div>
-                            <div class="swiper-pagination"></div>
-                            <div class="swiper-button-next"></div>
-                            <div class="swiper-button-prev"></div>
-                        </div>
-                    </div>
-                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
             </div>
         </div>
     </section>
 
-    <!-- Flash Sale Timer -->
-    <section id="flash-sale" class="py-5">
+    <!-- Category Slider Section -->
+    <section class="py-5">
         <div class="container">
-            <div class="flash-sale-timer">
-                <div class="row align-items-center">
-                    <div class="col-lg-3 mb-4 mb-lg-0">
-                        <h2 class="fw-bold mb-0"><i class="fas fa-bolt me-2"></i> FLASH SALE</h2>
-                        <p class="mb-0 opacity-75">Ends in:</p>
-                    </div>
-                    <div class="col-lg-9">
-                        <div class="d-flex justify-content-center justify-content-lg-end gap-3">
-                            <div class="timer-box">
-                                <div class="timer-number" id="days">00</div>
-                                <div class="timer-label">DAYS</div>
-                            </div>
-                            <div class="timer-box">
-                                <div class="timer-number" id="hours">00</div>
-                                <div class="timer-label">HOURS</div>
-                            </div>
-                            <div class="timer-box">
-                                <div class="timer-number" id="minutes">00</div>
-                                <div class="timer-label">MINUTES</div>
-                            </div>
-                            <div class="timer-box">
-                                <div class="timer-number" id="seconds">00</div>
-                                <div class="timer-label">SECONDS</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="section-header">
+                <h2>Shop by Categories</h2>
+                <a href="#" class="btn view-all-btn">
+                    View All <i class="fas fa-arrow-right ms-2"></i>
+                </a>
             </div>
-        </div>
-    </section>
 
-    <!-- Categories Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h2 class="fw-bold mb-3">Shop by Categories</h2>
-                    <p class="text-muted">Browse products by categories</p>
-                </div>
-            </div>
-            <div class="category-grid">
-
-                @foreach ($categories as $category)
-                    <a href="{{ route('category.show', strtolower(str_replace(' ', '-', $category['name']))) }}"
-                        class="text-decoration-none">
-                        <div class="category-card">
-                            <div class="category-icon">
-                                @if ($category->image)
-                                    <img class=" img-fluid" src="{{ asset('storage/' . $category->image) }}"
-                                        alt="{{ $category->name }}" class="category-image">
-                                @endif
-                            </div>
-                            <h5 class="fw-bold mb-2">{{ $category->name }}</h5>
-                            <p class="text-muted mb-0">{{ $category->description }}</p>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Products -->
-    <section id="featured-products" class="py-5">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="fw-bold mb-2">Featured Products</h2>
-                            <p class="text-muted">Most popular items this week</p>
-                        </div>
-                        <a href="{{ route('shop') }}" class="btn btn-outline-primary">
-                            View All <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                @php
-                    $featuredProducts = \App\Models\Product::with(['primaryImage'])
-                        ->where('is_featured', 1)
-                        ->where('is_active', 1)
-                        ->where('stock_quantity', '>', 0)
-                        ->latest()
-                        ->limit(8)
-                        ->get();
-                @endphp
-
-
-                @foreach ($featuredProducts as $product)
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <div class="product-card h-100">
-                            <div class="position-relative">
-                                @php
-                                    $image = $product->primaryImage ?? $product->images->first();
-                                @endphp
-
-                                <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                    alt="{{ $image->alt_text ?? $product->name }}" class="product-img">
-
-                                @if ($product->has_discount)
-                                    <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
-                                @endif
-                                <span class="featured-badge">Featured</span>
-                                <div class="position-absolute bottom-0 start-0 end-0 p-3 bg-dark bg-opacity-50">
-                                    <button class="btn btn-sm btn-light w-100 quick-view-btn"
-                                        data-product-id="{{ $product->id }}">
-                                        <i class="fas fa-eye me-2"></i> Quick View
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="p-3">
-                                <h5 class="fw-bold mb-2">
-                                    <a href="{{ route('product.show', $product->slug) }}"
-                                        class="text-decoration-none text-dark">
-                                        {{ Str::limit($product->name, 40) }}
-                                    </a>
-                                </h5>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="rating-stars">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= $product->average_rating)
-                                                <i class="fas fa-star"></i>
-                                            @else
-                                                <i class="far fa-star"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                    <span class="rating-count ms-2">({{ $product->total_reviews }})</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        @if ($product->has_discount)
-                                            <span class="price">৳{{ number_format($product->discount_price, 2) }}</span>
-                                            <span
-                                                class="old-price ms-2">৳{{ number_format($product->base_price, 2) }}</span>
+            <div class="swiper category-slider">
+                <div class="swiper-wrapper">
+                    @foreach ($categories as $category)
+                        <div class="swiper-slide">
+                            <a href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}"
+                                class="text-decoration-none">
+                                <div class="category-card">
+                                    <div class="category-icon">
+                                        @if ($category->image)
+                                            <img src="{{ asset('storage/' . $category->image) }}"
+                                                alt="{{ $category->name }}">
                                         @else
-                                            <span class="price">৳{{ number_format($product->base_price, 2) }}</span>
+                                            <i class="fas fa-box"></i>
                                         @endif
                                     </div>
-                                    <button class="btn btn-primary btn-sm add-to-cart"
-                                        data-product-id="{{ $product->id }}">
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
+                                    <h5 class="fw-bold mb-2">{{ $category->name }}</h5>
+                                    <p class="text-muted small mb-0">{{ $category->products_count ?? 0 }} products</p>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Products</h2>
+                <a href="{{ route('shop') }}?featured=1" class="btn view-all-btn">
+                    View All <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+
+            <div class="swiper featured-slider">
+                <div class="swiper-wrapper">
+                    @foreach ($featuredProducts as $product)
+                        <div class="swiper-slide">
+                            <div class="product-card">
+                                <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                    <div class="product-img-container">
+                                        @php
+                                            $image = $product->primaryImage ?? $product->images->first();
+                                        @endphp
+                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                            class="product-img" alt="{{ $image->alt_text ?? $product->name }}">
+
+                                        <div class="product-badges">
+                                            @if ($product->has_discount)
+                                                <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
+                                            @endif
+                                            @if ($product->is_featured)
+                                                <span class="featured-badge">Featured</span>
+                                            @endif
+                                        </div>
+
+                                        <div class="product-actions">
+                                            <button class="action-btn quick-view-btn" data-product-id="{{ $product->id }}"
+                                                title="Quick View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                <i class="fas fa-heart"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="product-content">
+                                    <div class="product-category">
+                                        {{ $product->category->name ?? 'Uncategorized' }}
+                                    </div>
+                                    <h6 class="product-title">{{ Str::limit($product->name, 50) }}</h6>
+
+                                    <div class="rating-container">
+                                        <div class="rating-stars">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= ($product->average_rating ?? 0))
+                                                    <i class="fas fa-star"></i>
+                                                @else
+                                                    <i class="far fa-star"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
+                                    </div>
+
+                                    <div class="product-price">
+                                        @if ($product->has_discount)
+                                            <span
+                                                class="current-price">৳{{ number_format($product->discount_price, 2) }}</span>
+                                            <span class="old-price">৳{{ number_format($product->base_price, 2) }}</span>
+                                            <span class="save-percent">Save {{ $product->discount_percentage }}%</span>
+                                        @else
+                                            <span
+                                                class="current-price">৳{{ number_format($product->base_price, 2) }}</span>
+                                        @endif
+                                    </div>
+
+                                    <div class="product-footer">
+                                        <span
+                                            class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
+                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out of Stock') }}
+                                        </span>
+                                        <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
             </div>
         </div>
     </section>
@@ -570,7 +887,7 @@
             <div class="container">
                 <div class="deal-of-the-day">
                     <div class="row align-items-center">
-                        <div class="col-lg-6 p-5 text-white">
+                        <div class="col-lg-6 p-5 text-white position-relative">
                             <span class="badge bg-warning text-dark mb-3 px-3 py-2">
                                 Deal of the Day
                             </span>
@@ -580,36 +897,29 @@
                                 {{ Str::limit(strip_tags($dealProduct->short_description), 120) }}
                             </p>
 
-                            {{-- TIMER --}}
+                            <!-- TIMER -->
                             <div class="deal-timer mb-4"
                                 data-deal-end="{{ optional($dealProduct->deal_end_at)->timestamp }}">
-
-                                <p class="mb-2">Hurry up! Offer ends in:</p>
-                                <div class="d-flex gap-2">
-                                    <div class="text-center">
-                                        <div class="bg-dark px-3 py-2 rounded">
-                                            <h4 class="hours">00</h4>
-                                        </div>
-                                        <small>Hours</small>
+                                <p class="mb-3">Hurry up! Offer ends in:</p>
+                                <div class="d-flex gap-3">
+                                    <div class="timer-unit">
+                                        <div class="timer-value hours">00</div>
+                                        <div class="timer-label">Hours</div>
                                     </div>
-                                    <div class="text-center">
-                                        <div class="bg-dark px-3 py-2 rounded">
-                                            <h4 class="minutes">00</h4>
-                                        </div>
-                                        <small>Minutes</small>
+                                    <div class="timer-unit">
+                                        <div class="timer-value minutes">00</div>
+                                        <div class="timer-label">Minutes</div>
                                     </div>
-                                    <div class="text-center">
-                                        <div class="bg-dark px-3 py-2 rounded">
-                                            <h4 class="seconds">00</h4>
-                                        </div>
-                                        <small>Seconds</small>
+                                    <div class="timer-unit">
+                                        <div class="timer-value seconds">00</div>
+                                        <div class="timer-label">Seconds</div>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- PRICE --}}
-                            <div class="d-flex align-items-center mb-4">
-                                <h3 class="fw-bold mb-0 me-3">
+                            <!-- PRICE -->
+                            <div class="d-flex align-items-center mb-4 flex-wrap gap-3">
+                                <h3 class="fw-bold mb-0">
                                     ৳{{ number_format($dealProduct->discount_price ?? $dealProduct->base_price, 2) }}
                                 </h3>
 
@@ -617,30 +927,38 @@
                                     <h5 class="text-decoration-line-through mb-0 opacity-75">
                                         ৳{{ number_format($dealProduct->base_price, 2) }}
                                     </h5>
-                                    <span class="badge bg-danger ms-3">
+                                    <span class="badge bg-danger px-3 py-2">
                                         Save {{ $dealProduct->discount_percentage }}%
                                     </span>
                                 @endif
                             </div>
 
-                            <div class="d-flex gap-3">
+                            <div class="d-flex gap-3 flex-wrap">
                                 <button class="btn btn-light btn-lg add-to-cart"
                                     data-product-id="{{ $dealProduct->id }}">
                                     <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                 </button>
-
                                 <a href="{{ route('product.show', $dealProduct->slug) }}"
                                     class="btn btn-outline-light btn-lg">
                                     View Product
                                 </a>
+                                <button
+                                    class="btn btn-outline-light btn-lg wishlist-btn {{ Auth::check() && $dealProduct->isInWishlist() ? 'active' : '' }}"
+                                    data-product-id="{{ $dealProduct->id }}">
+                                    <i class="fas fa-heart me-2"></i> Wishlist
+                                </button>
                             </div>
                         </div>
 
-                        <div class="col-lg-6 text-center">
-                            <img src="{{ $dealProduct->primaryImage
-                                ? asset('storage/' . $dealProduct->primaryImage->image_path)
-                                : 'https://via.placeholder.com/500' }}"
-                                class="img-fluid" alt="{{ $dealProduct->name }}">
+                        <div class="col-lg-6 text-center position-relative">
+                            @if ($dealProduct->primaryImage)
+                                <img src="{{ asset('storage/' . $dealProduct->primaryImage->image_path) }}"
+                                    class="img-fluid rounded-3" alt="{{ $dealProduct->name }}"
+                                    style="max-height: 400px;">
+                            @else
+                                <img src="https://via.placeholder.com/500x400" class="img-fluid rounded-3"
+                                    alt="{{ $dealProduct->name }}">
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -648,319 +966,724 @@
         </section>
     @endif
 
-
-    <!-- Brands Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h2 class="fw-bold mb-3">Top Brands</h2>
-                    <p class="text-muted">Shop from trusted brands</p>
+    <!-- Category Wise Products Sections -->
+    @foreach ($categories->take(3) as $category)
+        <section class="category-wise-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>{{ $category->name }}</h2>
+                    <a href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}"
+                        class="btn view-all-btn">
+                        View All <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
                 </div>
-            </div>
-            <div class="row">
+
                 @php
-                    $brands = [
-                        [
-                            'name' => 'Apple',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
-                        ],
-                        [
-                            'name' => 'Samsung',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg',
-                        ],
-                        [
-                            'name' => 'Sony',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg',
-                        ],
-                        ['name' => 'LG', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/20/LG_symbol.svg'],
-                        [
-                            'name' => 'Dell',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg',
-                        ],
-                        [
-                            'name' => 'HP',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/29/HP_New_Logo_2D.svg',
-                        ],
-                        [
-                            'name' => 'Lenovo',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Lenovo_Global_logo.svg',
-                        ],
-                        [
-                            'name' => 'Xiaomi',
-                            'logo' => 'https://upload.wikimedia.org/wikipedia/commons/2/29/Xiaomi_logo.svg',
-                        ],
-                    ];
+                    $categoryProducts = \App\Models\Product::with(['primaryImage', 'images'])
+                        ->where('category_id', $category->id)
+                        ->where('is_active', 1)
+                        ->where('stock_quantity', '>', 0)
+                        ->latest()
+                        ->limit(8)
+                        ->get();
                 @endphp
 
-                @foreach ($brands as $brand)
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <div class="brand-card h-100">
-                            <img src="{{ $brand['logo'] }}" alt="{{ $brand['name'] }}" class="brand-img mb-3">
-                            <h5 class="fw-bold mb-0">{{ $brand['name'] }}</h5>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
+                @if ($categoryProducts->count() > 0)
+                    <div class="swiper category-products-slider" data-category="{{ $category->id }}">
+                        <div class="swiper-wrapper">
+                            @foreach ($categoryProducts as $product)
+                                <div class="swiper-slide">
+                                    <div class="product-card">
+                                        <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                            <div class="product-img-container">
+                                                @php
+                                                    $image = $product->primaryImage ?? $product->images->first();
+                                                @endphp
+                                                <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                                    class="product-img" alt="{{ $image->alt_text ?? $product->name }}">
 
-    <!-- Features Section -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-shipping-fast"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Free Shipping</h4>
-                        <p class="text-muted">Free delivery on orders above $99</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Secure Payment</h4>
-                        <p class="text-muted">100% secure payment options</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-headset"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">24/7 Support</h4>
-                        <p class="text-muted">Dedicated customer support</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-undo-alt"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Easy Returns</h4>
-                        <p class="text-muted">30-day return policy</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                                                <div class="product-badges">
+                                                    @if ($product->has_discount)
+                                                        <span
+                                                            class="discount-badge">-{{ $product->discount_percentage }}%</span>
+                                                    @endif
+                                                    @if ($product->is_new)
+                                                        <span class="new-badge">New</span>
+                                                    @endif
+                                                </div>
 
-    <!-- Newsletter -->
-    <section class="py-5">
-        <div class="container">
-            <div class="newsletter-section">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 mb-4 mb-lg-0">
-                        <h2 class="fw-bold mb-3">Subscribe to Newsletter</h2>
-                        <p class="mb-4">Get the latest updates on new products and upcoming sales</p>
+                                                <div class="product-actions">
+                                                    <button class="action-btn quick-view-btn"
+                                                        data-product-id="{{ $product->id }}" title="Quick View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button
+                                                        class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                        data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                        <i class="fas fa-heart"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="product-content">
+                                            <div class="product-category">
+                                                {{ $product->category->name ?? 'Uncategorized' }}
+                                            </div>
+                                            <h6 class="product-title">{{ Str::limit($product->name, 50) }}</h6>
+
+                                            <div class="rating-container">
+                                                <div class="rating-stars">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= ($product->average_rating ?? 0))
+                                                            <i class="fas fa-star"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
+                                            </div>
+
+                                            <div class="product-price">
+                                                @if ($product->has_discount)
+                                                    <span
+                                                        class="current-price">৳{{ number_format($product->discount_price, 2) }}</span>
+                                                    <span
+                                                        class="old-price">৳{{ number_format($product->base_price, 2) }}</span>
+                                                    <span class="save-percent">Save
+                                                        {{ $product->discount_percentage }}%</span>
+                                                @else
+                                                    <span
+                                                        class="current-price">৳{{ number_format($product->base_price, 2) }}</span>
+                                                @endif
+                                            </div>
+
+                                            <div class="product-footer">
+                                                <span
+                                                    class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
+                                                    {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out of Stock') }}
+                                                </span>
+                                                <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
                     </div>
-                    <div class="col-lg-6">
-                        <form id="newsletterForm">
-                            <div class="input-group">
-                                <input type="email" class="form-control newsletter-input"
-                                    placeholder="Enter your email" required>
-                                <button class="btn btn-light px-4" type="submit">
-                                    Subscribe <i class="fas fa-paper-plane ms-2"></i>
-                                </button>
+                @else
+                    <div class="text-center py-5">
+                        <p class="text-muted">No products available in this category yet.</p>
+                    </div>
+                @endif
+            </div>
+        </section>
+    @endforeach
+
+    <!-- Best Deals Section -->
+    <section class="best-deals-section">
+        <div class="container position-relative">
+            <div class="section-header">
+                <h2 class="text-white">Best Deals</h2>
+                <a href="{{ route('shop') }}?deal=1" class="btn btn-outline-light view-all-btn">
+                    View All <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+
+            @php
+                $bestDeals = \App\Models\Product::with(['primaryImage', 'images'])
+                    ->where('is_active', 1)
+                    ->where('stock_quantity', '>', 0)
+                    ->whereNotNull('discount_price')
+                    ->whereColumn('discount_price', '<', 'base_price')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(6)
+                    ->get();
+            @endphp
+
+            <div class="swiper best-deals-slider">
+                <div class="swiper-wrapper">
+                    @foreach ($bestDeals as $product)
+                        <div class="swiper-slide">
+                            <div class="product-card">
+                                <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                    <div class="product-img-container">
+                                        @php
+                                            $image = $product->primaryImage ?? $product->images->first();
+                                        @endphp
+                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                            class="product-img" alt="{{ $image->alt_text ?? $product->name }}">
+
+                                        <div class="product-badges">
+                                            <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
+                                            @if ($product->is_featured)
+                                                <span class="featured-badge">Featured</span>
+                                            @endif
+                                        </div>
+
+                                        <div class="product-actions">
+                                            <button class="action-btn quick-view-btn"
+                                                data-product-id="{{ $product->id }}" title="Quick View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                <i class="fas fa-heart"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="product-content">
+                                    <div class="product-category text-white-50">
+                                        {{ $product->category->name ?? 'Uncategorized' }}
+                                    </div>
+                                    <h6 class="product-title text-white">{{ Str::limit($product->name, 50) }}</h6>
+
+                                    <div class="rating-container">
+                                        <div class="rating-stars">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= ($product->average_rating ?? 0))
+                                                    <i class="fas fa-star"></i>
+                                                @else
+                                                    <i class="far fa-star"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span
+                                            class="rating-count text-white-50">({{ $product->total_reviews ?? 0 }})</span>
+                                    </div>
+
+                                    <div class="product-price">
+                                        <span
+                                            class="current-price text-white">৳{{ number_format($product->discount_price, 2) }}</span>
+                                        <span
+                                            class="old-price text-white-50">৳{{ number_format($product->base_price, 2) }}</span>
+                                        <span class="save-percent bg-white text-danger">Save
+                                            {{ $product->discount_percentage }}%</span>
+                                    </div>
+
+                                    <div class="product-footer">
+                                        <span
+                                            class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
+                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out of Stock') }}
+                                        </span>
+                                        <button class="add-to-cart-btn bg-white text-danger"
+                                            data-product-id="{{ $product->id }}">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Slider Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="section-header">
+                <h2>Top Brands</h2>
+            </div>
+
+            <div class="swiper brand-slider">
+                <div class="swiper-wrapper">
+                    @foreach ($brands as $brand)
+                        <div class="swiper-slide">
+                            <div class="brand-card">
+                                @if ($brand->logo)
+                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
+                                        class="brand-img mb-3">
+                                @else
+                                    <div class="brand-img mb-3 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-building fa-2x text-muted"></i>
+                                    </div>
+                                @endif
+                                <h5 class="fw-bold mb-0">{{ $brand->name }}</h5>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-3">Stay Updated</h2>
+                    <p class="mb-0">Subscribe to our newsletter and get 10% off your first order</p>
+                </div>
+                <div class="col-lg-6">
+                    <form id="newsletterForm" class="d-flex">
+                        <input type="email" class="form-control newsletter-input me-2" placeholder="Enter your email"
+                            required>
+                        <button class="btn btn-light px-4" type="submit">
+                            Subscribe <i class="fas fa-paper-plane ms-2"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Quick View Modal -->
+    <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <div class="row">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <!-- Main Gallery Slider -->
+                            <div class="swiper product-gallery-slider">
+                                <div class="swiper-wrapper" id="gallery-slides">
+                                    <!-- Slides will be loaded via AJAX -->
+                                </div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                            </div>
+
+                            <!-- Thumbnail Gallery -->
+                            <div class="swiper gallery-thumbs mt-3">
+                                <div class="swiper-wrapper" id="gallery-thumbs">
+                                    <!-- Thumbs will be loaded via AJAX -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div id="product-details">
+                                <!-- Product details will be loaded via AJAX -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
-
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Swiper
-            const swiper = new Swiper('.mega-slider', {
-                loop: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                autoplay: {
-                    delay: 5000,
-                    disableOnInteraction: false,
-                },
-                effect: 'fade',
-                fadeEffect: {
-                    crossFade: true
-                },
-            });
+                // Initialize all Swiper sliders
+                const sliders = {
+                    hero: new Swiper('.hero-slider', {
+                        loop: true,
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        autoplay: {
+                            delay: 5000,
+                            disableOnInteraction: false,
+                        },
+                        effect: 'fade',
+                        fadeEffect: {
+                            crossFade: true
+                        },
+                    }),
 
-            // Flash Sale Timer
-            function updateFlashSaleTimer() {
-                const endDate = new Date();
-                endDate.setDate(endDate.getDate() + 3); // 3 days from now
-
-                const countdown = setInterval(() => {
-                    const now = new Date().getTime();
-                    const distance = endDate - now;
-
-                    if (distance < 0) {
-                        clearInterval(countdown);
-                        return;
-                    }
-
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    document.getElementById('days').textContent = days.toString().padStart(2, '0');
-                    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-                    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-                    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-                }, 1000);
-            }
-
-            // Deal of the Day Timer
-            function updateDealTimer() {
-                const countdown = setInterval(() => {
-                    const hours = document.getElementById('deal-hours');
-                    const minutes = document.getElementById('deal-minutes');
-                    const seconds = document.getElementById('deal-seconds');
-
-                    let h = parseInt(hours.textContent);
-                    let m = parseInt(minutes.textContent);
-                    let s = parseInt(seconds.textContent);
-
-                    if (s > 0) {
-                        s--;
-                    } else {
-                        if (m > 0) {
-                            m--;
-                            s = 59;
-                        } else {
-                            if (h > 0) {
-                                h--;
-                                m = 59;
-                                s = 59;
-                            } else {
-                                clearInterval(countdown);
-                                return;
+                    category: new Swiper('.category-slider', {
+                        slidesPerView: 2,
+                        spaceBetween: 15,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        breakpoints: {
+                            576: {
+                                slidesPerView: 3
+                            },
+                            768: {
+                                slidesPerView: 4
+                            },
+                            992: {
+                                slidesPerView: 5
+                            },
+                            1200: {
+                                slidesPerView: 6
                             }
                         }
-                    }
+                    }),
 
-                    hours.textContent = h.toString().padStart(2, '0');
-                    minutes.textContent = m.toString().padStart(2, '0');
-                    seconds.textContent = s.toString().padStart(2, '0');
-                }, 1000);
-            }
+                    featured: new Swiper('.featured-slider', {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        breakpoints: {
+                            576: {
+                                slidesPerView: 2
+                            },
+                            768: {
+                                slidesPerView: 3
+                            },
+                            992: {
+                                slidesPerView: 4
+                            },
+                            1200: {
+                                slidesPerView: 5
+                            }
+                        }
+                    }),
 
-            // Add to Cart Functionality
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-product-id');
-                    addToCart(productId, 1);
-                });
-            });
+                    bestDeals: new Swiper('.best-deals-slider', {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        breakpoints: {
+                            576: {
+                                slidesPerView: 2
+                            },
+                            768: {
+                                slidesPerView: 3
+                            },
+                            992: {
+                                slidesPerView: 4
+                            },
+                            1200: {
+                                slidesPerView: 5
+                            }
+                        }
+                    }),
 
-            // Quick View Functionality
-            document.querySelectorAll('.quick-view-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-product-id');
-                    showQuickView(productId);
-                });
-            });
-
-            // Newsletter Form
-            document.getElementById('newsletterForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = this.querySelector('input[type="email"]').value;
-
-                // Simulate API call
-                setTimeout(() => {
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Successfully subscribed to newsletter!'
-                    });
-                    this.reset();
-                }, 1000);
-            });
-
-            // Initialize timers
-            updateFlashSaleTimer();
-            updateDealTimer();
-
-            // Scroll animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animated');
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.animate-on-scroll').forEach(el => {
-                observer.observe(el);
-            });
-        });
-
-        function addToCart(productId, quantity) {
-            @auth
-            fetch('/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        quantity: quantity
+                    brand: new Swiper('.brand-slider', {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        breakpoints: {
+                            576: {
+                                slidesPerView: 3
+                            },
+                            768: {
+                                slidesPerView: 4
+                            },
+                            992: {
+                                slidesPerView: 5
+                            },
+                            1200: {
+                                slidesPerView: 6
+                            }
+                        }
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Product added to cart!'
-                        });
-                        updateCartCount(data.cart_count);
-                    } else {
+                };
+
+                // Initialize category product sliders
+                document.querySelectorAll('.category-products-slider').forEach(slider => {
+                    new Swiper(slider, {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                        navigation: {
+                            nextEl: slider.querySelector('.swiper-button-next'),
+                            prevEl: slider.querySelector('.swiper-button-prev'),
+                        },
+                        breakpoints: {
+                            576: {
+                                slidesPerView: 2
+                            },
+                            768: {
+                                slidesPerView: 3
+                            },
+                            992: {
+                                slidesPerView: 4
+                            },
+                            1200: {
+                                slidesPerView: 5
+                            }
+                        }
+                    });
+                });
+
+                // Deal of the Day Timer
+                function updateDealTimer() {
+                    const timer = document.querySelector('[data-deal-end]');
+                    if (!timer) return;
+
+                    const endTimestamp = parseInt(timer.dataset.dealEnd) * 1000;
+
+                    function update() {
+                        const diff = endTimestamp - Date.now();
+
+                        if (diff <= 0) {
+                            timer.querySelector('.hours').innerText = '00';
+                            timer.querySelector('.minutes').innerText = '00';
+                            timer.querySelector('.seconds').innerText = '00';
+                            return;
+                        }
+
+                        const hours = Math.floor(diff / 3600000);
+                        const minutes = Math.floor((diff / 60000) % 60);
+                        const seconds = Math.floor((diff / 1000) % 60);
+
+                        timer.querySelector('.hours').innerText = hours.toString().padStart(2, '0');
+                        timer.querySelector('.minutes').innerText = minutes.toString().padStart(2, '0');
+                        timer.querySelector('.seconds').innerText = seconds.toString().padStart(2, '0');
+                    }
+
+                    update();
+                    setInterval(update, 1000);
+                }
+
+                // Event Delegation for Click Events
+                document.addEventListener('click', function(e) {
+                    // Add to Cart
+                    if (e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn')) {
+                        e.preventDefault();
+                        const button = e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn');
+                        const productId = button.getAttribute('data-product-id');
+                        addToCart(productId, 1);
+                    }
+
+                    // Quick View
+                    if (e.target.closest('.quick-view-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const button = e.target.closest('.quick-view-btn');
+                        const productId = button.getAttribute('data-product-id');
+                        showQuickView(productId);
+                    }
+
+                    // Wishlist
+                    if (e.target.closest('.wishlist-btn')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const button = e.target.closest('.wishlist-btn');
+                        const productId = button.getAttribute('data-product-id');
+                        toggleWishlist(productId, button);
+                    }
+
+                    // Product Card Click (but not on buttons)
+                    if (e.target.closest('.product-link') && !e.target.closest('.product-actions')) {
+                        e.preventDefault();
+                        const link = e.target.closest('.product-link');
+                        window.location.href = link.href;
+                    }
+                });
+
+                // Quick View Function
+                async function showQuickView(productId) {
+                    try {
+                        const response = await fetch(`/products/${productId}/quick-view`);
+                        const data = await response.json();
+
+                        if (data.success) {
+                            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+                            document.getElementById('product-details').innerHTML = data.html;
+
+                            // Load gallery images
+                            loadProductGallery(productId);
+
+                            modal.show();
+
+                            // Initialize gallery slider after modal is shown
+                            setTimeout(() => {
+                                initGallerySlider();
+                            }, 100);
+                        }
+                    } catch (error) {
+                        console.error('Error loading quick view:', error);
                         Toast.fire({
                             icon: 'error',
-                            title: data.message || 'Failed to add to cart'
+                            title: 'Failed to load product details'
                         });
                     }
+                }
+
+                // Load Product Gallery
+                async function loadProductGallery(productId) {
+                    try {
+                        const response = await fetch(`/api/products/${productId}/gallery`);
+                        const galleryData = await response.json();
+
+                        if (galleryData.success) {
+                            const slidesContainer = document.getElementById('gallery-slides');
+                            const thumbsContainer = document.getElementById('gallery-thumbs');
+
+                            slidesContainer.innerHTML = '';
+                            thumbsContainer.innerHTML = '';
+
+                            // Add images
+                            galleryData.images.forEach((image, index) => {
+                                const slide = document.createElement('div');
+                                slide.className = 'swiper-slide';
+                                slide.innerHTML =
+                                    `<img src="${image.url}" alt="${image.alt}" class="img-fluid">`;
+                                slidesContainer.appendChild(slide);
+
+                                const thumb = document.createElement('div');
+                                thumb.className = 'swiper-slide';
+                                thumb.innerHTML =
+                                    `<img src="${image.thumbnail}" alt="${image.alt}" class="img-fluid">`;
+                                thumbsContainer.appendChild(thumb);
+                            });
+
+                            // Add video if exists
+                            if (galleryData.video_url) {
+                                const videoSlide = document.createElement('div');
+                                videoSlide.className = 'swiper-slide';
+                                videoSlide.innerHTML = `
+                        <video controls class="w-100 h-100">
+                            <source src="${galleryData.video_url}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                                slidesContainer.appendChild(videoSlide);
+
+                                const videoThumb = document.createElement('div');
+                                videoThumb.className = 'swiper-slide video-thumb';
+                                videoThumb.innerHTML = `<div class="w-100 h-100 bg-dark"></div>`;
+                                thumbsContainer.appendChild(videoThumb);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error loading gallery:', error);
+                    }
+                }
+
+                // Initialize Gallery Slider
+                function initGallerySlider() {
+                    const gallerySlider = new Swiper('.product-gallery-slider', {
+                        spaceBetween: 10,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                    });
+
+                    const thumbsSlider = new Swiper('.gallery-thumbs', {
+                        spaceBetween: 10,
+                        slidesPerView: 4,
+                        freeMode: true,
+                        watchSlidesProgress: true,
+                    });
+
+                    gallerySlider.controller.control = thumbsSlider;
+                    thumbsSlider.controller.control = gallerySlider;
+                }
+
+                // Wishlist Function
+                function toggleWishlist(productId, button) {
+                    @auth
+                    fetch('{{ route('wishlist.toggle', $product->id) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                product_id: productId
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                button.classList.toggle('active');
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: data.message
+                                });
+
+                                // Update wishlist count
+                                const wishlistCount = document.querySelector('.wishlist-count');
+                                if (wishlistCount) {
+                                    wishlistCount.textContent = data.wishlist_count;
+                                }
+                            } else {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: data.message
+                                });
+                            }
+                        });
+                @else
+                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    loginModal.show();
+
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Please login to add to wishlist'
+                    });
+                @endauth
+            }
+
+            // Add to Cart Function
+            function addToCart(productId, quantity) {
+                @auth
+                fetch('{{ route('cart.add') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            quantity: quantity
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Product added to cart!'
+                            });
+                            updateCartCount(data.cart_count);
+                        } else {
+                            Toast.fire({
+                                icon: 'error',
+                                title: data.message || 'Failed to add to cart'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Network error. Please try again.'
+                        });
+                    });
+            @else
+                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Please login to add items to cart'
                 });
-        @else
-            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-            loginModal.show();
-
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please login to add items to cart'
-            });
-        @endauth
+            @endauth
         }
 
-        function showQuickView(productId) {
-            // Here you would typically fetch product details via AJAX
-            // For now, we'll redirect to the product page
-            window.location.href = `/products/${productId}`;
-        }
-
+        // Update Cart Count
         function updateCartCount(count) {
             const cartCountElement = document.querySelector('.cart-count');
             if (cartCountElement) {
@@ -968,8 +1691,47 @@
                 cartCountElement.style.display = count > 0 ? 'flex' : 'none';
             }
         }
+
+        // Newsletter Form
+        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            const button = this.querySelector('button');
+            const originalText = button.innerHTML;
+
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Successfully subscribed to newsletter!'
+                });
+                this.reset();
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 1500);
+        });
+
+        // Initialize Deal Timer
+        updateDealTimer();
+        });
     </script>
 
-
-
+    <!-- Toast Notification -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+    </script>
 @endsection

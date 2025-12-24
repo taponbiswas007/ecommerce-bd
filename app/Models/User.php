@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -55,9 +56,9 @@ class User extends Authenticatable
         return $this->hasMany(Cart::class);
     }
 
-    public function wishlist()
+    public function wishlists(): BelongsToMany
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->belongsToMany(Product::class, 'wishlists')->withTimestamps();
     }
 
     public function orders()
@@ -70,10 +71,10 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
 
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
-    }
+    // public function notifications()
+    // {
+    //     return $this->hasMany(Notification::class);
+    // }
     // Add this method to your User model
     public function cart()
     {

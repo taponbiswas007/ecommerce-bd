@@ -18,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
@@ -71,6 +72,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
     Route::post('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // Checkout & Payment Routes (Buying flow)
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -81,10 +83,10 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/payment/cancel/{order}', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
+    Route::get('/', [FrontendController::class, 'index'])->name('home');
     // Customer Dashboard
-    Route::get('/dashboard', function () {
-        return view('home');
-    })->name('dashboard');
+    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+
 
     // Customer Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

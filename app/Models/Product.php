@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Product extends Model
 {
@@ -158,5 +160,18 @@ class Product extends Model
             })
             ->orderBy('min_quantity', 'desc')
             ->first();
+    }
+
+    public function isInWishlist()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return $this->wishlists()->where('user_id', Auth::id())->exists();
+    }
+    public function wishlists(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'wishlists')->withTimestamps();
     }
 }
