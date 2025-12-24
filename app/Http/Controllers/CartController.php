@@ -10,31 +10,38 @@ use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
-
     public function index()
     {
         $cartItems = Cart::items();
-        $subtotal = 0;
-        $totalItems = 0;
+        $subtotal = Cart::subtotal();
+        $totalItems = Cart::count();
         $requiresLogin = (!Auth::check() || Auth::user()->role !== 'customer');
 
-        // Calculate totals
-        foreach ($cartItems as $item) {
-            $subtotal += $item->price * $item->quantity;
-            $totalItems += $item->quantity;
-        }
+        // Get coupon from session (if applied)
+        $couponCode = session('coupon_code');
+        $discount = Cart::discount($couponCode);
 
-        // Calculate shipping (example: free shipping over ৳500)
-        $shipping = $subtotal >= 500 ? 0 : 60;
-        $total = $subtotal + $shipping;
+        // Get shipping based on user location
+        $district = Auth::check() ? Auth::user()->district : null;
+        $upazila = Auth::check() ? Auth::user()->upazila : null;
+        $shipping = Cart::shipping($district, $upazila);
+
+        // Calculate tax on discounted subtotal
+        $tax = Cart::tax($subtotal - $discount);
+
+        // Grand total
+        $total = Cart::grandTotal($couponCode, $district, $upazila);
 
         return view('cart.index', compact(
             'cartItems',
             'subtotal',
+            'discount',
+            'tax',
             'shipping',
             'total',
             'totalItems',
-            'requiresLogin'
+            'requiresLogin',
+            'couponCode'
         ));
     }
 
@@ -57,14 +64,11 @@ class CartController extends Controller
             ], 400);
         }
 
-        // Get price (discount price if available, otherwise base price)
-        $price = $product->discount_price ?? $product->base_price;
-
-        // Add to cart
+        // Add to cart (price calculated automatically)
         $cartItem = Cart::addItem(
             $product->id,
             $request->quantity,
-            $price,
+            null, // Price will be calculated
             $request->attributes ?? []
         );
 
@@ -89,14 +93,14 @@ class CartController extends Controller
             // Remove item if quantity is 0
             Cart::removeItem($id);
 
-            return response()->json(data: [
+            return response()->json([
                 'success' => true,
                 'message' => 'Item removed from cart',
                 'cart_count' => Cart::count()
             ]);
         }
 
-        // Update quantity
+        // Update quantity (price recalculated automatically)
         $updated = Cart::updateQuantity($id, $request->quantity);
 
         if ($updated) {
@@ -145,6 +149,42 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'cart_count' => $count
+        ]);
+    }
+
+    // Apply coupon
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string'
+        ]);
+
+        $couponCode = strtoupper($request->coupon_code);
+        $discount = Cart::discount($couponCode);
+
+        if ($discount > 0) {
+            session(['coupon_code' => $couponCode]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Coupon applied successfully!',
+                'discount' => $discount
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid or expired coupon code.'
+        ], 400);
+    }
+
+    // Remove coupon
+    public function removeCoupon()
+    {
+        session()->forget('coupon_code');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon removed successfully!'
         ]);
     }
 }

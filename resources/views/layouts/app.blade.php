@@ -22,7 +22,6 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
         rel="stylesheet">
 
-
     <style>
         :root {
             --primary-blue: #0d6efd;
@@ -528,7 +527,7 @@
             border-color: var(--electric-blue);
         }
 
-        .dropdown-item-custom[onclick*="bn"] {
+        .dropdown-item-custom[onclick*="en"] {
             font-weight: bold;
             background: rgba(0, 150, 255, 0.1);
         }
@@ -575,29 +574,28 @@
                     </div>
                 </div>
 
-
                 <!-- Language Selector -->
                 <div class="language-selector">
                     <button class="language-btn d-flex align-items-center" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="https://flagcdn.com/w20/bd.png" class="language-flag" alt="Bangla">
-                        <span>বাংলা</span>
+                        <img src="https://flagcdn.com/w20/us.png" class="language-flag" alt="English">
+                        <span>English</span>
                         <i class="fas fa-chevron-down ms-2" style="font-size: 0.75rem;"></i>
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom" style="min-width: 150px;">
                         <li>
                             <a class="dropdown-item dropdown-item-custom d-flex align-items-center" href="#"
-                                onclick="changeGoogleTranslate('bn')">
-                                <img src="https://flagcdn.com/w20/bd.png" class="language-flag me-2" alt="Bangla">
-                                বাংলা
+                                onclick="changeGoogleTranslate('en')">
+                                <img src="https://flagcdn.com/w20/us.png" class="language-flag me-2" alt="English">
+                                English
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item dropdown-item-custom d-flex align-items-center" href="#"
-                                onclick="changeGoogleTranslate('en')">
-                                <img src="https://flagcdn.com/w20/us.png" class="language-flag me-2" alt="English">
-                                English
+                                onclick="changeGoogleTranslate('bn')">
+                                <img src="https://flagcdn.com/w20/bd.png" class="language-flag me-2" alt="Bangla">
+                                বাংলা
                             </a>
                         </li>
                         <li>
@@ -704,7 +702,6 @@
                                 @endif
                             @endauth
                         </a>
-
 
                         <!-- Cart -->
                         <a href="{{ route('cart.index') }}" class="header-icon position-relative">
@@ -1149,7 +1146,6 @@
         @yield('content')
     </main>
 
-
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Swiper JS -->
@@ -1228,12 +1224,12 @@
     <script>
         // Google Translate functions
         let googleTranslateInitialized = false;
-        let currentLanguage = 'bn'; // Default to Bangla
+        let currentLanguage = 'en'; // Default to English
 
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
-                pageLanguage: 'bn',
-                includedLanguages: 'bn,en,es,fr,de,zh-CN,hi,ar,ja,ko',
+                pageLanguage: 'en', // Default page language to English
+                includedLanguages: 'en,bn,es,fr,de,zh-CN,hi,ar,ja,ko', // Put English first
                 layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
                 autoDisplay: false,
                 multilanguagePage: true,
@@ -1302,7 +1298,7 @@
                     setTimeout(() => {
                         Toast.fire({
                             icon: 'success',
-                            title: getLanguageName(lang) + ' ভাষায় পরিবর্তন করা হয়েছে'
+                            title: getLanguageName(lang) + ' selected'
                         });
                     }, 1000);
                 }
@@ -1310,7 +1306,7 @@
                 console.error('Language change failed:', error);
                 Toast.fire({
                     icon: 'error',
-                    title: 'ভাষা পরিবর্তন ব্যর্থ হয়েছে'
+                    title: 'Language change failed'
                 });
             }
         }
@@ -1318,13 +1314,13 @@
         // Update language button text and flag
         function updateLanguageButton(lang) {
             const languageData = {
+                'en': { // Put English first
+                    flag: 'https://flagcdn.com/w20/us.png',
+                    name: 'English'
+                },
                 'bn': {
                     flag: 'https://flagcdn.com/w20/bd.png',
                     name: 'বাংলা'
-                },
-                'en': {
-                    flag: 'https://flagcdn.com/w20/us.png',
-                    name: 'English'
                 },
                 'es': {
                     flag: 'https://flagcdn.com/w20/es.png',
@@ -1360,7 +1356,7 @@
                 }
             };
 
-            const langData = languageData[lang] || languageData['bn'];
+            const langData = languageData[lang] || languageData['en']; // Default to English
             const button = document.querySelector('.language-btn');
 
             if (button) {
@@ -1375,8 +1371,8 @@
         // Get language name
         function getLanguageName(lang) {
             const languages = {
+                'en': 'English', // Put English first
                 'bn': 'Bangla',
-                'en': 'English',
                 'es': 'Spanish',
                 'fr': 'French',
                 'de': 'German',
@@ -1386,7 +1382,7 @@
                 'ja': 'Japanese',
                 'ko': 'Korean'
             };
-            return languages[lang] || 'Bangla';
+            return languages[lang] || 'English'; // Default to English
         }
 
         // Hide Google Translate toolbar
@@ -1430,7 +1426,7 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Check for saved language preference
-            const savedLang = localStorage.getItem('googleTranslateLanguage') || 'bn';
+            const savedLang = localStorage.getItem('googleTranslateLanguage') || 'en'; // Default to English
             currentLanguage = savedLang;
 
             // Update button to show saved language
@@ -1446,7 +1442,7 @@
                     // Show loading message
                     Toast.fire({
                         icon: 'info',
-                        title: 'লোড হচ্ছে...'
+                        title: 'Loading...'
                     });
 
                     loadGoogleTranslate();
@@ -1522,7 +1518,7 @@
             console.error('Google Translate error:', error);
             Toast.fire({
                 icon: 'error',
-                title: 'Google Translate লোড করতে ব্যর্থ হয়েছে'
+                title: 'Google Translate failed to load'
             });
         };
 
@@ -1537,7 +1533,7 @@
             // For now, just show a message
             Toast.fire({
                 icon: 'info',
-                title: 'ভাষা পরিবর্তন হচ্ছে...'
+                title: 'Language changing...'
             });
 
             // Save the language preference
@@ -1562,8 +1558,6 @@
                 mobileToggle.classList.remove('active');
             }
         });
-
-
 
         // Update cart and wishlist counts (simulated)
         function updateCartCount(count) {

@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;  // Add this import
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\Coupon;
+use App\Models\DeliveryCharge;
 
 class Cart extends Model
 {
@@ -48,11 +50,18 @@ class Cart extends Model
         return number_format($this->price * $this->quantity, 2);
     }
 
+    // Static method to calculate price for product and quantity
+    public static function calculatePrice($product, $quantity)
+    {
+        $bulkPrice = $product->getPriceForQuantity($quantity);
+        return $bulkPrice ? $bulkPrice->price : $product->final_price;
+    }
+
     // Static methods for easier access
     public static function count()
     {
-        if (Auth::check()) {  // Changed from auth()->check()
-            return self::where('user_id', Auth::id())->sum('quantity');  // Changed from auth()->id()
+        if (Auth::check()) {
+            return self::where('user_id', Auth::id())->sum('quantity');
         } else {
             $sessionId = session()->getId();
             return self::where('session_id', $sessionId)
@@ -63,9 +72,9 @@ class Cart extends Model
 
     public static function items()
     {
-        if (Auth::check()) {  // Changed
+        if (Auth::check()) {
             return self::with('product.images')
-                ->where('user_id', Auth::id())  // Changed
+                ->where('user_id', Auth::id())
                 ->get();
         } else {
             $sessionId = session()->getId();
@@ -76,16 +85,78 @@ class Cart extends Model
         }
     }
 
-    public static function total()
+    public static function subtotal()
     {
         $items = self::items();
         $total = 0;
-
         foreach ($items as $item) {
             $total += $item->price * $item->quantity;
         }
-
         return $total;
+    }
+
+    public static function discount($couponCode = null)
+    {
+        $subtotal = self::subtotal();
+        if (!$couponCode) {
+            return 0;
+        }
+        $coupon = Coupon::where('code', $couponCode)->where('is_active', true)->first();
+        if (!$coupon) {
+            return 0;
+        }
+        // Check validity
+        if (now()->lt($coupon->valid_from) || now()->gt($coupon->valid_to)) {
+            return 0;
+        }
+        if ($coupon->usage_limit && $coupon->used_count >= $coupon->usage_limit) {
+            return 0;
+        }
+        if ($coupon->min_order_amount && $subtotal < $coupon->min_order_amount) {
+            return 0;
+        }
+        $discount = 0;
+        if ($coupon->discount_type == 'percentage') {
+            $discount = ($subtotal * $coupon->discount_value) / 100;
+            if ($coupon->max_discount_amount && $discount > $coupon->max_discount_amount) {
+                $discount = $coupon->max_discount_amount;
+            }
+        } else {
+            $discount = $coupon->discount_value;
+        }
+        return $discount;
+    }
+
+    public static function tax($subtotal = null)
+    {
+        if ($subtotal === null) {
+            $subtotal = self::subtotal();
+        }
+        // Assume 5% tax; adjust as needed
+        return $subtotal * 0.05;
+    }
+
+    public static function shipping($district = null, $upazila = null)
+    {
+        if (!$district || !$upazila) {
+            // Default shipping
+            $subtotal = self::subtotal();
+            return $subtotal >= 500 ? 0 : 60;
+        }
+        $charge = DeliveryCharge::where('district', $district)
+            ->where('upazila', $upazila)
+            ->where('is_active', true)
+            ->first();
+        return $charge ? $charge->charge : 100; // Default charge
+    }
+
+    public static function grandTotal($couponCode = null, $district = null, $upazila = null)
+    {
+        $subtotal = self::subtotal();
+        $discount = self::discount($couponCode);
+        $tax = self::tax($subtotal - $discount);
+        $shipping = self::shipping($district, $upazila);
+        return $subtotal - $discount + $tax + $shipping;
     }
 
     public static function addItem($productId, $quantity = 1, $price = null, $attributes = [])
@@ -93,11 +164,11 @@ class Cart extends Model
         $product = Product::findOrFail($productId);
 
         if (!$price) {
-            $price = $product->final_price;
+            $price = self::calculatePrice($product, $quantity);
         }
 
-        if (Auth::check()) {  // Changed
-            $userId = Auth::id();  // Changed
+        if (Auth::check()) {
+            $userId = Auth::id();
             $sessionId = null;
         } else {
             $userId = null;
@@ -116,8 +187,9 @@ class Cart extends Model
             ->first();
 
         if ($cartItem) {
-            // Update quantity if item exists
+            // Update quantity and recalculate price
             $cartItem->quantity += $quantity;
+            $cartItem->price = self::calculatePrice($product, $cartItem->quantity);
             $cartItem->save();
         } else {
             // Create new cart item
@@ -136,9 +208,9 @@ class Cart extends Model
 
     public static function removeItem($cartId)
     {
-        if (Auth::check()) {  // Changed
+        if (Auth::check()) {
             return self::where('id', $cartId)
-                ->where('user_id', Auth::id())  // Changed
+                ->where('user_id', Auth::id())
                 ->delete();
         } else {
             $sessionId = session()->getId();
@@ -155,23 +227,34 @@ class Cart extends Model
             return self::removeItem($cartId);
         }
 
-        if (Auth::check()) {  // Changed
-            return self::where('id', $cartId)
-                ->where('user_id', Auth::id())  // Changed
+        if (Auth::check()) {
+            $updated = self::where('id', $cartId)
+                ->where('user_id', Auth::id())
                 ->update(['quantity' => $quantity]);
         } else {
             $sessionId = session()->getId();
-            return self::where('id', $cartId)
+            $updated = self::where('id', $cartId)
                 ->where('session_id', $sessionId)
                 ->whereNull('user_id')
                 ->update(['quantity' => $quantity]);
         }
+
+        if ($updated) {
+            // Recalculate price
+            $cartItem = self::find($cartId);
+            if ($cartItem) {
+                $cartItem->price = self::calculatePrice($cartItem->product, $cartItem->quantity);
+                $cartItem->save();
+            }
+        }
+
+        return $updated;
     }
 
     public static function clear()
     {
-        if (Auth::check()) {  // Changed
-            return self::where('user_id', Auth::id())->delete();  // Changed
+        if (Auth::check()) {
+            return self::where('user_id', Auth::id())->delete();
         } else {
             $sessionId = session()->getId();
             return self::where('session_id', $sessionId)
@@ -182,11 +265,11 @@ class Cart extends Model
 
     public static function mergeGuestCart()
     {
-        if (!Auth::check()) {  // Changed
+        if (!Auth::check()) {
             return;
         }
 
-        $userId = Auth::id();  // Changed
+        $userId = Auth::id();
         $sessionId = session()->getId();
 
         $guestCartItems = self::where('session_id', $sessionId)
@@ -200,8 +283,9 @@ class Cart extends Model
                 ->first();
 
             if ($existingCartItem) {
-                // Update quantity if product exists
+                // Update quantity and price
                 $existingCartItem->quantity += $item->quantity;
+                $existingCartItem->price = self::calculatePrice($existingCartItem->product, $existingCartItem->quantity);
                 $existingCartItem->save();
                 $item->delete();
             } else {

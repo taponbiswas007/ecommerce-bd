@@ -101,6 +101,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     // Customer Addresses
     Route::resource('addresses', App\Http\Controllers\Customer\AddressController::class);
+    Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon']);
+    Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon']);
 });
 
 /*

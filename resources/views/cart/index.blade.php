@@ -194,6 +194,20 @@
             font-size: 24px;
         }
 
+        .coupon-section .card {
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .coupon-section .card-body {
+            padding: 15px;
+        }
+
+        .coupon-section .alert {
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
         .btn-checkout {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -338,6 +352,10 @@
                 position: static;
                 margin-top: 30px;
             }
+
+            .coupon-section {
+                margin-bottom: 20px;
+            }
         }
     </style>
 @endsection
@@ -473,8 +491,36 @@
                         @endforeach
                     </div>
 
-                    <!-- Order Summary -->
+                    <!-- Sidebar -->
                     <div class="col-lg-4">
+                        @if (!$requiresLogin)
+                            <!-- Coupon Section -->
+                            <div class="coupon-section mb-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-3"><i class="fas fa-ticket-alt me-2"></i> Have a Coupon?
+                                        </h6>
+                                        @if ($couponCode)
+                                            <div class="alert alert-success py-2">
+                                                <small><i class="fas fa-check-circle me-1"></i> Coupon
+                                                    "{{ $couponCode }}" applied! You saved
+                                                    ৳{{ number_format($discount, 2) }}.</small>
+                                                <button class="btn btn-sm btn-outline-danger ms-2"
+                                                    onclick="removeCoupon()">Remove</button>
+                                            </div>
+                                        @else
+                                            <form id="couponForm" class="d-flex gap-2">
+                                                <input type="text" id="couponCode" class="form-control form-control-sm"
+                                                    placeholder="Enter coupon code" required>
+                                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Order Summary -->
                         <div class="cart-summary">
                             <h5 class="summary-title">Order Summary</h5>
 
@@ -482,6 +528,13 @@
                                 <span class="summary-label">Subtotal ({{ $totalItems }} items)</span>
                                 <span class="summary-value">৳{{ number_format($subtotal, 2) }}</span>
                             </div>
+
+                            @if ($discount > 0)
+                                <div class="summary-row">
+                                    <span class="summary-label">Discount</span>
+                                    <span class="summary-value text-success">-৳{{ number_format($discount, 2) }}</span>
+                                </div>
+                            @endif
 
                             <div class="summary-row">
                                 <span class="summary-label">Shipping</span>
@@ -496,7 +549,7 @@
 
                             <div class="summary-row">
                                 <span class="summary-label">Tax</span>
-                                <span class="summary-value">৳0.00</span>
+                                <span class="summary-value">৳{{ number_format($tax, 2) }}</span>
                             </div>
 
                             <div class="summary-total">
@@ -697,6 +750,60 @@
                     title: 'Please login to proceed to checkout'
                 });
             @endif
+        }
+
+        // Coupon form submission
+        document.getElementById('couponForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const couponCode = document.getElementById('couponCode').value.trim().toUpperCase();
+            if (!couponCode) return;
+
+            fetch('/cart/apply-coupon', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        coupon_code: couponCode
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.message
+                        });
+                        location.reload();
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message
+                        });
+                    }
+                });
+        });
+
+        // Remove coupon
+        function removeCoupon() {
+            fetch('/cart/remove-coupon', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.message
+                        });
+                        location.reload();
+                    }
+                });
         }
 
         // Update cart count in header
