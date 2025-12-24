@@ -57,13 +57,22 @@ class FrontendController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get();
+        $dealProduct = Product::with('primaryImage')
+            ->where('is_deal', 1)
+            ->where('is_active', 1)
+            ->where('stock_quantity', '>', 0)
+            ->where('deal_end_at', '>=', now())
+            ->latest('deal_end_at')
+            ->first();
+
 
         return view('home', compact(
             'featuredProducts',
             'categories',
             'brands',
             'flashSaleProducts',
-            'newArrivals'
+            'newArrivals',
+            'dealProduct'
         ));
     }
 

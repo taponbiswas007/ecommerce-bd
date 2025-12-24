@@ -452,32 +452,19 @@
                 </div>
             </div>
             <div class="category-grid">
-                @php
-                    $categories = [
-                        ['icon' => 'fas fa-mobile-alt', 'name' => 'Smartphones', 'count' => 245],
-                        ['icon' => 'fas fa-laptop', 'name' => 'Laptops', 'count' => 189],
-                        ['icon' => 'fas fa-headphones', 'name' => 'Audio', 'count' => 312],
-                        ['icon' => 'fas fa-tv', 'name' => 'TVs', 'count' => 156],
-                        ['icon' => 'fas fa-camera', 'name' => 'Cameras', 'count' => 98],
-                        ['icon' => 'fas fa-gamepad', 'name' => 'Gaming', 'count' => 267],
-                        ['icon' => 'fas fa-watch', 'name' => 'Wearables', 'count' => 134],
-                        ['icon' => 'fas fa-home', 'name' => 'Smart Home', 'count' => 211],
-                        ['icon' => 'fas fa-car-battery', 'name' => 'Accessories', 'count' => 456],
-                        ['icon' => 'fas fa-plug', 'name' => 'Chargers', 'count' => 178],
-                        ['icon' => 'fas fa-hdd', 'name' => 'Storage', 'count' => 89],
-                        ['icon' => 'fas fa-ellipsis-h', 'name' => 'More', 'count' => '+500'],
-                    ];
-                @endphp
 
                 @foreach ($categories as $category)
                     <a href="{{ route('category.show', strtolower(str_replace(' ', '-', $category['name']))) }}"
                         class="text-decoration-none">
                         <div class="category-card">
                             <div class="category-icon">
-                                <i class="{{ $category['icon'] }}"></i>
+                                @if ($category->image)
+                                    <img class=" img-fluid" src="{{ asset('storage/' . $category->image) }}"
+                                        alt="{{ $category->name }}" class="category-image">
+                                @endif
                             </div>
-                            <h5 class="fw-bold mb-2">{{ $category['name'] }}</h5>
-                            <p class="text-muted mb-0">{{ $category['count'] }} items</p>
+                            <h5 class="fw-bold mb-2">{{ $category->name }}</h5>
+                            <p class="text-muted mb-0">{{ $category->description }}</p>
                         </div>
                     </a>
                 @endforeach
@@ -503,21 +490,27 @@
             </div>
             <div class="row">
                 @php
-                    $featuredProducts = \App\Models\Product::with('images')
-                        ->where('is_featured', true)
-                        ->where('is_active', true)
+                    $featuredProducts = \App\Models\Product::with(['primaryImage'])
+                        ->where('is_featured', 1)
+                        ->where('is_active', 1)
                         ->where('stock_quantity', '>', 0)
-                        ->orderBy('created_at', 'desc')
+                        ->latest()
                         ->limit(8)
                         ->get();
                 @endphp
+
 
                 @foreach ($featuredProducts as $product)
                     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                         <div class="product-card h-100">
                             <div class="position-relative">
-                                <img src="{{ $product->primary_image ? asset('storage/' . $product->primary_image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                    alt="{{ $product->name }}" class="product-img">
+                                @php
+                                    $image = $product->primaryImage ?? $product->images->first();
+                                @endphp
+
+                                <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                    alt="{{ $image->alt_text ?? $product->name }}" class="product-img">
+
                                 @if ($product->has_discount)
                                     <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
                                 @endif
@@ -572,62 +565,89 @@
     </section>
 
     <!-- Deal of the Day -->
-    <section class="py-5">
-        <div class="container">
-            <div class="deal-of-the-day">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 p-5">
-                        <span class="badge bg-warning text-dark mb-3 px-3 py-2">Deal of the Day</span>
-                        <h2 class="fw-bold mb-3">Apple iPhone 14 Pro Max</h2>
-                        <p class="mb-4">Get the latest iPhone with amazing camera features and premium performance.</p>
+    @if ($dealProduct)
+        <section class="py-5">
+            <div class="container">
+                <div class="deal-of-the-day">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 p-5 text-white">
+                            <span class="badge bg-warning text-dark mb-3 px-3 py-2">
+                                Deal of the Day
+                            </span>
 
-                        <div class="deal-timer mb-4">
-                            <p class="mb-2">Hurry up! Offer ends in:</p>
-                            <div class="d-flex gap-2">
-                                <div class="text-center">
-                                    <div class="bg-dark px-3 py-2 rounded">
-                                        <h4 class="mb-0 fw-bold" id="deal-hours">12</h4>
+                            <h2 class="fw-bold mb-3">{{ $dealProduct->name }}</h2>
+                            <p class="mb-4">
+                                {{ Str::limit(strip_tags($dealProduct->short_description), 120) }}
+                            </p>
+
+                            {{-- TIMER --}}
+                            <div class="deal-timer mb-4"
+                                data-deal-end="{{ optional($dealProduct->deal_end_at)->timestamp }}">
+
+                                <p class="mb-2">Hurry up! Offer ends in:</p>
+                                <div class="d-flex gap-2">
+                                    <div class="text-center">
+                                        <div class="bg-dark px-3 py-2 rounded">
+                                            <h4 class="hours">00</h4>
+                                        </div>
+                                        <small>Hours</small>
                                     </div>
-                                    <small>Hours</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-dark px-3 py-2 rounded">
-                                        <h4 class="mb-0 fw-bold" id="deal-minutes">45</h4>
+                                    <div class="text-center">
+                                        <div class="bg-dark px-3 py-2 rounded">
+                                            <h4 class="minutes">00</h4>
+                                        </div>
+                                        <small>Minutes</small>
                                     </div>
-                                    <small>Minutes</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-dark px-3 py-2 rounded">
-                                        <h4 class="mb-0 fw-bold" id="deal-seconds">30</h4>
+                                    <div class="text-center">
+                                        <div class="bg-dark px-3 py-2 rounded">
+                                            <h4 class="seconds">00</h4>
+                                        </div>
+                                        <small>Seconds</small>
                                     </div>
-                                    <small>Seconds</small>
                                 </div>
+                            </div>
+
+                            {{-- PRICE --}}
+                            <div class="d-flex align-items-center mb-4">
+                                <h3 class="fw-bold mb-0 me-3">
+                                    ৳{{ number_format($dealProduct->discount_price ?? $dealProduct->base_price, 2) }}
+                                </h3>
+
+                                @if ($dealProduct->has_discount)
+                                    <h5 class="text-decoration-line-through mb-0 opacity-75">
+                                        ৳{{ number_format($dealProduct->base_price, 2) }}
+                                    </h5>
+                                    <span class="badge bg-danger ms-3">
+                                        Save {{ $dealProduct->discount_percentage }}%
+                                    </span>
+                                @endif
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <button class="btn btn-light btn-lg add-to-cart"
+                                    data-product-id="{{ $dealProduct->id }}">
+                                    <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                                </button>
+
+                                <a href="{{ route('product.show', $dealProduct->slug) }}"
+                                    class="btn btn-outline-light btn-lg">
+                                    View Product
+                                </a>
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center mb-4">
-                            <h3 class="fw-bold mb-0 me-3">৳119,999</h3>
-                            <h5 class="text-decoration-line-through mb-0 opacity-75">৳149,999</h5>
-                            <span class="badge bg-danger ms-3">Save 20%</span>
+                        <div class="col-lg-6 text-center">
+                            <img src="{{ $dealProduct->primaryImage
+                                ? asset('storage/' . $dealProduct->primaryImage->image_path)
+                                : 'https://via.placeholder.com/500' }}"
+                                class="img-fluid" alt="{{ $dealProduct->name }}">
                         </div>
-
-                        <div class="d-flex gap-3">
-                            <button class="btn btn-light btn-lg">
-                                <i class="fas fa-cart-plus me-2"></i> Add to Cart
-                            </button>
-                            <button class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-heart me-2"></i> Wishlist
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Deal of the Day" class="img-fluid">
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
+
 
     <!-- Brands Section -->
     <section class="py-5 bg-light">
@@ -949,4 +969,7 @@
             }
         }
     </script>
+
+
+
 @endsection

@@ -1740,6 +1740,38 @@
             });
         </script>
     @endif
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const timer = document.querySelector('[data-deal-end]');
+            if (!timer) return;
+
+            const endTimestamp = parseInt(timer.dataset.dealEnd) * 1000;
+
+            function updateTimer() {
+                const diff = endTimestamp - Date.now();
+
+                if (diff <= 0) {
+                    timer.querySelector('.hours').innerText = '00';
+                    timer.querySelector('.minutes').innerText = '00';
+                    timer.querySelector('.seconds').innerText = '00';
+                    return;
+                }
+
+                timer.querySelector('.hours').innerText =
+                    Math.floor(diff / 3600000);
+
+                timer.querySelector('.minutes').innerText =
+                    Math.floor((diff / 60000) % 60);
+
+                timer.querySelector('.seconds').innerText =
+                    Math.floor((diff / 1000) % 60);
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        });
+    </script>
 </body>
 
 </html>

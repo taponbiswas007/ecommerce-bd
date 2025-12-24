@@ -26,6 +26,8 @@ class Product extends Model
         'dimensions',
         'is_featured',
         'is_active',
+        'is_deal',
+        'deal_end_at',
         'view_count',
         'sold_count',
         'average_rating',
@@ -41,9 +43,10 @@ class Product extends Model
         'is_active' => 'boolean',
         'base_price' => 'decimal:2',
         'discount_price' => 'decimal:2',
-        'discount_price' => 'decimal:2',
         'average_rating' => 'decimal:2',
         'attributes' => 'array',
+        'is_deal' => 'boolean',
+        'deal_end_at' => 'datetime',
     ];
 
     // Relationships
@@ -59,8 +62,15 @@ class Product extends Model
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class)->orderBy('display_order');
     }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)
+            ->where('is_primary', 1);
+    }
+
 
     // Accessors
     public function getFeaturedImageAttribute()
@@ -91,6 +101,24 @@ class Product extends Model
     public function getIsOnSaleAttribute()
     {
         return !is_null($this->discount_price) && $this->discount_price < $this->base_price;
+    }
+
+
+    // Accessor
+    public function getIsDealActiveAttribute()
+    {
+        return $this->is_deal &&
+            (!$this->deal_end_at || $this->deal_end_at->isFuture());
+    }
+
+    // Scope
+    public function scopeDealOfTheDay($query)
+    {
+        return $query->where('is_deal', 1)
+            ->where(function ($q) {
+                $q->whereNull('deal_end_at')
+                    ->orWhere('deal_end_at', '>', now());
+            });
     }
 
     // Scopes

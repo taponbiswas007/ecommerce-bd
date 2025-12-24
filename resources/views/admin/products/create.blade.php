@@ -260,6 +260,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card mb-3">
+                                    <div class="card-header fw-bold">Deal of the Day</div>
+                                    <div class="card-body">
+
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="is_deal"
+                                                value="1"
+                                                {{ old('is_deal', $product->is_deal ?? false) ? 'checked' : '' }}>
+                                            <label class="form-check-label">Set as Deal of the Day</label>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Deal End Time</label>
+                                            <input type="datetime-local" name="deal_end_at" class="form-control"
+                                                value="{{ old('deal_end_at', isset($product->deal_end_at) ? $product->deal_end_at->format('Y-m-d\TH:i') : '') }}">
+                                        </div>
+
+                                    </div>
+                                </div>
+
 
                                 <!-- Shipping Information -->
                                 <div class="card mb-4">

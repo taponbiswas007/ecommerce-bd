@@ -50,6 +50,9 @@ class ProductController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:500',
+            'is_deal' => 'nullable|boolean',
+            'deal_end_at' => 'nullable|date',
+
         ]);
 
         // Generate slug
@@ -71,10 +74,20 @@ class ProductController extends Controller
             }
             $validated['attributes'] = !empty($attributes) ? json_encode($attributes) : null;
         }
+        // 🔥 If deal selected, remove previous deal
+        if ($request->boolean('is_deal')) {
+            Product::where('is_deal', 1)->update([
+                'is_deal' => 0,
+                'deal_end_at' => null,
+            ]);
+        }
+
 
         // Set default values
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_deal'] = $request->boolean('is_deal');
+
 
         $product = Product::create($validated);
 
@@ -116,6 +129,9 @@ class ProductController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:500',
+            'is_deal' => 'nullable|boolean',
+            'deal_end_at' => 'nullable|date',
+
         ]);
 
         // Update slug if name changed
@@ -144,10 +160,22 @@ class ProductController extends Controller
         } else {
             $validated['attributes'] = null;
         }
+        // 🔥 Only one deal allowed
+        if ($request->boolean('is_deal')) {
+            Product::where('is_deal', 1)
+                ->where('id', '!=', $product->id)
+                ->update([
+                    'is_deal' => 0,
+                    'deal_end_at' => null,
+                ]);
+        }
+
 
         // Set boolean values
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_deal'] = $request->boolean('is_deal');
+
 
         $product->update($validated);
 
