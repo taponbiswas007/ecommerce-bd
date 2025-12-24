@@ -62,7 +62,7 @@ Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear')
 
 // Product Reviews (Public viewing, authenticated posting)
 Route::get('/products/{product}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth:customer');
+Route::post('/reviews', action: [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth:customer');
 
 /*
 |--------------------------------------------------------------------------
@@ -86,7 +86,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/payment/cancel/{order}', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
-    Route::get('/', [FrontendController::class, 'index'])->name('home');
     // Customer Dashboard
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
 

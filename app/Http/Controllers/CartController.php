@@ -10,20 +10,13 @@ use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
-    // Display cart page
+
     public function index()
     {
         $cartItems = Cart::items();
         $subtotal = 0;
         $totalItems = 0;
-        $requiresLogin = false;
-
-        // Determine if login is required
-        if (Auth::check() && Auth::user()->role !== 'customer' && $cartItems->count() > 0) {
-            $requiresLogin = true; // User is logged in but not as customer
-        } elseif (!Auth::check() && $cartItems->count() > 0) {
-            $requiresLogin = true; // Guest has items, needs to login
-        }
+        $requiresLogin = (!Auth::check() || Auth::user()->role !== 'customer');
 
         // Calculate totals
         foreach ($cartItems as $item) {
@@ -96,7 +89,7 @@ class CartController extends Controller
             // Remove item if quantity is 0
             Cart::removeItem($id);
 
-            return response()->json([
+            return response()->json(data: [
                 'success' => true,
                 'message' => 'Item removed from cart',
                 'cart_count' => Cart::count()
