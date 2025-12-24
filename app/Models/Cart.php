@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;  // Add this import
+use App\Models\User;
+use App\Models\Product;
 
 class Cart extends Model
 {
@@ -30,14 +33,26 @@ class Cart extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->with('images');
+    }
+
+    // Accessor for display price
+    public function getDisplayPriceAttribute()
+    {
+        return number_format($this->price, 2);
+    }
+
+    // Accessor for total price
+    public function getTotalPriceAttribute()
+    {
+        return number_format($this->price * $this->quantity, 2);
     }
 
     // Static methods for easier access
     public static function count()
     {
-        if (auth()->check()) {
-            return self::where('user_id', auth()->id())->sum('quantity');
+        if (Auth::check()) {  // Changed from auth()->check()
+            return self::where('user_id', Auth::id())->sum('quantity');  // Changed from auth()->id()
         } else {
             $sessionId = session()->getId();
             return self::where('session_id', $sessionId)
@@ -48,9 +63,9 @@ class Cart extends Model
 
     public static function items()
     {
-        if (auth()->check()) {
+        if (Auth::check()) {  // Changed
             return self::with('product.images')
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())  // Changed
                 ->get();
         } else {
             $sessionId = session()->getId();
@@ -78,11 +93,11 @@ class Cart extends Model
         $product = Product::findOrFail($productId);
 
         if (!$price) {
-            $price = $product->display_price;
+            $price = $product->final_price;
         }
 
-        if (auth()->check()) {
-            $userId = auth()->id();
+        if (Auth::check()) {  // Changed
+            $userId = Auth::id();  // Changed
             $sessionId = null;
         } else {
             $userId = null;
@@ -121,9 +136,9 @@ class Cart extends Model
 
     public static function removeItem($cartId)
     {
-        if (auth()->check()) {
+        if (Auth::check()) {  // Changed
             return self::where('id', $cartId)
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())  // Changed
                 ->delete();
         } else {
             $sessionId = session()->getId();
@@ -140,9 +155,9 @@ class Cart extends Model
             return self::removeItem($cartId);
         }
 
-        if (auth()->check()) {
+        if (Auth::check()) {  // Changed
             return self::where('id', $cartId)
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())  // Changed
                 ->update(['quantity' => $quantity]);
         } else {
             $sessionId = session()->getId();
@@ -155,8 +170,8 @@ class Cart extends Model
 
     public static function clear()
     {
-        if (auth()->check()) {
-            return self::where('user_id', auth()->id())->delete();
+        if (Auth::check()) {  // Changed
+            return self::where('user_id', Auth::id())->delete();  // Changed
         } else {
             $sessionId = session()->getId();
             return self::where('session_id', $sessionId)
@@ -167,11 +182,11 @@ class Cart extends Model
 
     public static function mergeGuestCart()
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {  // Changed
             return;
         }
 
-        $userId = auth()->id();
+        $userId = Auth::id();  // Changed
         $sessionId = session()->getId();
 
         $guestCartItems = self::where('session_id', $sessionId)

@@ -1163,8 +1163,10 @@
     @yield('scripts')
     <script>
         // Handle add to cart with login check
+        // Handle add to cart with login check
+        // Add to cart function (use this in all your blade files)
         function addToCart(productId, quantity = 1) {
-            fetch('/cart/add', {
+            fetch('{{ route('cart.add') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1182,32 +1184,26 @@
                             icon: 'success',
                             title: data.message
                         });
-
-                        // Update cart count in header
-                        if (data.cart_count !== undefined) {
-                            updateCartCount(data.cart_count);
-                        }
+                        updateCartCount(data.cart_count);
                     } else if (data.requires_login) {
-                        // Show login modal
                         const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
                         loginModal.show();
-
                         Toast.fire({
                             icon: 'warning',
-                            title: data.message
+                            title: 'Please login to add items to cart'
                         });
                     } else {
                         Toast.fire({
                             icon: 'error',
-                            title: data.message || 'Something went wrong'
+                            title: data.message || 'Failed to add to cart'
                         });
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Add to cart error:', error);
                     Toast.fire({
                         icon: 'error',
-                        title: 'Failed to add to cart'
+                        title: 'Network error. Please try again.'
                     });
                 });
         }

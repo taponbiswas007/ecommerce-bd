@@ -33,8 +33,10 @@ use App\Http\Controllers\ReviewController;
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/products', [FrontendController::class, 'shop'])->name('shop');
 Route::get('/products/{slug}', [FrontendController::class, 'show'])->name('product.show');
-Route::get('/category/{slug}', [FrontendController::class, 'category'])->name('category.show');
-
+Route::get('/category/{category:slug}', [FrontendController::class, 'categoryShow'])->name('category.show');
+Route::get('/product/quick-view/{id}', [FrontendController::class, 'quickView'])->name('product.quick-view');
+Route::get('/flash-sale', [FrontendController::class, 'flashSale'])->name('flash-sale');
+Route::get('/new-arrivals', [FrontendController::class, 'newArrivals'])->name('new-arrivals');
 // Static Page Routes
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/services', [PageController::class, 'services'])->name('services');
@@ -50,12 +52,13 @@ Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogle
 Route::get('/auth/facebook', [SocialLoginController::class, 'redirectToFacebook'])->name('login.facebook');
 Route::get('/auth/facebook/callback', [SocialLoginController::class, 'handleFacebookCallback']);
 
+
 // Cart Routes (Public - with authentication check inside controller)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add')->middleware('auth:customer');
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update')->middleware('auth:customer');
-Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove')->middleware('auth:customer');
-Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear')->middleware('auth:customer');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 // Product Reviews (Public viewing, authenticated posting)
 Route::get('/products/{product}/reviews', [ReviewController::class, 'index'])->name('reviews.index');

@@ -761,8 +761,9 @@
                 <div class="swiper-wrapper">
                     @foreach ($categories as $category)
                         <div class="swiper-slide">
-                            <a href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}"
-                                class="text-decoration-none">
+                            <a class=" text-decoration-none"
+                                href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}">
+
                                 <div class="category-card">
                                     <div class="category-icon">
                                         @if ($category->image)
@@ -806,25 +807,26 @@
                                             $image = $product->primaryImage ?? $product->images->first();
                                         @endphp
                                         <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                            class="product-img" alt="{{ $image->alt_text ?? $product->name }}">
+                                            alt="{{ $product->name }}" class="product-img">
 
                                         <div class="product-badges">
-                                            @if ($product->has_discount)
-                                                <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
-                                            @endif
                                             @if ($product->is_featured)
                                                 <span class="featured-badge">Featured</span>
+                                            @endif
+                                            @if ($product->has_discount)
+                                                <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                    OFF</span>
                                             @endif
                                         </div>
 
                                         <div class="product-actions">
-                                            <button class="action-btn quick-view-btn" data-product-id="{{ $product->id }}"
-                                                title="Quick View">
+                                            <button class="action-btn quick-view-btn"
+                                                data-product-id="{{ $product->id }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button
                                                 class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                data-product-id="{{ $product->id }}">
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                         </div>
@@ -839,8 +841,10 @@
                                     <div class="rating-container">
                                         <div class="rating-stars">
                                             @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= ($product->average_rating ?? 0))
+                                                @if ($i <= floor($product->average_rating ?? 0))
                                                     <i class="fas fa-star"></i>
+                                                @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                    <i class="fas fa-star-half-alt"></i>
                                                 @else
                                                     <i class="far fa-star"></i>
                                                 @endif
@@ -1000,26 +1004,26 @@
                                                     $image = $product->primaryImage ?? $product->images->first();
                                                 @endphp
                                                 <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                                    class="product-img" alt="{{ $image->alt_text ?? $product->name }}">
+                                                    alt="{{ $product->name }}" class="product-img">
 
                                                 <div class="product-badges">
-                                                    @if ($product->has_discount)
-                                                        <span
-                                                            class="discount-badge">-{{ $product->discount_percentage }}%</span>
+                                                    @if ($product->is_featured)
+                                                        <span class="featured-badge">Featured</span>
                                                     @endif
-                                                    @if ($product->is_new)
-                                                        <span class="new-badge">New</span>
+                                                    @if ($product->has_discount)
+                                                        <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                            OFF</span>
                                                     @endif
                                                 </div>
 
                                                 <div class="product-actions">
                                                     <button class="action-btn quick-view-btn"
-                                                        data-product-id="{{ $product->id }}" title="Quick View">
+                                                        data-product-id="{{ $product->id }}">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                     <button
                                                         class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                        data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                        data-product-id="{{ $product->id }}">
                                                         <i class="fas fa-heart"></i>
                                                     </button>
                                                 </div>
@@ -1034,8 +1038,10 @@
                                             <div class="rating-container">
                                                 <div class="rating-stars">
                                                     @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= ($product->average_rating ?? 0))
+                                                        @if ($i <= floor($product->average_rating ?? 0))
                                                             <i class="fas fa-star"></i>
+                                                        @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                            <i class="fas fa-star-half-alt"></i>
                                                         @else
                                                             <i class="far fa-star"></i>
                                                         @endif
@@ -1116,23 +1122,26 @@
                                             $image = $product->primaryImage ?? $product->images->first();
                                         @endphp
                                         <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                            class="product-img" alt="{{ $image->alt_text ?? $product->name }}">
+                                            alt="{{ $product->name }}" class="product-img">
 
                                         <div class="product-badges">
-                                            <span class="discount-badge">-{{ $product->discount_percentage }}%</span>
                                             @if ($product->is_featured)
                                                 <span class="featured-badge">Featured</span>
+                                            @endif
+                                            @if ($product->has_discount)
+                                                <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                    OFF</span>
                                             @endif
                                         </div>
 
                                         <div class="product-actions">
                                             <button class="action-btn quick-view-btn"
-                                                data-product-id="{{ $product->id }}" title="Quick View">
+                                                data-product-id="{{ $product->id }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button
                                                 class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                data-product-id="{{ $product->id }}">
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                         </div>
@@ -1147,8 +1156,10 @@
                                     <div class="rating-container">
                                         <div class="rating-stars">
                                             @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= ($product->average_rating ?? 0))
+                                                @if ($i <= floor($product->average_rating ?? 0))
                                                     <i class="fas fa-star"></i>
+                                                @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                    <i class="fas fa-star-half-alt"></i>
                                                 @else
                                                     <i class="far fa-star"></i>
                                                 @endif
@@ -1491,18 +1502,29 @@
                     }
                 });
 
+
                 // Quick View Function
                 async function showQuickView(productId) {
                     try {
-                        const response = await fetch(`/products/${productId}/quick-view`);
+                        // FIXED URL: Use the correct route
+                        const response = await fetch(`/product/quick-view/${productId}`);
                         const data = await response.json();
 
                         if (data.success) {
                             const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+
+                            // Clear previous content
+                            document.getElementById('gallery-slides').innerHTML = '';
+                            document.getElementById('gallery-thumbs').innerHTML = '';
+                            document.getElementById('product-details').innerHTML = '';
+
+                            // Load the HTML from the response
                             document.getElementById('product-details').innerHTML = data.html;
 
-                            // Load gallery images
-                            loadProductGallery(productId);
+                            // Load product images from the data
+                            if (data.product && data.product.images) {
+                                loadProductImages(data.product.images, data.product.video_url);
+                            }
 
                             modal.show();
 
@@ -1520,54 +1542,52 @@
                     }
                 }
 
-                // Load Product Gallery
-                async function loadProductGallery(productId) {
-                    try {
-                        const response = await fetch(`/api/products/${productId}/gallery`);
-                        const galleryData = await response.json();
+                // Load Product Images (simplified - uses data from response)
+                function loadProductImages(images, videoUrl = null) {
+                    const slidesContainer = document.getElementById('gallery-slides');
+                    const thumbsContainer = document.getElementById('gallery-thumbs');
 
-                        if (galleryData.success) {
-                            const slidesContainer = document.getElementById('gallery-slides');
-                            const thumbsContainer = document.getElementById('gallery-thumbs');
+                    slidesContainer.innerHTML = '';
+                    thumbsContainer.innerHTML = '';
 
-                            slidesContainer.innerHTML = '';
-                            thumbsContainer.innerHTML = '';
+                    // Add images
+                    images.forEach((image, index) => {
+                        const slide = document.createElement('div');
+                        slide.className = 'swiper-slide';
+                        slide.innerHTML =
+                            `<img src="/storage/${image.image_path}" alt="${image.alt_text}" class="img-fluid">`;
+                        slidesContainer.appendChild(slide);
 
-                            // Add images
-                            galleryData.images.forEach((image, index) => {
-                                const slide = document.createElement('div');
-                                slide.className = 'swiper-slide';
-                                slide.innerHTML =
-                                    `<img src="${image.url}" alt="${image.alt}" class="img-fluid">`;
-                                slidesContainer.appendChild(slide);
+                        const thumb = document.createElement('div');
+                        thumb.className = 'swiper-slide';
+                        thumb.innerHTML =
+                            `<img src="/storage/${image.image_path}" alt="${image.alt_text}" class="img-fluid" style="height: 80px; object-fit: cover;">`;
+                        thumbsContainer.appendChild(thumb);
+                    });
 
-                                const thumb = document.createElement('div');
-                                thumb.className = 'swiper-slide';
-                                thumb.innerHTML =
-                                    `<img src="${image.thumbnail}" alt="${image.alt}" class="img-fluid">`;
-                                thumbsContainer.appendChild(thumb);
-                            });
+                    // Add video if exists
+                    if (videoUrl) {
+                        const videoSlide = document.createElement('div');
+                        videoSlide.className = 'swiper-slide';
+                        videoSlide.innerHTML = `
+            <div class="ratio ratio-16x9 h-100">
+                <iframe src="${videoUrl}"
+                        title="Product Video"
+                        allowfullscreen
+                        class="w-100 h-100">
+                </iframe>
+            </div>
+        `;
+                        slidesContainer.appendChild(videoSlide);
 
-                            // Add video if exists
-                            if (galleryData.video_url) {
-                                const videoSlide = document.createElement('div');
-                                videoSlide.className = 'swiper-slide';
-                                videoSlide.innerHTML = `
-                        <video controls class="w-100 h-100">
-                            <source src="${galleryData.video_url}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    `;
-                                slidesContainer.appendChild(videoSlide);
-
-                                const videoThumb = document.createElement('div');
-                                videoThumb.className = 'swiper-slide video-thumb';
-                                videoThumb.innerHTML = `<div class="w-100 h-100 bg-dark"></div>`;
-                                thumbsContainer.appendChild(videoThumb);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error loading gallery:', error);
+                        const videoThumb = document.createElement('div');
+                        videoThumb.className = 'swiper-slide video-thumb';
+                        videoThumb.innerHTML = `
+            <div class="w-100 h-100 bg-dark d-flex align-items-center justify-content-center">
+                <i class="fas fa-play-circle fa-2x text-white"></i>
+            </div>
+        `;
+                        thumbsContainer.appendChild(videoThumb);
                     }
                 }
 
@@ -1576,26 +1596,25 @@
                     const gallerySlider = new Swiper('.product-gallery-slider', {
                         spaceBetween: 10,
                         navigation: {
-                            nextEl: '.swiper-button-next',
-                            prevEl: '.swiper-button-prev',
+                            nextEl: '.product-gallery-slider .swiper-button-next',
+                            prevEl: '.product-gallery-slider .swiper-button-prev',
+                        },
+                        thumbs: {
+                            swiper: {
+                                el: '.gallery-thumbs',
+                                slidesPerView: 4,
+                                spaceBetween: 10,
+                                freeMode: true,
+                                watchSlidesProgress: true,
+                            },
                         },
                     });
-
-                    const thumbsSlider = new Swiper('.gallery-thumbs', {
-                        spaceBetween: 10,
-                        slidesPerView: 4,
-                        freeMode: true,
-                        watchSlidesProgress: true,
-                    });
-
-                    gallerySlider.controller.control = thumbsSlider;
-                    thumbsSlider.controller.control = gallerySlider;
                 }
 
                 // Wishlist Function
                 function toggleWishlist(productId, button) {
                     @auth
-                    fetch('{{ route('wishlist.toggle', $product->id) }}', {
+                    fetch('{{ route('wishlist.toggle', ':id') }}'.replace(':id', productId), {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

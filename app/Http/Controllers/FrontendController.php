@@ -164,7 +164,7 @@ class FrontendController extends Controller
             ->limit(4)
             ->get();
 
-        return view('product.show', compact('product', 'relatedProducts'));
+        return view('pages.productdetails', compact('product', 'relatedProducts'));
     }
 
     /**
@@ -235,5 +235,23 @@ class FrontendController extends Controller
             ->paginate(16);
 
         return view('new-arrivals', compact('products'));
+    }
+    /**
+     * Display a specific resource.
+     * This might be what your route is trying to call
+     */
+    public function show($id)
+    {
+        // If this is for products
+        if (request()->is('products/*')) {
+            return $this->productShow($id);
+        }
+
+        // If this is for categories
+        if (request()->is('category/*')) {
+            return $this->categoryShow($id);
+        }
+
+        abort(404);
     }
 }
