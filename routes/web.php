@@ -33,6 +33,12 @@ use App\Http\Controllers\ReviewController;
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/products', [FrontendController::class, 'shop'])->name('shop');
 Route::get('/products/{slug}', [FrontendController::class, 'show'])->name('product.show');
+
+// Public endpoint for upazilas (used by admin UI AJAX to avoid auth issues)
+Route::get('/delivery-charges/upazilas', [\App\Http\Controllers\Admin\DeliveryChargeController::class, 'upazilas'])->name('delivery-charges.upazilas.public');
+
+// Shipping estimate (used by checkout to re-calc when transport/company changes)
+Route::get('/shipping/estimate', [\App\Http\Controllers\CheckoutController::class, 'estimate'])->name('shipping.estimate');
 Route::get('/category/{category:slug}', [FrontendController::class, 'categoryShow'])->name('category.show');
 Route::get('/product/quick-view/{id}', [FrontendController::class, 'quickView'])->name('product.quick-view');
 Route::get('/flash-sale', [FrontendController::class, 'flashSale'])->name('flash-sale');
@@ -190,6 +196,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Delivery Charge Management
     Route::resource('delivery-charges', DeliveryChargeController::class);
+    // AJAX route to get upazilas for a district
+    Route::get('delivery-charges/upazilas', [DeliveryChargeController::class, 'upazilas'])->name('delivery-charges.upazilas');
+
+    // Transport companies and package rates management (admin)
+    Route::resource('transport-companies', \App\Http\Controllers\Admin\TransportCompanyController::class);
+    Route::resource('package-rates', \App\Http\Controllers\Admin\PackageRateController::class);
+    Route::resource('packaging-rules', \App\Http\Controllers\Admin\PackagingRuleController::class);
 
     // Review Management
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');

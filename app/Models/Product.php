@@ -150,6 +150,12 @@ class Product extends Model
         return $this->hasMany(ProductPrice::class)->orderBy('min_quantity');
     }
 
+    // Packaging rules: defines shipping units (e.g., Roll = 10 KG, Cartoon = 50 KG)
+    public function packagingRules()
+    {
+        return $this->hasMany(PackagingRule::class)->where('is_active', true)->orderBy('priority', 'desc');
+    }
+
     public function getPriceForQuantity($quantity)
     {
         return $this->prices()

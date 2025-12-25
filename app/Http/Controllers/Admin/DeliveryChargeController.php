@@ -12,7 +12,9 @@ class DeliveryChargeController extends Controller
      */
     public function index()
     {
-        //
+        $deliveryCharges = \App\Models\DeliveryCharge::orderBy('district')->paginate(25);
+
+        return view('admin.delivery-charges.index', compact('deliveryCharges'));
     }
 
     /**
@@ -20,7 +22,8 @@ class DeliveryChargeController extends Controller
      */
     public function create()
     {
-        //
+        $districts = array_keys(config('locations'));
+        return view('admin.delivery-charges.create', compact('districts'));
     }
 
     /**
@@ -28,7 +31,22 @@ class DeliveryChargeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'district' => 'required|string',
+            'upazila' => 'required|string',
+            'charge' => 'required|numeric|min:0',
+            'estimated_days' => 'nullable|integer|min:0',
+        ]);
+
+        \App\Models\DeliveryCharge::create([
+            'district' => $request->district,
+            'upazila' => $request->upazila,
+            'charge' => $request->charge,
+            'estimated_days' => $request->estimated_days,
+            'is_active' => $request->has('is_active'),
+        ]);
+
+        return redirect()->route('admin.delivery-charges.index')->with('success', 'Delivery charge created successfully.');
     }
 
     /**
@@ -36,7 +54,8 @@ class DeliveryChargeController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $deliveryCharge = \App\Models\DeliveryCharge::findOrFail($id);
+        return view('admin.delivery-charges.show', compact('deliveryCharge'));
     }
 
     /**
@@ -44,7 +63,9 @@ class DeliveryChargeController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $deliveryCharge = \App\Models\DeliveryCharge::findOrFail($id);
+        $districts = array_keys(config('locations'));
+        return view('admin.delivery-charges.edit', compact('deliveryCharge', 'districts'));
     }
 
     /**
@@ -52,7 +73,23 @@ class DeliveryChargeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'district' => 'required|string',
+            'upazila' => 'required|string',
+            'charge' => 'required|numeric|min:0',
+            'estimated_days' => 'nullable|integer|min:0',
+        ]);
+
+        $deliveryCharge = \App\Models\DeliveryCharge::findOrFail($id);
+        $deliveryCharge->update([
+            'district' => $request->district,
+            'upazila' => $request->upazila,
+            'charge' => $request->charge,
+            'estimated_days' => $request->estimated_days,
+            'is_active' => $request->has('is_active'),
+        ]);
+
+        return redirect()->route('admin.delivery-charges.index')->with('success', 'Delivery charge updated successfully.');
     }
 
     /**
@@ -60,6 +97,40 @@ class DeliveryChargeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $deliveryCharge = \App\Models\DeliveryCharge::findOrFail($id);
+        $deliveryCharge->delete();
+
+        return redirect()->route('admin.delivery-charges.index')->with('success', 'Delivery charge deleted.');
+    }
+
+    /**
+     * Return upazilas for a given district (AJAX)
+     */
+    public function upazilas(Request $request)
+    {
+        $district = $request->query('district');
+
+        if (!$district) {
+            return response()->json([]);
+        }
+
+        // Prefer DB entries (distinct upazilas for this district)
+        $dbUpazilas = \App\Models\DeliveryCharge::where('district', $district)
+            ->where('is_active', true)
+            ->distinct()
+            ->pluck('upazila')
+            ->filter()
+            ->values()
+            ->toArray();
+
+        if (!empty($dbUpazilas)) {
+            return response()->json($dbUpazilas);
+        }
+
+        // Fallback to config locations
+        $data = config('locations');
+        $upazilas = $data[$district] ?? [];
+
+        return response()->json($upazilas);
     }
 }

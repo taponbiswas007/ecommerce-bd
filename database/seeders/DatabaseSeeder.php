@@ -21,5 +21,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Seed transport companies and packaging rule example
+        $this->call([\Database\Seeders\TransportSeeder::class, \Database\Seeders\PackagingRuleSeeder::class]);
     }
 }

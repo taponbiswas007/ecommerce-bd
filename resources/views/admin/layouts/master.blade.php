@@ -61,24 +61,6 @@
                             <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
                                 <a href="{{ route('admin.products.create') }}">Add New</a>
                             </li>
-                            <!-- Product Images Submenu -->
-                            <li class="{{ request()->routeIs('admin.products.images.*') ? 'mm-active' : '' }}">
-                                <a href="javascript:void(0)" class="has-arrow">
-                                    <i class="fas fa-images"></i>
-                                    <span class="menu-text">Product Images</span>
-                                </a>
-                                <ul class="submenu {{ request()->routeIs('admin.products.images.*') ? 'show' : '' }}">
-                                    <li
-                                        class="{{ request()->routeIs('admin.products.images.index') ? 'active' : '' }}">
-                                        <a href="#">
-                                            <i class="fas fa-search"></i>
-                                            <span class="menu-text">Browse by Product</span>
-                                        </a>
-                                    </li>
-                                    <!-- Dynamic list or search would go here -->
-                                </ul>
-                            </li>
-                            <li><a href="#">Categories</a></li>
                             <li><a href="#">Brands</a></li>
 
                         </ul>
@@ -126,6 +108,34 @@
                         <a href="{{ route('admin.coupons.index') }}">
                             <i class="fas fa-ticket-alt"></i>
                             <span class="menu-text">Coupons</span>
+                        </a>
+                    </li>
+
+                    <li class="{{ request()->routeIs('admin.delivery-charges.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.delivery-charges.index') }}">
+                            <i class="fas fa-truck"></i>
+                            <span class="menu-text">Delivery Charges</span>
+                        </a>
+                    </li>
+
+                    <li class="{{ request()->routeIs('admin.transport-companies.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.transport-companies.index') }}">
+                            <i class="fas fa-ship"></i>
+                            <span class="menu-text">Transport Companies</span>
+                        </a>
+                    </li>
+
+                    <li class="{{ request()->routeIs('admin.package-rates.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.package-rates.index') }}">
+                            <i class="fas fa-list"></i>
+                            <span class="menu-text">Package Rates</span>
+                        </a>
+                    </li>
+
+                    <li class="{{ request()->routeIs('admin.packaging-rules.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.packaging-rules.index') }}">
+                            <i class="fas fa-boxes"></i>
+                            <span class="menu-text">Packaging Rules</span>
                         </a>
                     </li>
 

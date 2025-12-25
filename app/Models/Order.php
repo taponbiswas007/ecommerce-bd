@@ -29,6 +29,8 @@ class Order extends Model
         'shipping_upazila',
         'shipping_address',
         'transport_name',
+        'transport_company_id',
+        'shipping_method',
         'tracking_number',
         'tracking_url',
         'delivery_document',
@@ -63,6 +65,11 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function transportCompany()
+    {
+        return $this->belongsTo(\App\Models\TransportCompany::class, 'transport_company_id');
     }
 
     // Accessors

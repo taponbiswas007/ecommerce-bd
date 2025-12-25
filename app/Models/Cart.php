@@ -136,18 +136,39 @@ class Cart extends Model
         return $subtotal * 0.05;
     }
 
-    public static function shipping($district = null, $upazila = null)
+    public static function shipping($district = null, $upazila = null, $transportCompanyId = null, $method = 'transport')
     {
+        // If destination missing, fallback to simple rule
         if (!$district || !$upazila) {
-            // Default shipping
             $subtotal = self::subtotal();
             return $subtotal >= 500 ? 0 : 60;
         }
-        $charge = DeliveryCharge::where('district', $district)
+
+        $items = self::items();
+
+        // Use the ShippingCalculator service
+        try {
+            $calc = new \App\Services\ShippingCalculator();
+            $res = $calc->calculate($items, $district, $upazila, $transportCompanyId, $method);
+            if (isset($res['total'])) {
+                return (float) $res['total'];
+            }
+        } catch (\Throwable $e) {
+            // In case of failure, fallback to legacy rule
+            report($e);
+        }
+
+        // Legacy fallback
+        $chargeRecord = DeliveryCharge::where('district', $district)
             ->where('upazila', $upazila)
             ->where('is_active', true)
             ->first();
-        return $charge ? $charge->charge : 100; // Default charge
+
+        $perItemTransport = $chargeRecord ? (float) $chargeRecord->charge : (float) config('shipping.default_transport_per_item', 80);
+        $qty = self::count();
+        $shopToTransportPerItem = (float) config('shipping.shop_to_transport_per_item', 50);
+        $cost = ($shopToTransportPerItem + $perItemTransport) * max(1, $qty);
+        return round($cost, 2);
     }
 
     public static function grandTotal($couponCode = null, $district = null, $upazila = null)
