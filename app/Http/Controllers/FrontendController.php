@@ -14,8 +14,22 @@ class FrontendController extends Controller
      */
     public function index()
     {
+        // Build hero slider products: top-selling 2 per active category (fallback via ordering)
+        $heroProducts = Category::where('is_active', true)
+            ->with(['products' => function ($query) {
+                $query->with(['primaryImage', 'images', 'unit', 'category'])
+                    ->where('is_active', true)
+                    ->where('stock_quantity', '>', 0)
+                    ->orderByDesc('sold_count')
+                    ->orderByDesc('created_at')
+                    ->take(2);
+            }])->get()
+            ->flatMap->products
+            ->unique('id')
+            ->values();
+
         // Get featured products
-        $featuredProducts = Product::with(['primaryImage', 'images', 'category'])
+        $featuredProducts = Product::with(['primaryImage', 'images', 'category', 'unit'])
             ->where('is_featured', true)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -41,7 +55,7 @@ class FrontendController extends Controller
             ->get();
 
         // Get flash sale products - products with discount_price
-        $flashSaleProducts = Product::with(['primaryImage', 'images'])
+        $flashSaleProducts = Product::with(['primaryImage', 'images', 'unit'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->whereNotNull('discount_price')
@@ -51,13 +65,13 @@ class FrontendController extends Controller
             ->get();
 
         // Get new arrivals
-        $newArrivals = Product::with(['primaryImage', 'images'])
+        $newArrivals = Product::with(['primaryImage', 'images', 'unit'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get();
-        $dealProduct = Product::with('primaryImage')
+        $dealProduct = Product::with(['primaryImage', 'unit'])
             ->where('is_deal', 1)
             ->where('is_active', 1)
             ->where('stock_quantity', '>', 0)
@@ -67,6 +81,7 @@ class FrontendController extends Controller
 
 
         return view('home', compact(
+            'heroProducts',
             'featuredProducts',
             'categories',
             'brands',
@@ -180,7 +195,7 @@ class FrontendController extends Controller
         // Get all child category IDs including parent
         $categoryIds = $category->children->pluck('id')->push($category->id);
 
-        $products = Product::with(['primaryImage', 'images'])
+        $products = Product::with(['primaryImage', 'images', 'unit', 'prices'])
             ->whereIn('category_id', $categoryIds)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -195,7 +210,7 @@ class FrontendController extends Controller
      */
     public function quickView($id)
     {
-        $product = Product::with(['images', 'category'])
+        $product = Product::with(['images', 'category', 'unit', 'prices'])
             ->where('id', $id)
             ->where('is_active', true)
             ->firstOrFail();

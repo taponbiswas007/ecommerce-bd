@@ -20,7 +20,7 @@
                 @endif
             @endfor
         </div>
-        <span class="rating-count ms-2">({{ $product->total_reviews }} reviews)</span>
+        <span class="rating-count ms-2">({{ $product->total_reviews ?? 0 }} reviews)</span>
     </div>
 
     <!-- Price -->
@@ -35,6 +35,26 @@
             <h4 class="fw-bold">৳{{ number_format($product->base_price, 2) }}</h4>
         @endif
     </div>
+
+    <!-- Tiered Pricing Display -->
+    @php
+        $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+        $unit = $product->unit ? $product->unit->symbol : '';
+    @endphp
+    @if ($tieredPrices->count() > 0)
+        <div class="tiered-pricing mb-4">
+            <strong class="d-block mb-2">Quantity-based Pricing:</strong>
+            <div class="price-list">
+                @foreach ($tieredPrices as $price)
+                    <div class="price-item small mb-2">
+                        <span
+                            class="qty-range">{{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }}</span>
+                        <span class="price-value">৳{{ number_format($price->price, 2) }} each</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     <!-- Short Description -->
     <div class="short-description mb-4">
@@ -95,6 +115,41 @@
         <p class="mb-0"><strong>SKU:</strong> {{ $product->id }}</p>
     </div>
 </div>
+
+<style>
+    .tiered-pricing {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid #0d6efd;
+    }
+
+    .price-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .price-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+    }
+
+    .qty-range {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .price-value {
+        color: #0f5132;
+        font-weight: 600;
+        background: #d1e7dd;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+</style>
 
 <script>
     // Quantity functions for quick view

@@ -9,6 +9,7 @@ use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -32,6 +33,11 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        // Debug: Check if attributes are coming in
+        Log::info('Store Request ALL DATA:', $request->all());
+        Log::info('Store Request attributes:', ['attributes' => $request->input('attributes')]);
+        Log::info('Store Request has attributes:', ['has' => $request->has('attributes')]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -52,7 +58,9 @@ class ProductController extends Controller
             'meta_keywords' => 'nullable|string|max:500',
             'is_deal' => 'nullable|boolean',
             'deal_end_at' => 'nullable|date',
-
+            'attributes' => 'nullable|array',
+            'attributes.*.key' => 'nullable|string|max:255',
+            'attributes.*.value' => 'nullable|string|max:1000',
         ]);
 
         // Generate slug
@@ -64,16 +72,11 @@ class ProductController extends Controller
             $validated['slug'] = $validated['slug'] . '-' . ($count + 1);
         }
 
-        // Handle attributes if provided
-        if ($request->has('attributes')) {
-            $attributes = [];
-            foreach ($request->attributes as $key => $value) {
-                if (!empty($key) && !empty($value)) {
-                    $attributes[$key] = $value;
-                }
-            }
-            $validated['attributes'] = !empty($attributes) ? json_encode($attributes) : null;
-        }
+        // Extract attributes rows
+        $attributeRows = $this->buildAttributeRows($request->input('attributes') ?? []);
+            // Prevent array field from being inserted into products table
+            unset($validated['attributes']);
+
         // 🔥 If deal selected, remove previous deal
         if ($request->boolean('is_deal')) {
             Product::where('is_deal', 1)->update([
@@ -82,14 +85,19 @@ class ProductController extends Controller
             ]);
         }
 
-
         // Set default values
         $validated['is_featured'] = $request->boolean('is_featured');
         $validated['is_active'] = $request->boolean('is_active', true);
         $validated['is_deal'] = $request->boolean('is_deal');
 
-
-        $product = Product::create($validated);
+        $product = DB::transaction(function () use ($validated, $attributeRows) {
+            $product = Product::create($validated);
+            if (!empty($attributeRows)) {
+                $product->attributesRows()->createMany($attributeRows);
+            }
+            return $product;
+        });
+        Log::info('Product created with attribute rows:', ['id' => $product->id, 'attributes_rows' => $attributeRows]);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product created successfully.');
@@ -111,6 +119,10 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        Log::info('Update Request ALL DATA:', $request->all());
+        Log::info('Update Request attributes:', ['attributes' => $request->input('attributes')]);
+        Log::info('Update Request has attributes:', ['has' => $request->has('attributes')]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -131,7 +143,9 @@ class ProductController extends Controller
             'meta_keywords' => 'nullable|string|max:500',
             'is_deal' => 'nullable|boolean',
             'deal_end_at' => 'nullable|date',
-
+            'attributes' => 'nullable|array',
+            'attributes.*.key' => 'nullable|string|max:255',
+            'attributes.*.value' => 'nullable|string|max:1000',
         ]);
 
         // Update slug if name changed
@@ -148,18 +162,7 @@ class ProductController extends Controller
             }
         }
 
-        // Handle attributes
-        if ($request->has('attributes')) {
-            $attributes = [];
-            foreach ($request->attributes as $key => $value) {
-                if (!empty($key) && !empty($value)) {
-                    $attributes[$key] = $value;
-                }
-            }
-            $validated['attributes'] = !empty($attributes) ? json_encode($attributes) : null;
-        } else {
-            $validated['attributes'] = null;
-        }
+        $attributeRows = $this->buildAttributeRows($request->input('attributes') ?? []);
         // 🔥 Only one deal allowed
         if ($request->boolean('is_deal')) {
             Product::where('is_deal', 1)
@@ -176,8 +179,14 @@ class ProductController extends Controller
         $validated['is_active'] = $request->boolean('is_active');
         $validated['is_deal'] = $request->boolean('is_deal');
 
-
-        $product->update($validated);
+        DB::transaction(function () use ($product, $validated, $attributeRows) {
+            $product->update($validated);
+            $product->attributesRows()->delete();
+            if (!empty($attributeRows)) {
+                $product->attributesRows()->createMany($attributeRows);
+            }
+        });
+        Log::info('Product updated with attribute rows:', ['id' => $product->id, 'attributes_rows' => $attributeRows]);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product updated successfully.');
@@ -188,6 +197,7 @@ class ProductController extends Controller
         // Check if product has any orders before deleting
         // You might want to add this check based on your order system
 
+                    unset($validated['attributes']);
         $product->delete();
 
         return redirect()->route('admin.products.index')
@@ -248,5 +258,24 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Status updated successfully.'
         ]);
+    }
+
+    /**
+     * Normalize attribute inputs into rows for persistence.
+     */
+    private function buildAttributeRows(array $attributesInput): array
+    {
+        $rows = [];
+
+        foreach ($attributesInput as $attr) {
+            if (is_array($attr) && !empty($attr['key']) && !empty($attr['value'])) {
+                $rows[] = [
+                    'key' => trim($attr['key']),
+                    'value' => trim($attr['value']),
+                ];
+            }
+        }
+
+        return $rows;
     }
 }

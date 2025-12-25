@@ -1158,6 +1158,53 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
     <script>
+        // Global auth enforcement across all pages
+        (function() {
+            const IS_AUTH = {{ auth()->check() ? 'true' : 'false' }};
+            const wishlistUrl = '{{ route('wishlist.index') }}';
+            const cartUrl = '{{ route('cart.index') }}';
+
+            function requireLoginPrompt() {
+                const loginModalEl = document.getElementById('loginModal');
+                if (loginModalEl) {
+                    const loginModal = new bootstrap.Modal(loginModalEl);
+                    loginModal.show();
+                }
+                if (window.Toast) {
+                    window.Toast.fire({
+                        icon: 'warning',
+                        title: 'Please login to continue'
+                    });
+                }
+            }
+
+            // Capture-phase guard to block before page-specific handlers
+            document.addEventListener('click', function(e) {
+                if (IS_AUTH) return; // no-op if logged in
+
+                // Guard header wishlist/cart links
+                const headerLink = e.target.closest('a.header-icon');
+                if (headerLink) {
+                    const href = headerLink.getAttribute('href') || '';
+                    if (href === wishlistUrl || href === cartUrl) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        requireLoginPrompt();
+                        return;
+                    }
+                }
+
+                // Guard product actions
+                if (e.target.closest('.add-to-cart-btn') || e.target.closest('.wishlist-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    requireLoginPrompt();
+                    return;
+                }
+            }, true);
+        })();
+    </script>
+    <script>
         // Handle add to cart with login check
         // Handle add to cart with login check
         // Add to cart function (use this in all your blade files)

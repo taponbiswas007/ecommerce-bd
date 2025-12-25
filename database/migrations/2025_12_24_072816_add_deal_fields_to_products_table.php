@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->boolean('is_deal')->default(false)->after('is_featured');
-            $table->timestamp('deal_end_at')->nullable()->after('is_deal');
+            if (!Schema::hasColumn('products', 'is_deal')) {
+                $table->boolean('is_deal')->default(false)->after('is_featured');
+            }
+            if (!Schema::hasColumn('products', 'deal_end_at')) {
+                $table->timestamp('deal_end_at')->nullable()->after('is_deal');
+            }
         });
     }
 

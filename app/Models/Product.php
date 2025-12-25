@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ProductAttribute;
 
 class Product extends Model
 {
@@ -37,7 +38,6 @@ class Product extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
-        'attributes',
     ];
 
     protected $casts = [
@@ -46,10 +46,30 @@ class Product extends Model
         'base_price' => 'decimal:2',
         'discount_price' => 'decimal:2',
         'average_rating' => 'decimal:2',
-        'attributes' => 'array',
         'is_deal' => 'boolean',
         'deal_end_at' => 'datetime',
     ];
+
+    /**
+     * Attribute rows associated with the product.
+     */
+    public function attributesRows()
+    {
+        return $this->hasMany(ProductAttribute::class);
+    }
+
+    /**
+     * Computed attribute pairs aggregated by key.
+     */
+    public function getAttributePairsAttribute(): array
+    {
+        return $this->attributesRows
+            ->groupBy('key')
+            ->map(function ($rows) {
+                return $rows->pluck('value')->unique()->implode(', ');
+            })
+            ->toArray();
+    }
 
     // Relationships
     public function category()

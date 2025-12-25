@@ -219,7 +219,8 @@
                                 <div class="card mb-4">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="card-title mb-0">Attributes</h5>
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="addAttribute()">
+                                        <button type="button" class="btn btn-sm btn-primary"
+                                            onclick="addAttributeRow()">
                                             <i class="fas fa-plus me-1"></i> Add Attribute
                                         </button>
                                     </div>
@@ -227,35 +228,29 @@
                                         <div id="attributesContainer">
                                             <!-- Existing attributes -->
                                             @php
-                                                $attributes = $product->attributes
-                                                    ? json_decode($product->attributes, true)
-                                                    : [];
-                                                $index = 0;
+                                                $attributes = $product->attribute_pairs ?? [];
                                             @endphp
 
                                             @if ($attributes && count($attributes) > 0)
                                                 @foreach ($attributes as $key => $value)
-                                                    <div class="row attribute-row">
+                                                    <div class="row attribute-row mb-2">
                                                         <div class="col-md-5">
-                                                            <input type="text" class="form-control"
-                                                                name="attributes[{{ $index }}][key]"
+                                                            <input type="text" class="form-control attribute-key"
                                                                 placeholder="Attribute name (e.g., Color)"
                                                                 value="{{ $key }}">
                                                         </div>
                                                         <div class="col-md-5">
-                                                            <input type="text" class="form-control"
-                                                                name="attributes[{{ $index }}][value]"
-                                                                placeholder="Attribute value (e.g., Red)"
+                                                            <input type="text" class="form-control attribute-value"
+                                                                placeholder="Attribute value (e.g., Red, Blue, Green)"
                                                                 value="{{ $value }}">
                                                         </div>
                                                         <div class="col-md-2">
-                                                            <button type="button" class="btn btn-danger w-100"
-                                                                onclick="removeAttribute(this)">
+                                                            <button type="button"
+                                                                class="btn btn-danger w-100 btn-remove-attribute">
                                                                 <i class="fas fa-times"></i>
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    @php $index++; @endphp
                                                 @endforeach
                                             @endif
                                         </div>
@@ -263,6 +258,25 @@
                                             Size, Material)</small>
                                     </div>
                                 </div>
+
+                                <!-- Hidden template for attribute rows -->
+                                <template id="attributeTemplate">
+                                    <div class="row attribute-row mb-2">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control attribute-key"
+                                                placeholder="Attribute name (e.g., Color)">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control attribute-value"
+                                                placeholder="Attribute value (e.g., Red, Blue, Green)">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-danger w-100 btn-remove-attribute">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
 
                             <!-- Sidebar -->
@@ -485,42 +499,34 @@
                 ]
             });
 
-            // Add attribute field
-            window.addAttribute = function(key = '', value = '') {
+            // Global counter for attribute indices - initialize with existing count
+            let attributeCounter = document.querySelectorAll('.attribute-row').length;
+
+            // Add attribute field using template
+            window.addAttributeRow = function() {
+                const template = document.getElementById('attributeTemplate');
+                const clone = template.content.cloneNode(true);
                 const container = document.getElementById('attributesContainer');
-                const rows = container.querySelectorAll('.attribute-row');
-                const index = rows.length;
+                const row = clone.querySelector('.attribute-row');
 
-                const row = document.createElement('div');
-                row.className = 'row attribute-row';
-                row.innerHTML = `
-                    <div class="col-md-5">
-                        <input type="text" class="form-control"
-                            name="attributes[${index}][key]"
-                            placeholder="Attribute name (e.g., Color)"
-                            value="${key}">
-                    </div>
-                    <div class="col-md-5">
-                        <input type="text" class="form-control"
-                            name="attributes[${index}][value]"
-                            placeholder="Attribute value (e.g., Red)"
-                            value="${value}">
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger w-100" onclick="removeAttribute(this)">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(row);
+                // Add remove event listener
+                row.querySelector('.btn-remove-attribute').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.closest('.attribute-row').remove();
+                });
+
+                container.appendChild(clone);
             };
 
-            // Remove attribute field
-            window.removeAttribute = function(button) {
-                button.closest('.attribute-row').remove();
-            };
+            // Attach remove event listeners to existing rows
+            document.querySelectorAll('.btn-remove-attribute').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.closest('.attribute-row').remove();
+                });
+            });
 
-            // Form validation
+            // Update form submission to properly serialize attributes
             document.getElementById('productForm').addEventListener('submit', function(e) {
                 const basePrice = parseFloat(document.getElementById('base_price').value);
                 const discountPrice = parseFloat(document.getElementById('discount_price').value);
@@ -529,7 +535,42 @@
                     e.preventDefault();
                     alert('Discount price must be less than base price');
                     document.getElementById('discount_price').focus();
+                    return;
                 }
+
+                // Before submitting, serialize attributes into hidden inputs
+                const container = document.getElementById('attributesContainer');
+                const rows = container.querySelectorAll('.attribute-row');
+                const form = this;
+
+                // Remove any existing attribute inputs
+                document.querySelectorAll('input[name^="attributes"]').forEach(input => {
+                    input.remove();
+                });
+
+                // Create proper inputs for each attribute
+                rows.forEach((row, index) => {
+                    const key = row.querySelector('.attribute-key').value;
+                    const value = row.querySelector('.attribute-value').value;
+
+                    if (key && value) {
+                        // Create hidden inputs
+                        const keyInput = document.createElement('input');
+                        keyInput.type = 'hidden';
+                        keyInput.name = `attributes[${index}][key]`;
+                        keyInput.value = key;
+
+                        const valueInput = document.createElement('input');
+                        valueInput.type = 'hidden';
+                        valueInput.name = `attributes[${index}][value]`;
+                        valueInput.value = value;
+
+                        form.appendChild(keyInput);
+                        form.appendChild(valueInput);
+                    }
+                });
+
+                // Allow form to submit normally
             });
         });
     </script>

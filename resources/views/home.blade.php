@@ -71,101 +71,108 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             background: white;
-            height: 100%;
+            min-height: 480px;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .product-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            /* transform: translateY(-15px); */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
 
         .product-card a {
             text-decoration: none;
             color: inherit;
             display: block;
-            height: 100%;
         }
 
         .product-img-container {
             position: relative;
             overflow: hidden;
-            height: 250px;
+            height: 280px;
             background: #f8f9fa;
+            flex-shrink: 0;
         }
 
         .product-img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             transition: transform 0.5s ease;
-            padding: 20px;
         }
 
         .product-card:hover .product-img {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .product-badges {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
+            top: 12px;
+            left: 12px;
+            right: 12px;
             z-index: 2;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .discount-badge {
             background: linear-gradient(135deg, var(--danger-color), #ff6b6b);
             color: white;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.4);
+            backdrop-filter: blur(4px);
         }
 
         .featured-badge {
             background: linear-gradient(135deg, var(--warning-color), #ffd166);
             color: var(--dark-color);
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
+            box-shadow: 0 3px 10px rgba(255, 193, 7, 0.4);
+            backdrop-filter: blur(4px);
         }
 
         .new-badge {
             background: linear-gradient(135deg, var(--accent-color), #20c997);
             color: white;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            box-shadow: 0 3px 10px rgba(32, 201, 151, 0.3);
+            box-shadow: 0 3px 10px rgba(32, 201, 151, 0.4);
+            backdrop-filter: blur(4px);
         }
 
         .product-actions {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            bottom: 20px;
+            right: 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             opacity: 0;
-            transform: translateX(20px);
+            transform: translateY(20px);
             transition: all 0.3s ease;
+            z-index: 3;
         }
 
         .product-card:hover .product-actions {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0);
         }
 
         .action-btn {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: white;
             border: none;
@@ -173,79 +180,213 @@
             align-items: center;
             justify-content: center;
             color: var(--dark-color);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 18px;
         }
 
         .action-btn:hover {
             background: var(--primary-color);
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
         }
 
         .wishlist-btn.active {
-            color: var(--danger-color);
-            background: #ffe6e6;
+            color: white;
+            background: var(--danger-color);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .wishlist-btn.active:hover {
+            background: #c82333;
+            transform: scale(1.15);
         }
 
         .product-content {
-            padding: 20px;
+            padding: 14px;
             background: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
         }
 
         .product-title {
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             color: var(--dark-color);
             margin-bottom: 8px;
-            line-height: 1.4;
-            height: 42px;
+            line-height: 1.3;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-content a .product-title:hover {
+            color: var(--primary-color);
         }
 
         .product-category {
-            font-size: 12px;
-            color: #6c757d;
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-details-toggle {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
             margin-bottom: 10px;
+        }
+
+        .product-description {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+            max-height: 52px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-description.hidden {
+            display: block;
         }
 
         .rating-container {
             display: flex;
             align-items: center;
-            gap: 5px;
-            margin-bottom: 15px;
+            gap: 6px;
+        }
+
+        .rating-container.hidden {
+            display: flex;
         }
 
         .rating-stars {
             color: var(--warning-color);
-            font-size: 14px;
+            font-size: 13px;
+            letter-spacing: 1px;
         }
 
         .rating-count {
-            font-size: 12px;
-            color: #6c757d;
+            font-size: 11px;
+            color: #999;
         }
 
-        .product-price {
-            display: flex;
+        .price-marquee {
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 6px;
+        }
+
+        .price-marquee-inner,
+        .price-marquee-dup {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 15px;
         }
 
-        .current-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-color);
+        .price-marquee.marquee .price-marquee-inner,
+        .price-marquee.marquee .price-marquee-dup {
+            animation: marquee-slide 14s linear infinite;
         }
 
-        .old-price {
-            font-size: 14px;
-            color: #6c757d;
+        .price-marquee.marquee:hover .price-marquee-inner,
+        .price-marquee.marquee:hover .price-marquee-dup {
+            animation-play-state: paused;
+        }
+
+        .price-marquee-dup {
+            margin-left: 24px;
+        }
+
+        @keyframes marquee-slide {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .price-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #f1f3f5;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0d6efd;
+            border: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .price-chip.old {
+            background: transparent;
+            color: #888;
             text-decoration: line-through;
+            border: none;
+            font-weight: 500;
+        }
+
+        .price-chip.tier {
+            color: #0f5132;
+            background: #e8f5e9;
+            border-color: #d1e7dd;
+            font-weight: 600;
+        }
+
+        .tiered-pricing {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            max-height: 80px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .tiered-pricing::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .tiered-pricing::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .tiered-price-item {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tiered-price-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .tiered-price-qty {
+            font-size: 10px;
+            color: #666;
+            font-weight: 500;
         }
 
         .save-percent {
@@ -253,7 +394,7 @@
             color: white;
             padding: 2px 8px;
             border-radius: 10px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
         }
 
@@ -261,22 +402,39 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: auto;
+            border-top: 1px solid #e9ecef;
+            gap: 8px;
+        }
+
+        .product-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .product-footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 0 auto;
         }
 
         .add-to-cart-btn {
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
+            white-space: nowrap;
         }
 
         .add-to-cart-btn:hover {
@@ -285,54 +443,126 @@
             box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
         }
 
+        .stock-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .in-stock {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .low-stock {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .out-of-stock {
+            background: #f8d7da;
+            color: #842029;
+        }
+
         /* Category Cards */
         .category-slider .swiper-slide {
-            width: 200px;
+            /* width: 200px; */
+            height: 200px;
+            padding: 15px 0;
         }
 
         .category-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px 15px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            position: relative;
             height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
+            justify-content: flex-end;
         }
 
-        .category-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-            border-color: var(--primary-color);
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+            z-index: 1;
         }
 
         .category-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
-            color: white;
-            font-size: 24px;
+            z-index: 0;
+            border-radius: 15px;
             overflow: hidden;
-            position: relative;
-            z-index: 1;
         }
 
         .category-icon img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .category-icon i {
+            font-size: 48px;
+            color: #ddd;
+        }
+
+        .category-card h5 {
+            position: relative;
+            z-index: 2;
+            color: white;
+            margin: 0 15px 5px 15px !important;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .category-card p {
+            position: relative;
+            z-index: 2;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0 15px 15px 15px !important;
+            font-size: 13px;
+        }
+
+        .category-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+        }
+
+        .category-card:hover h5,
+        .category-card:hover p {
+            color: white;
+        }
+
+        .category-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .category-products-slider .swiper-slide {
+            height: auto;
+            padding: 20px 0;
         }
 
         /* Deal of the Day */
@@ -505,8 +735,8 @@
         .swiper-button-next,
         .swiper-button-prev {
             background: white;
-            width: 45px;
-            height: 45px;
+            width: 40px !important;
+            height: 40px !important;
             border-radius: 50%;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
@@ -514,7 +744,7 @@
 
         .swiper-button-next:after,
         .swiper-button-prev:after {
-            font-size: 16px;
+            font-size: 20px !important;
             color: var(--dark-color);
             font-weight: bold;
         }
@@ -646,9 +876,6 @@
                 height: 400px;
             }
 
-            .category-slider .swiper-slide {
-                width: 150px;
-            }
 
             .section-header {
                 flex-direction: column;
@@ -675,9 +902,7 @@
                 height: 300px;
             }
 
-            .category-slider .swiper-slide {
-                width: 120px;
-            }
+
 
             .newsletter-section {
                 padding: 30px 20px;
@@ -728,17 +953,58 @@
         <div class="container">
             <div class="swiper hero-slider">
                 <div class="swiper-wrapper">
-                    @for ($i = 1; $i <= 5; $i++)
+                    @forelse ($heroProducts as $product)
+                        @php
+                            $image = $product->primaryImage ?? $product->images->first();
+                            $imageUrl = $image
+                                ? asset('storage/' . $image->image_path)
+                                : 'https://via.placeholder.com/1200x600';
+                            $finalPrice = $product->discount_price ?? $product->base_price;
+                        @endphp
                         <div class="swiper-slide position-relative">
-                            <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                                alt="Hero Slide {{ $i }}">
+                            <img src="{{ $imageUrl }}" alt="{{ $product->name }}">
                             <div class="slider-content">
-                                <h1 class="display-4 fw-bold">Electronic Deals {{ $i }}</h1>
-                                <p class="lead">Up to 50% OFF on selected items</p>
-                                <a href="{{ route('shop') }}" class="btn btn-primary btn-lg mt-3">Shop Now</a>
+                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                    <span class="badge bg-light text-dark">
+                                        {{ $product->category->name ?? 'All Products' }}
+                                    </span>
+                                    @if ($product->discount_price)
+                                        <span class="badge bg-danger">Save {{ $product->discount_percentage }}%</span>
+                                    @endif
+                                </div>
+                                <h1 class="display-5 fw-bold">{{ $product->name }}</h1>
+                                <p class="lead">{{ Str::limit(strip_tags($product->short_description ?? ''), 140) }}</p>
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <span class="fs-3 fw-bold">৳{{ number_format($finalPrice, 0) }}</span>
+                                    @if ($product->discount_price)
+                                        <span
+                                            class="text-decoration-line-through opacity-75">৳{{ number_format($product->base_price, 0) }}</span>
+                                    @endif
+                                </div>
+                                <div class="mt-4 d-flex gap-3 flex-wrap">
+                                    <a href="{{ route('shop') }}" class="btn btn-primary btn-lg">
+                                        Shop Now
+                                    </a>
+                                    <a href="{{ route('product.show', $product->slug) }}"
+                                        class="btn btn-outline-light btn-lg">
+                                        View Product
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    @endfor
+                    @empty
+                        @for ($i = 1; $i <= 3; $i++)
+                            <div class="swiper-slide position-relative">
+                                <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                                    alt="Hero Slide {{ $i }}">
+                                <div class="slider-content">
+                                    <h1 class="display-4 fw-bold">Electronic Deals</h1>
+                                    <p class="lead">Explore our latest offers across all categories</p>
+                                    <a href="{{ route('shop') }}" class="btn btn-primary btn-lg mt-3">Shop Now</a>
+                                </div>
+                            </div>
+                        @endfor
+                    @endforelse
                 </div>
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
@@ -761,20 +1027,18 @@
                 <div class="swiper-wrapper">
                     @foreach ($categories as $category)
                         <div class="swiper-slide">
-                            <a class=" text-decoration-none"
+                            <a class="text-decoration-none"
                                 href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}">
 
-                                <div class="category-card">
-                                    <div class="category-icon">
-                                        @if ($category->image)
-                                            <img src="{{ asset('storage/' . $category->image) }}"
-                                                alt="{{ $category->name }}">
-                                        @else
+                                <div class="category-card"
+                                    style="background-image: url('{{ $category->image ? asset('storage/' . $category->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22250%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22200%22 height=%22250%22/%3E%3C/svg%3E' }}');">
+                                    @if (!$category->image)
+                                        <div class="category-icon">
                                             <i class="fas fa-box"></i>
-                                        @endif
-                                    </div>
-                                    <h5 class="fw-bold mb-2">{{ $category->name }}</h5>
-                                    <p class="text-muted small mb-0">{{ $category->products_count ?? 0 }} products</p>
+                                        </div>
+                                    @endif
+                                    <h5 class="fw-bold">{{ $category->name }}</h5>
+                                    <p class="text-white small mb-0">{{ $category->products_count ?? 0 }} products</p>
                                 </div>
                             </a>
                         </div>
@@ -833,45 +1097,61 @@
                                     </div>
                                 </a>
                                 <div class="product-content">
-                                    <div class="product-category">
-                                        {{ $product->category->name ?? 'Uncategorized' }}
-                                    </div>
-                                    <h6 class="product-title">{{ Str::limit($product->name, 50) }}</h6>
+                                    <a href="{{ route('product.show', $product->slug) }}" class="text-decoration-none">
+                                        <h6 class="product-title">{{ $product->name }}</h6>
+                                    </a>
 
-                                    <div class="rating-container">
-                                        <div class="rating-stars">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= floor($product->average_rating ?? 0))
-                                                    <i class="fas fa-star"></i>
-                                                @elseif ($i - 0.5 <= $product->average_rating ?? 0)
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                @else
-                                                    <i class="far fa-star"></i>
-                                                @endif
-                                            @endfor
+                                    <div class="product-details-toggle">
+                                        <div class="rating-container">
+                                            <div class="rating-stars">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($product->average_rating ?? 0))
+                                                        <i class="fas fa-star"></i>
+                                                    @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                        <i class="far fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
                                         </div>
-                                        <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
+                                        <div class="product-description">
+                                            {{ Str::limit(strip_tags($product->short_description ?? ''), 80) }}
+                                        </div>
+                                    </div>
+                                    <!-- Price Line (single marquee) -->
+                                    @php
+                                        $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+                                        $unit = $product->unit ? $product->unit->symbol : '';
+                                    @endphp
+                                    <div class="price-marquee" data-price-marquee>
+                                        <div class="price-marquee-inner">
+                                            @if ($product->has_discount)
+                                                <span
+                                                    class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                                <span
+                                                    class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
+                                            @else
+                                                <span
+                                                    class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
+                                            @endif
+
+                                            @foreach ($tieredPrices as $price)
+                                                <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                                    <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                            @endforeach
+                                        </div>
                                     </div>
 
-                                    <div class="product-price">
-                                        @if ($product->has_discount)
-                                            <span
-                                                class="current-price">৳{{ number_format($product->discount_price, 2) }}</span>
-                                            <span class="old-price">৳{{ number_format($product->base_price, 2) }}</span>
-                                            <span class="save-percent">Save {{ $product->discount_percentage }}%</span>
-                                        @else
-                                            <span
-                                                class="current-price">৳{{ number_format($product->base_price, 2) }}</span>
-                                        @endif
-                                    </div>
-
+                                    <!-- Footer: Stock & Add to Cart -->
                                     <div class="product-footer">
                                         <span
                                             class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
-                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out of Stock') }}
+                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                         </span>
                                         <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
-                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                            <i class="fas fa-cart-plus"></i> Cart
                                         </button>
                                     </div>
                                 </div>
@@ -983,7 +1263,7 @@
                 </div>
 
                 @php
-                    $categoryProducts = \App\Models\Product::with(['primaryImage', 'images'])
+                    $categoryProducts = \App\Models\Product::with(['primaryImage', 'images', 'unit'])
                         ->where('category_id', $category->id)
                         ->where('is_active', 1)
                         ->where('stock_quantity', '>', 0)
@@ -1030,47 +1310,67 @@
                                             </div>
                                         </a>
                                         <div class="product-content">
-                                            <div class="product-category">
-                                                {{ $product->category->name ?? 'Uncategorized' }}
-                                            </div>
-                                            <h6 class="product-title">{{ Str::limit($product->name, 50) }}</h6>
+                                            <a href="{{ route('product.show', $product->slug) }}"
+                                                class="text-decoration-none">
+                                                <h6 class="product-title">{{ $product->name }}</h6>
+                                            </a>
 
-                                            <div class="rating-container">
-                                                <div class="rating-stars">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= floor($product->average_rating ?? 0))
-                                                            <i class="fas fa-star"></i>
-                                                        @elseif ($i - 0.5 <= $product->average_rating ?? 0)
-                                                            <i class="fas fa-star-half-alt"></i>
-                                                        @else
-                                                            <i class="far fa-star"></i>
-                                                        @endif
-                                                    @endfor
+                                            <div class="product-details-toggle">
+                                                <div class="rating-container">
+                                                    <div class="rating-stars">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= floor($product->average_rating ?? 0))
+                                                                <i class="fas fa-star"></i>
+                                                            @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                                <i class="fas fa-star-half-alt"></i>
+                                                            @else
+                                                                <i class="far fa-star"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
                                                 </div>
-                                                <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
+                                                <div class="product-description">
+                                                    {{ Str::limit(strip_tags($product->short_description ?? ''), 80) }}
+                                                </div>
                                             </div>
 
-                                            <div class="product-price">
-                                                @if ($product->has_discount)
-                                                    <span
-                                                        class="current-price">৳{{ number_format($product->discount_price, 2) }}</span>
-                                                    <span
-                                                        class="old-price">৳{{ number_format($product->base_price, 2) }}</span>
-                                                    <span class="save-percent">Save
-                                                        {{ $product->discount_percentage }}%</span>
-                                                @else
-                                                    <span
-                                                        class="current-price">৳{{ number_format($product->base_price, 2) }}</span>
-                                                @endif
+                                            <!-- Price Line (single marquee) -->
+                                            @php
+                                                $tieredPrices = $product
+                                                    ->prices()
+                                                    ->orderBy('min_quantity', 'asc')
+                                                    ->get();
+                                                $unit = $product->unit ? $product->unit->symbol : '';
+                                            @endphp
+                                            <div class="price-marquee" data-price-marquee>
+                                                <div class="price-marquee-inner">
+                                                    @if ($product->has_discount)
+                                                        <span
+                                                            class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                                        <span
+                                                            class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
+                                                    @else
+                                                        <span
+                                                            class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
+                                                    @endif
+
+                                                    @foreach ($tieredPrices as $price)
+                                                        <span
+                                                            class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                                            <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                                    @endforeach
+                                                </div>
                                             </div>
 
+                                            <!-- Footer: Stock & Add to Cart -->
                                             <div class="product-footer">
                                                 <span
                                                     class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
-                                                    {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out of Stock') }}
+                                                    {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                                 </span>
                                                 <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
-                                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                                    <i class="fas fa-cart-plus"></i> Cart
                                                 </button>
                                             </div>
                                         </div>
@@ -1101,7 +1401,7 @@
             </div>
 
             @php
-                $bestDeals = \App\Models\Product::with(['primaryImage', 'images'])
+                $bestDeals = \App\Models\Product::with(['primaryImage', 'images', 'unit'])
                     ->where('is_active', 1)
                     ->where('stock_quantity', '>', 0)
                     ->whereNotNull('discount_price')
@@ -1148,44 +1448,57 @@
                                     </div>
                                 </a>
                                 <div class="product-content">
-                                    <div class="product-category text-white-50">
-                                        {{ $product->category->name ?? 'Uncategorized' }}
-                                    </div>
-                                    <h6 class="product-title text-white">{{ Str::limit($product->name, 50) }}</h6>
+                                    <a href="{{ route('product.show', $product->slug) }}" class="text-decoration-none">
+                                        <h6 class="product-title">{{ $product->name }}</h6>
+                                    </a>
 
-                                    <div class="rating-container">
-                                        <div class="rating-stars">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= floor($product->average_rating ?? 0))
-                                                    <i class="fas fa-star"></i>
-                                                @elseif ($i - 0.5 <= $product->average_rating ?? 0)
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                @else
-                                                    <i class="far fa-star"></i>
-                                                @endif
-                                            @endfor
+                                    <div class="product-details-toggle">
+                                        <div class="rating-container">
+                                            <div class="rating-stars">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($product->average_rating ?? 0))
+                                                        <i class="fas fa-star"></i>
+                                                    @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                        <i class="far fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
                                         </div>
-                                        <span
-                                            class="rating-count text-white-50">({{ $product->total_reviews ?? 0 }})</span>
+                                        <div class="product-description">
+                                            {{ Str::limit(strip_tags($product->short_description ?? ''), 80) }}
+                                        </div>
                                     </div>
 
-                                    <div class="product-price">
-                                        <span
-                                            class="current-price text-white">৳{{ number_format($product->discount_price, 2) }}</span>
-                                        <span
-                                            class="old-price text-white-50">৳{{ number_format($product->base_price, 2) }}</span>
-                                        <span class="save-percent bg-white text-danger">Save
-                                            {{ $product->discount_percentage }}%</span>
+                                    <!-- Price Line (single marquee) -->
+                                    @php
+                                        $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+                                        $unit = $product->unit ? $product->unit->symbol : '';
+                                    @endphp
+                                    <div class="price-marquee" data-price-marquee>
+                                        <div class="price-marquee-inner">
+                                            <span
+                                                class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                            <span
+                                                class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
+
+                                            @foreach ($tieredPrices as $price)
+                                                <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                                    <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                            @endforeach
+                                        </div>
                                     </div>
 
+                                    <!-- Footer: Stock & Add to Cart -->
                                     <div class="product-footer">
                                         <span
                                             class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
-                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out of Stock') }}
+                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                         </span>
-                                        <button class="add-to-cart-btn bg-white text-danger"
-                                            data-product-id="{{ $product->id }}">
-                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                            <i class="fas fa-cart-plus"></i> Cart
                                         </button>
                                     </div>
                                 </div>
@@ -1295,8 +1608,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-                // Initialize all Swiper sliders
-                const sliders = {
+                // Initialize all Swiper sliders - store in window object for pause/resume control
+                window.sliders = {
                     hero: new Swiper('.hero-slider', {
                         loop: true,
                         pagination: {
@@ -1318,13 +1631,16 @@
                     }),
 
                     category: new Swiper('.category-slider', {
-                        slidesPerView: 2,
+                        slidesPerView: 1,
                         spaceBetween: 15,
                         navigation: {
                             nextEl: '.swiper-button-next',
                             prevEl: '.swiper-button-prev',
                         },
                         breakpoints: {
+                            370: {
+                                slidesPerView: 2
+                            },
                             576: {
                                 slidesPerView: 3
                             },
@@ -1341,7 +1657,7 @@
                     }),
 
                     featured: new Swiper('.featured-slider', {
-                        slidesPerView: 2,
+                        slidesPerView: 1,
                         spaceBetween: 20,
                         navigation: {
                             nextEl: '.swiper-button-next',
@@ -1349,22 +1665,22 @@
                         },
                         breakpoints: {
                             576: {
-                                slidesPerView: 2
+                                slidesPerView: 1
                             },
                             768: {
-                                slidesPerView: 3
+                                slidesPerView: 2
                             },
                             992: {
-                                slidesPerView: 4
+                                slidesPerView: 3
                             },
                             1200: {
-                                slidesPerView: 5
+                                slidesPerView: 4
                             }
                         }
                     }),
 
                     bestDeals: new Swiper('.best-deals-slider', {
-                        slidesPerView: 2,
+                        slidesPerView: 1,
                         spaceBetween: 20,
                         navigation: {
                             nextEl: '.swiper-button-next',
@@ -1372,22 +1688,22 @@
                         },
                         breakpoints: {
                             576: {
-                                slidesPerView: 2
+                                slidesPerView: 1
                             },
                             768: {
-                                slidesPerView: 3
+                                slidesPerView: 2
                             },
                             992: {
-                                slidesPerView: 4
+                                slidesPerView: 3
                             },
                             1200: {
-                                slidesPerView: 5
+                                slidesPerView: 4
                             }
                         }
                     }),
 
                     brand: new Swiper('.brand-slider', {
-                        slidesPerView: 2,
+                        slidesPerView: 1,
                         spaceBetween: 20,
                         navigation: {
                             nextEl: '.swiper-button-next',
@@ -1395,16 +1711,16 @@
                         },
                         breakpoints: {
                             576: {
-                                slidesPerView: 3
+                                slidesPerView: 1
                             },
                             768: {
-                                slidesPerView: 4
+                                slidesPerView: 2
                             },
                             992: {
-                                slidesPerView: 5
+                                slidesPerView: 3
                             },
                             1200: {
-                                slidesPerView: 6
+                                slidesPerView: 4
                             }
                         }
                     })
@@ -1413,7 +1729,7 @@
                 // Initialize category product sliders
                 document.querySelectorAll('.category-products-slider').forEach(slider => {
                     new Swiper(slider, {
-                        slidesPerView: 2,
+                        slidesPerView: 1,
                         spaceBetween: 20,
                         navigation: {
                             nextEl: slider.querySelector('.swiper-button-next'),
@@ -1421,20 +1737,46 @@
                         },
                         breakpoints: {
                             576: {
-                                slidesPerView: 2
+                                slidesPerView: 1
                             },
                             768: {
-                                slidesPerView: 3
+                                slidesPerView: 2
                             },
                             992: {
-                                slidesPerView: 4
+                                slidesPerView: 3
                             },
                             1200: {
-                                slidesPerView: 5
+                                slidesPerView: 4
                             }
                         }
                     });
                 });
+
+                // Enable marquee only when price line overflows
+                const initPriceMarquee = () => {
+                    document.querySelectorAll('[data-price-marquee]').forEach(container => {
+                        const firstTrack = container.querySelector('.price-marquee-inner');
+                        if (!firstTrack) return;
+
+                        const needsMarquee = firstTrack.scrollWidth > container.clientWidth + 2;
+
+                        if (needsMarquee) {
+                            container.classList.add('marquee');
+                            if (!container.querySelector('.price-marquee-dup')) {
+                                const dup = firstTrack.cloneNode(true);
+                                dup.classList.add('price-marquee-dup');
+                                container.appendChild(dup);
+                            }
+                        } else {
+                            container.classList.remove('marquee');
+                            const dup = container.querySelector('.price-marquee-dup');
+                            if (dup) dup.remove();
+                        }
+                    });
+                };
+
+                initPriceMarquee();
+                window.addEventListener('resize', () => initPriceMarquee());
 
                 // Deal of the Day Timer
                 function updateDealTimer() {
@@ -1526,11 +1868,16 @@
                                 loadProductImages(data.product.images, data.product.video_url);
                             }
 
+                            // Pause all background sliders when modal opens
+                            pauseAllSliders();
+
                             modal.show();
 
                             // Initialize gallery slider after modal is shown
                             setTimeout(() => {
                                 initGallerySlider();
+                                // Auto-play video if exists
+                                playVideoInModal();
                             }, 100);
                         }
                     } catch (error) {
@@ -1568,13 +1915,14 @@
                     // Add video if exists
                     if (videoUrl) {
                         const videoSlide = document.createElement('div');
-                        videoSlide.className = 'swiper-slide';
+                        videoSlide.className = 'swiper-slide video-slide';
                         videoSlide.innerHTML = `
             <div class="ratio ratio-16x9 h-100">
                 <iframe src="${videoUrl}"
                         title="Product Video"
                         allowfullscreen
-                        class="w-100 h-100">
+                        class="w-100 h-100 product-video"
+                        data-autoplay="true">
                 </iframe>
             </div>
         `;
@@ -1588,6 +1936,65 @@
             </div>
         `;
                         thumbsContainer.appendChild(videoThumb);
+                    }
+                }
+
+                // Auto-play video in modal
+                function playVideoInModal() {
+                    const activeSlide = document.querySelector('.product-gallery-slider .swiper-slide-active');
+                    if (activeSlide) {
+                        const video = activeSlide.querySelector('.product-video');
+                        if (video) {
+                            // For iframes, we add ?autoplay=1 parameter
+                            if (video.tagName.toLowerCase() === 'iframe') {
+                                const src = video.src;
+                                if (!src.includes('?')) {
+                                    video.src = src + '?autoplay=1';
+                                } else if (!src.includes('autoplay')) {
+                                    video.src = src + '&autoplay=1';
+                                }
+                            } else {
+                                video.play();
+                            }
+                        }
+                    }
+                }
+
+                // Pause all videos
+                function pauseAllVideos() {
+                    document.querySelectorAll('#quickViewModal video, #quickViewModal iframe').forEach(elem => {
+                        if (elem.tagName.toLowerCase() === 'iframe') {
+                            // For iframes, we can't directly pause, but we can handle it differently
+                            const src = elem.src;
+                            if (src.includes('autoplay=1')) {
+                                elem.src = src.replace('?autoplay=1', '').replace('&autoplay=1', '');
+                            }
+                        } else {
+                            elem.pause();
+                        }
+                    });
+                }
+
+                // Pause all background sliders when modal opens
+                function pauseAllSliders() {
+                    // Pause all registered sliders
+                    if (window.sliders) {
+                        Object.keys(window.sliders).forEach(key => {
+                            if (window.sliders[key] && window.sliders[key].autoplay) {
+                                window.sliders[key].autoplay.stop();
+                            }
+                        });
+                    }
+                }
+
+                // Resume sliders when modal closes
+                function resumeAllSliders() {
+                    if (window.sliders) {
+                        Object.keys(window.sliders).forEach(key => {
+                            if (window.sliders[key] && window.sliders[key].autoplay) {
+                                window.sliders[key].autoplay.start();
+                            }
+                        });
                     }
                 }
 
@@ -1608,6 +2015,21 @@
                                 watchSlidesProgress: true,
                             },
                         },
+                        on: {
+                            slideChange: function() {
+                                pauseAllVideos();
+                                playVideoInModal();
+                            }
+                        }
+                    });
+                }
+
+                // Setup modal close event to resume sliders
+                const quickViewModalElement = document.getElementById('quickViewModal');
+                if (quickViewModalElement) {
+                    quickViewModalElement.addEventListener('hidden.bs.modal', function() {
+                        resumeAllSliders();
+                        pauseAllVideos();
                     });
                 }
 

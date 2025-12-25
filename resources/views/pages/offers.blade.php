@@ -120,25 +120,34 @@
                                 {{ Str::limit($product->short_description, 80) }}
                             </p>
 
-                            <div class="d-flex align-items-center mb-3">
-                                @if ($product->discount_price)
-                                    <h4 class="text-danger mb-0">
-                                        {{ config('app.currency_symbol') }}{{ number_format($product->discount_price, 2) }}
-                                    </h4>
-                                    <del
-                                        class="text-muted ms-2">{{ config('app.currency_symbol') }}{{ number_format($product->base_price, 2) }}</del>
-                                @else
-                                    <h4 class="text-primary mb-0">
-                                        {{ config('app.currency_symbol') }}{{ number_format($product->base_price, 2) }}
-                                    </h4>
-                                @endif
+                            @php
+                                $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+                                $unit = $product->unit ? $product->unit->symbol : '';
+                            @endphp
+                            <div class="price-marquee" data-price-marquee>
+                                <div class="price-marquee-inner">
+                                    @if ($product->discount_price)
+                                        <span
+                                            class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                        <span class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
+                                    @else
+                                        <span class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
+                                    @endif
+                                    @foreach ($tieredPrices as $price)
+                                        <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                            <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button class="btn btn-primary" onclick="addToCart({{ $product->id }})">
+                                <button class="btn btn-primary add-to-cart-btn" data-product-id="{{ $product->id }}">
                                     <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                 </button>
-                                <button class="btn btn-outline-primary">
+                                <button
+                                    class="btn btn-outline-primary wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                    data-product-id="{{ $product->id }}"
+                                    data-wishlist-url="{{ route('wishlist.toggle', $product) }}">
                                     <i class="far fa-heart me-2"></i> Add to Wishlist
                                 </button>
                             </div>
@@ -210,27 +219,37 @@
                                 </a>
                             </h6>
 
-                            <div class="d-flex align-items-center mb-2">
-                                @if ($product->discount_price)
-                                    <h5 class="text-danger mb-0">
-                                        {{ config('app.currency_symbol') }}{{ number_format($product->discount_price, 2) }}
-                                    </h5>
-                                    <del
-                                        class="text-muted small ms-2">{{ config('app.currency_symbol') }}{{ number_format($product->base_price, 2) }}</del>
-                                @else
-                                    <h5 class="text-primary mb-0">
-                                        {{ config('app.currency_symbol') }}{{ number_format($product->base_price, 2) }}
-                                    </h5>
-                                @endif
+                            @php
+                                $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+                                $unit = $product->unit ? $product->unit->symbol : '';
+                            @endphp
+                            <div class="price-marquee" data-price-marquee>
+                                <div class="price-marquee-inner">
+                                    @if ($product->discount_price)
+                                        <span
+                                            class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                        <span class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
+                                    @else
+                                        <span class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
+                                    @endif
+                                    @foreach ($tieredPrices as $price)
+                                        <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                            <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center">
-                                <button class="btn btn-sm btn-primary" onclick="addToCart({{ $product->id }})">
+                                <button class="btn btn-sm btn-primary add-to-cart-btn"
+                                    data-product-id="{{ $product->id }}">
                                     <i class="fas fa-cart-plus"></i>
                                 </button>
-                                <div class="text-warning small">
-                                    <i class="fas fa-star"></i> {{ number_format($product->average_rating, 1) }}
-                                </div>
+                                <button
+                                    class="btn btn-sm btn-outline-primary wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                    data-product-id="{{ $product->id }}"
+                                    data-wishlist-url="{{ route('wishlist.toggle', $product) }}">
+                                    <i class="fas fa-heart"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -368,6 +387,74 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
+
+        /* Price marquee and chips */
+        .price-marquee {
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 8px 0 12px;
+        }
+
+        .price-marquee-inner,
+        .price-marquee-dup {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-marquee.marquee .price-marquee-inner,
+        .price-marquee.marquee .price-marquee-dup {
+            animation: marquee-slide 14s linear infinite;
+        }
+
+        .price-marquee.marquee:hover .price-marquee-inner,
+        .price-marquee.marquee:hover .price-marquee-dup {
+            animation-play-state: paused;
+        }
+
+        .price-marquee-dup {
+            margin-left: 24px;
+        }
+
+        @keyframes marquee-slide {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .price-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #f1f3f5;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0d6efd;
+            border: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .price-chip.old {
+            background: transparent;
+            color: #888;
+            text-decoration: line-through;
+            border: none;
+            font-weight: 500;
+        }
+
+        .price-chip.tier {
+            color: #0f5132;
+            background: #e8f5e9;
+            border-color: #d1e7dd;
+            font-weight: 600;
+        }
     </style>
 
     <script>
@@ -392,5 +479,86 @@
         // Update countdown every second
         setInterval(updateCountdown, 1000);
         updateCountdown();
+    </script>
+    <script>
+        // Enable marquee only when price line overflows (per card)
+        const initPriceMarquee = () => {
+            document.querySelectorAll('[data-price-marquee]').forEach(container => {
+                const firstTrack = container.querySelector('.price-marquee-inner');
+                if (!firstTrack) return;
+
+                const needsMarquee = firstTrack.scrollWidth > container.clientWidth + 2;
+
+                if (needsMarquee) {
+                    container.classList.add('marquee');
+                    if (!container.querySelector('.price-marquee-dup')) {
+                        const dup = firstTrack.cloneNode(true);
+                        dup.classList.add('price-marquee-dup');
+                        container.appendChild(dup);
+                    }
+                } else {
+                    container.classList.remove('marquee');
+                    const dup = container.querySelector('.price-marquee-dup');
+                    if (dup) dup.remove();
+                }
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initPriceMarquee();
+            window.addEventListener('resize', initPriceMarquee);
+
+            // Wishlist toggle (auth required; global guard will prompt if guest)
+            document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('data-wishlist-url');
+                    if (!url) return;
+                    this.classList.toggle('active');
+                    fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        })
+                        .then(r => r.json().catch(() => ({})))
+                        .then(data => {
+                            if (window.Toast) {
+                                if (data && data.success) {
+                                    window.Toast.fire({
+                                        icon: 'success',
+                                        title: data.message || 'Wishlist updated'
+                                    });
+                                } else {
+                                    window.Toast.fire({
+                                        icon: 'info',
+                                        title: 'Wishlist updated'
+                                    });
+                                }
+                            }
+                        })
+                        .catch(() => {
+                            if (window.Toast) {
+                                window.Toast.fire({
+                                    icon: 'error',
+                                    title: 'Wishlist request failed'
+                                });
+                            }
+                        });
+                });
+            });
+
+            // Add to cart binds to global helper
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const id = this.getAttribute('data-product-id');
+                    if (window.addToCart) {
+                        window.addToCart(parseInt(id, 10), 1);
+                    }
+                });
+            });
+        });
     </script>
 @endsection

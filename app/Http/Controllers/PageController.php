@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ContactMessage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -65,14 +66,14 @@ class PageController extends Controller
     {
         $discountedProducts = Product::whereNotNull('discount_price')
             ->where('is_active', true)
-            ->where('discount_price', '<', \DB::raw('base_price'))
-            ->with(['images', 'category'])
+            ->where('discount_price', '<', DB::raw('base_price'))
+            ->with(['images', 'category', 'unit', 'prices'])
             ->orderByRaw('(base_price - discount_price) DESC')
             ->paginate(12);
 
         $featuredOffers = Product::where('is_featured', true)
             ->where('is_active', true)
-            ->with(['images', 'category'])
+            ->with(['images', 'category', 'unit', 'prices'])
             ->limit(6)
             ->get();
 

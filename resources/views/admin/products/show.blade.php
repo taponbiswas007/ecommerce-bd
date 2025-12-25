@@ -228,25 +228,21 @@
                             </div>
 
                             <!-- Attributes -->
-                            @if ($product->attributes)
+                            @php
+                                $attributes = $product->attribute_pairs ?? [];
+                            @endphp
+                            @if (!empty($attributes))
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <h6 class="card-title mb-0">Attributes</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            @php
-                                                $attributes = json_decode($product->attributes, true);
-                                            @endphp
-                                            @if ($attributes && count($attributes) > 0)
-                                                @foreach ($attributes as $key => $value)
-                                                    <div class="col-md-6 mb-2">
-                                                        <strong>{{ $key }}:</strong> {{ $value }}
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <p class="text-muted">No attributes defined</p>
-                                            @endif
+                                            @foreach ($attributes as $key => $value)
+                                                <div class="col-md-6 mb-2">
+                                                    <strong>{{ $key }}:</strong> {{ $value }}
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>

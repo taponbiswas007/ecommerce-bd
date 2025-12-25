@@ -568,6 +568,49 @@
             font-size: 12px;
             color: #495057;
         }
+
+        /* Product Attributes */
+        .product-attributes {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .attribute-group {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 15px;
+        }
+
+        .attribute-group:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .attribute-options .attribute-option {
+            min-width: 80px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .attribute-options .attribute-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .attribute-options .attribute-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .attribute-value .badge {
+            padding: 8px 16px;
+            font-weight: 500;
+        }
     </style>
 
     <!-- Swiper CSS -->
@@ -767,6 +810,43 @@
                     </div>
                 </div>
 
+                <!-- Product Attributes Selection -->
+                @php
+                    $attributes = $product->attribute_pairs ?? [];
+                @endphp
+                @if (!empty($attributes))
+                    <div class="product-attributes mb-4">
+                        @foreach ($attributes as $key => $value)
+                            <div class="attribute-group mb-3">
+                                <label class="fw-bold mb-2">{{ ucfirst(str_replace('_', ' ', $key)) }}:</label>
+                                @php
+                                    // Check if value contains multiple options (comma-separated)
+                                    $options = array_map('trim', explode(',', $value));
+                                @endphp
+
+                                @if (count($options) > 1)
+                                    <!-- Multiple options - show as buttons -->
+                                    <div class="attribute-options d-flex flex-wrap gap-2">
+                                        @foreach ($options as $option)
+                                            <button type="button" class="btn btn-outline-primary attribute-option"
+                                                data-attribute="{{ $key }}" data-value="{{ $option }}"
+                                                onclick="selectAttribute(this)">
+                                                {{ $option }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <!-- Single value - show as text -->
+                                    <div class="attribute-value">
+                                        <span class="badge bg-light text-dark fs-6">{{ $value }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                        <input type="hidden" id="selectedAttributes" value="">
+                    </div>
+                @endif
+
                 <!-- Quantity Selector -->
                 <div class="quantity-selector">
                     <label class="fw-bold">Quantity:</label>
@@ -860,21 +940,19 @@
                     <div class="product-description">
                         {!! $product->full_description !!}
 
-                        @if ($product->attributes)
+                        @php
+                            $attributes = $product->attribute_pairs ?? [];
+                        @endphp
+                        @if (!empty($attributes))
                             <div class="mt-4">
                                 <h5>Additional Information</h5>
                                 <div class="row mt-3">
-                                    @php
-                                        $attributes = json_decode($product->attributes, true);
-                                    @endphp
-                                    @if (is_array($attributes))
-                                        @foreach ($attributes as $key => $value)
-                                            <div class="col-md-6 mb-2">
-                                                <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong>
-                                                <span>{{ $value }}</span>
-                                            </div>
-                                        @endforeach
-                                    @endif
+                                    @foreach ($attributes as $key => $value)
+                                        <div class="col-md-6 mb-2">
+                                            <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong>
+                                            <span>{{ $value }}</span>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         @endif
@@ -921,18 +999,16 @@
                                 <td>Stock Quantity</td>
                                 <td>{{ $product->stock_quantity }}</td>
                             </tr>
-                            @if ($product->attributes)
-                                @php
-                                    $attributes = json_decode($product->attributes, true);
-                                @endphp
-                                @if (is_array($attributes))
-                                    @foreach ($attributes as $key => $value)
-                                        <tr>
-                                            <td>{{ ucfirst(str_replace('_', ' ', $key)) }}</td>
-                                            <td>{{ $value }}</td>
-                                        </tr>
-                                    @endforeach
-                                @endif
+                            @php
+                                $attributes = $product->attribute_pairs ?? [];
+                            @endphp
+                            @if (!empty($attributes))
+                                @foreach ($attributes as $key => $value)
+                                    <tr>
+                                        <td>{{ ucfirst(str_replace('_', ' ', $key)) }}</td>
+                                        <td>{{ $value }}</td>
+                                    </tr>
+                                @endforeach
                             @endif
                         </tbody>
                     </table>
@@ -1172,9 +1248,41 @@
             }
         }
 
+        // Attribute selection
+        function selectAttribute(button) {
+            // Remove selected class from siblings
+            const siblings = button.parentElement.querySelectorAll('.attribute-option');
+            siblings.forEach(btn => btn.classList.remove('selected'));
+
+            // Add selected class to clicked button
+            button.classList.add('selected');
+
+            // Update hidden input with all selected attributes
+            updateSelectedAttributes();
+        }
+
+        function updateSelectedAttributes() {
+            const selectedAttrs = {};
+            document.querySelectorAll('.attribute-option.selected').forEach(btn => {
+                const attrName = btn.getAttribute('data-attribute');
+                const attrValue = btn.getAttribute('data-value');
+                selectedAttrs[attrName] = attrValue;
+            });
+            document.getElementById('selectedAttributes').value = JSON.stringify(selectedAttrs);
+        }
+
+        function getSelectedAttributes() {
+            const attrsInput = document.getElementById('selectedAttributes');
+            if (attrsInput && attrsInput.value) {
+                return JSON.parse(attrsInput.value);
+            }
+            return {};
+        }
+
         // Add to cart
         function addToCart(productId) {
             const quantity = document.getElementById('quantity').value;
+            const selectedAttributes = getSelectedAttributes();
 
             @auth
             fetch('{{ route('cart.add') }}', {
@@ -1185,7 +1293,8 @@
                     },
                     body: JSON.stringify({
                         product_id: productId,
-                        quantity: quantity
+                        quantity: quantity,
+                        attributes: selectedAttributes
                     })
                 })
                 .then(response => response.json())

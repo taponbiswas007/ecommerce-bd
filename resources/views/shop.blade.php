@@ -1,5 +1,450 @@
 @extends('layouts.app')
 
+@section('styles')
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6f42c1;
+            --accent-color: #20c997;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+        }
+
+        /* Product Card Styles */
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white;
+            min-height: 480px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-img-container {
+            position: relative;
+            overflow: hidden;
+            height: 280px;
+            background: #f8f9fa;
+            flex-shrink: 0;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.08);
+        }
+
+        .product-badges {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, var(--danger-color), #ff6b6b);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .featured-badge {
+            background: linear-gradient(135deg, var(--warning-color), #ffd166);
+            color: var(--dark-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 193, 7, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .product-actions {
+            position: absolute;
+            bottom: 20px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .product-card:hover .product-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+        }
+
+        .wishlist-btn.active {
+            color: white;
+            background: var(--danger-color);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .product-content {
+            padding: 16px;
+            background: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            line-height: 1.35;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-content a .product-title:hover {
+            color: var(--primary-color);
+        }
+
+        .product-details-toggle {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .product-description {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+            max-height: 52px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-description.hidden {
+            display: block;
+        }
+
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rating-container.hidden {
+            display: flex;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .rating-count {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .price-marquee {
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 6px;
+        }
+
+        .price-marquee-inner,
+        .price-marquee-dup {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-marquee.marquee .price-marquee-inner,
+        .price-marquee.marquee .price-marquee-dup {
+            animation: marquee-slide 14s linear infinite;
+        }
+
+        .price-marquee.marquee:hover .price-marquee-inner,
+        .price-marquee.marquee:hover .price-marquee-dup {
+            animation-play-state: paused;
+        }
+
+        .price-marquee-dup {
+            margin-left: 24px;
+        }
+
+        @keyframes marquee-slide {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .price-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #f1f3f5;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0d6efd;
+            border: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .price-chip.old {
+            background: transparent;
+            color: #888;
+            text-decoration: line-through;
+            border: none;
+            font-weight: 500;
+        }
+
+        .price-chip.tier {
+            color: #0f5132;
+            background: #e8f5e9;
+            border-color: #d1e7dd;
+            font-weight: 600;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .product-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .product-footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 0 auto;
+        }
+
+        .add-to-cart-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .stock-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .in-stock {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .low-stock {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .out-of-stock {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .hover-shadow {
+            transition: box-shadow 0.3s ease;
+        }
+
+        .hover-shadow:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .transition {
+            transition: all 0.3s ease;
+        }
+
+        .filter-section {
+            padding: 0.5rem 0;
+        }
+
+        .object-fit-cover {
+            object-fit: cover;
+        }
+
+        .form-range {
+            height: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* Quick View Modal Styles */
+        .quick-view-modal .modal-dialog {
+            max-width: 900px;
+            margin: 1rem auto;
+        }
+
+        .quick-view-modal .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+        }
+
+        .product-gallery-slider {
+            height: 400px;
+            position: relative;
+        }
+
+        .product-gallery-slider img,
+        .product-gallery-slider video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f8f9fa;
+        }
+
+        .gallery-thumbs {
+            margin-top: 10px;
+            padding: 10px 0;
+        }
+
+        .gallery-thumbs .swiper-slide {
+            opacity: 0.4;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 80px;
+        }
+
+        .gallery-thumbs .swiper-slide-thumb-active {
+            opacity: 1;
+            border-color: var(--primary-color);
+        }
+
+        .gallery-thumbs img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-thumb {
+            position: relative;
+        }
+
+        .video-thumb::after {
+            content: '';
+            position: absolute;
+        }
+
+        .product-quick-view {
+            padding: 20px;
+        }
+
+        .product-quick-view h4 {
+            color: #212529;
+        }
+
+        .product-quick-view .price {
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .quick-view-modal .modal-dialog {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+
+            .product-gallery-slider {
+                height: 300px;
+            }
+        }
+    </style>
+@endsection
 @section('content')
     <div class="container py-4">
         <!-- Header -->
@@ -149,108 +594,100 @@
                 @if ($products->count() > 0)
                     <div class="row g-3" id="productsContainer">
                         @foreach ($products as $product)
-                            <div class="col-md-6 col-lg-4 product-card">
-                                <div class="card h-100 border-0 shadow-sm hover-shadow transition">
-                                    <!-- Product Image -->
-                                    <div class="position-relative overflow-hidden" style="height: 250px;">
-                                        @if ($product->primaryImage)
-                                            <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
-                                                alt="{{ $product->name }}"
-                                                class="img-fluid w-100 h-100 object-fit-cover">
-                                        @else
-                                            <div class="bg-light d-flex align-items-center justify-content-center h-100">
-                                                <i class="fas fa-image text-muted fa-3x"></i>
-                                            </div>
-                                        @endif
+                            <div class="col-md-6 col-lg-4">
+                                <div class="product-card">
+                                    <!-- Product Image Container -->
+                                    <div class="product-img-container">
+                                        @php
+                                            $image = $product->primaryImage ?? $product->images->first();
+                                        @endphp
+                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                            alt="{{ $product->name }}" class="product-img">
 
                                         <!-- Badges -->
-                                        <div class="position-absolute top-0 start-0 p-2">
-                                            @if ($product->discount_price && $product->discount_price < $product->base_price)
-                                                @php
-                                                    $discount = round(
-                                                        (($product->base_price - $product->discount_price) /
-                                                            $product->base_price) *
-                                                            100,
-                                                    );
-                                                @endphp
-                                                <span class="badge bg-danger">-{{ $discount }}%</span>
+                                        <div class="product-badges">
+                                            @if ($product->has_discount)
+                                                <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                    OFF</span>
                                             @endif
                                             @if ($product->is_featured)
-                                                <span class="badge bg-warning">Featured</span>
+                                                <span class="featured-badge">Featured</span>
                                             @endif
                                         </div>
 
-                                        <!-- Wishlist Button -->
-                                        <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2 wishlist-btn"
-                                            data-product-id="{{ $product->id }}" title="Add to Wishlist">
-                                            <i class="far fa-heart"></i>
-                                        </button>
+                                        <!-- Action Buttons -->
+                                        <div class="product-actions">
+                                            <button class="action-btn quick-view-btn"
+                                                data-product-id="{{ $product->id }}" title="Quick View">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                <i class="fas fa-heart"></i>
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div class="card-body d-flex flex-column">
-                                        <!-- Category -->
-                                        <small class="text-primary mb-2">
-                                            {{ $product->category ? $product->category->name : 'Uncategorized' }}
-                                        </small>
+                                    <!-- Product Content -->
+                                    <div class="product-content">
+                                        <a href="{{ route('product.show', $product->slug) }}"
+                                            class="text-decoration-none">
+                                            <h6 class="product-title">{{ $product->name }}</h6>
+                                        </a>
 
-                                        <!-- Product Name -->
-                                        <h6 class="card-title mb-2 flex-grow-1">
-                                            <a href="{{ route('product.show', $product->slug) }}"
-                                                class="text-dark text-decoration-none">
-                                                @if (strlen($product->name) > 50)
-                                                    {{ substr($product->name, 0, 50) }}...
+                                        <div class="product-details-toggle">
+                                            <div class="rating-container">
+                                                <div class="rating-stars">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($product->average_rating ?? 0))
+                                                            <i class="fas fa-star"></i>
+                                                        @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
+                                            </div>
+                                            <div class="product-description">
+                                                {{ Str::limit(strip_tags($product->short_description ?? ''), 80) }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Price Line (single marquee) -->
+                                        @php
+                                            $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+                                            $unit = $product->unit ? $product->unit->symbol : '';
+                                        @endphp
+                                        <div class="price-marquee" data-price-marquee>
+                                            <div class="price-marquee-inner">
+                                                @if ($product->has_discount)
+                                                    <span
+                                                        class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                                    <span
+                                                        class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
                                                 @else
-                                                    {{ $product->name }}
+                                                    <span
+                                                        class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
                                                 @endif
-                                            </a>
-                                        </h6>
 
-                                        <!-- Rating -->
-                                        <div class="mb-2">
-                                            <small class="text-warning">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star-half"></i>
-                                                <span class="text-muted">(24)</span>
-                                            </small>
+                                                @foreach ($tieredPrices as $price)
+                                                    <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                                        <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                                @endforeach
+                                            </div>
                                         </div>
 
-                                        <!-- Price -->
-                                        <div class="mb-3">
-                                            @if ($product->discount_price && $product->discount_price < $product->base_price)
-                                                <span class="h6 text-danger fw-bold">
-                                                    ₹{{ number_format($product->discount_price, 2) }}
-                                                </span>
-                                                <span class="small text-muted text-decoration-line-through">
-                                                    ₹{{ number_format($product->base_price, 2) }}
-                                                </span>
-                                            @else
-                                                <span class="h6 text-danger fw-bold">
-                                                    ₹{{ number_format($product->base_price, 2) }}
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                        <!-- Stock Status -->
-                                        <small class="mb-3">
-                                            @if ($product->stock_quantity > 0)
-                                                <span class="badge bg-success">In Stock</span>
-                                            @else
-                                                <span class="badge bg-danger">Out of Stock</span>
-                                            @endif
-                                        </small>
-
-                                        <!-- Quick Actions -->
-                                        <div class="d-grid gap-2">
-                                            <a href="{{ route('product.show', $product->slug) }}"
-                                                class="btn btn-sm btn-primary">
-                                                <i class="fas fa-eye"></i> View Details
-                                            </a>
-                                            <button class="btn btn-sm btn-outline-primary add-to-cart-btn"
-                                                data-product-id="{{ $product->id }}">
-                                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                        <!-- Footer: Stock & Add to Cart -->
+                                        <div class="product-footer">
+                                            <span
+                                                class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
+                                                {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
+                                            </span>
+                                            <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                                <i class="fas fa-cart-plus"></i> Cart
                                             </button>
                                         </div>
                                     </div>
@@ -273,37 +710,74 @@
             </div>
         </div>
     </div>
+    <!-- Quick View Modal -->
+    <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <div class="row">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <!-- Main Gallery Slider -->
+                            <div class="swiper product-gallery-slider">
+                                <div class="swiper-wrapper" id="gallery-slides">
+                                    <!-- Slides will be loaded via AJAX -->
+                                </div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                            </div>
 
-    <style>
-        .hover-shadow {
-            transition: box-shadow 0.3s ease;
-        }
+                            <!-- Thumbnail Gallery -->
+                            <div class="swiper gallery-thumbs mt-3">
+                                <div class="swiper-wrapper" id="gallery-thumbs">
+                                    <!-- Thumbs will be loaded via AJAX -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div id="product-details">
+                                <!-- Product details will be loaded via AJAX -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        .hover-shadow:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
 
-        .transition {
-            transition: all 0.3s ease;
-        }
-
-        .filter-section {
-            padding: 0.5rem 0;
-        }
-
-        .object-fit-cover {
-            object-fit: cover;
-        }
-
-        .form-range {
-            height: 0.5rem;
-            cursor: pointer;
-        }
-    </style>
 @endsection
 
 @section('scripts')
     <script>
+        // Enable marquee only when price line overflows (per card)
+        const initPriceMarquee = () => {
+            document.querySelectorAll('[data-price-marquee]').forEach(container => {
+                const firstTrack = container.querySelector('.price-marquee-inner');
+                if (!firstTrack) return;
+
+                const needsMarquee = firstTrack.scrollWidth > container.clientWidth + 2;
+
+                if (needsMarquee) {
+                    container.classList.add('marquee');
+                    if (!container.querySelector('.price-marquee-dup')) {
+                        const dup = firstTrack.cloneNode(true);
+                        dup.classList.add('price-marquee-dup');
+                        container.appendChild(dup);
+                    }
+                } else {
+                    container.classList.remove('marquee');
+                    const dup = container.querySelector('.price-marquee-dup');
+                    if (dup) dup.remove();
+                }
+            });
+        };
+
+        initPriceMarquee();
+        window.addEventListener('resize', () => initPriceMarquee());
+
         $(document).ready(function() {
             // Search functionality
             $('#searchBtn').click(function() {
@@ -403,7 +877,12 @@
                     })
                     .then(r => r.json())
                     .then(data => {
-                        alert('Added to cart!');
+                        if (window.Toast) {
+                            window.Toast.fire({
+                                icon: 'success',
+                                title: 'Added to cart!'
+                            });
+                        }
                     })
                     .catch(err => console.log(err));
             });
@@ -422,6 +901,202 @@
                 $('#productsContainer').removeClass('list-view').addClass('row');
                 $('.product-card').removeClass('col-12').addClass('col-md-6 col-lg-4');
             });
+
+            // Quick View Modal
+            // Initialize quick view handlers
+            // Quick View Function
+            window.showQuickView = async function(productId) {
+                try {
+                    const response = await fetch(`/product/quick-view/${productId}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const modal = new bootstrap.Modal(document.getElementById(
+                            'quickViewModal'));
+
+                        // Clear previous content
+                        document.getElementById('gallery-slides').innerHTML = '';
+                        document.getElementById('gallery-thumbs').innerHTML = '';
+                        document.getElementById('product-details').innerHTML = '';
+
+                        // Load product images from the data
+                        if (data.product && data.product.images) {
+                            loadProductImages(data.product.images, data.product.video_url);
+                        }
+
+                        // Load product details
+                        document.getElementById('product-details').innerHTML = data.html;
+
+                        // Show modal
+                        modal.show();
+
+                        // Pause background sliders when modal opens
+                        pauseAllSliders();
+
+                        // Initialize gallery slider after modal is shown
+                        setTimeout(() => {
+                            initGallerySlider();
+                            // Auto-play video if exists
+                            playVideoInModal();
+                        }, 100);
+                    }
+                } catch (error) {
+                    console.error('Error loading quick view:', error);
+                    alert('Failed to load product details');
+                }
+            };
+
+            // Load Product Images
+            window.loadProductImages = function(images, videoUrl = null) {
+                const slidesContainer = document.getElementById('gallery-slides');
+                const thumbsContainer = document.getElementById('gallery-thumbs');
+
+                slidesContainer.innerHTML = '';
+                thumbsContainer.innerHTML = '';
+
+                // Add images
+                images.forEach((image, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML =
+                        `<img src="/storage/${image.image_path}" alt="${image.alt_text}" class="img-fluid">`;
+                    slidesContainer.appendChild(slide);
+
+                    const thumb = document.createElement('div');
+                    thumb.className = 'swiper-slide';
+                    thumb.innerHTML =
+                        `<img src="/storage/${image.image_path}" alt="${image.alt_text}" class="img-fluid" style="height: 80px; object-fit: cover;">`;
+                    thumbsContainer.appendChild(thumb);
+                });
+
+                // Add video if exists
+                if (videoUrl) {
+                    const videoSlide = document.createElement('div');
+                    videoSlide.className = 'swiper-slide video-slide';
+                    videoSlide.innerHTML = `
+                            <div class="ratio ratio-16x9 h-100">
+                                <iframe src="${videoUrl}"
+                                        title="Product Video"
+                                        allowfullscreen
+                                        class="w-100 h-100 product-video"
+                                        data-autoplay="true">
+                                </iframe>
+                            </div>
+                        `;
+                    slidesContainer.appendChild(videoSlide);
+
+                    const videoThumb = document.createElement('div');
+                    videoThumb.className = 'swiper-slide video-thumb';
+                    videoThumb.innerHTML = `
+                            <div class="w-100 h-100 bg-dark d-flex align-items-center justify-content-center">
+                                <i class="fas fa-play-circle fa-2x text-white"></i>
+                            </div>
+                        `;
+                    thumbsContainer.appendChild(videoThumb);
+                }
+            };
+
+            // Initialize Gallery Slider in Modal
+            window.initGallerySlider = function() {
+                const gallerySlider = new Swiper('.product-gallery-slider', {
+                    spaceBetween: 10,
+                    navigation: {
+                        nextEl: '.product-gallery-slider .swiper-button-next',
+                        prevEl: '.product-gallery-slider .swiper-button-prev',
+                    },
+                    thumbs: {
+                        swiper: {
+                            el: '.gallery-thumbs',
+                            slidesPerView: 4,
+                            spaceBetween: 10,
+                            freeMode: true,
+                            watchSlidesProgress: true,
+                        },
+                    },
+                    on: {
+                        slideChange: function() {
+                            pauseAllVideos();
+                            playVideoInModal();
+                        }
+                    }
+                });
+            };
+
+            // Auto-play video in modal
+            window.playVideoInModal = function() {
+                const activeSlide = document.querySelector(
+                    '.product-gallery-slider .swiper-slide-active');
+                if (activeSlide) {
+                    const video = activeSlide.querySelector('.product-video');
+                    if (video) {
+                        // For iframes, we add ?autoplay=1 parameter
+                        if (video.tagName.toLowerCase() === 'iframe') {
+                            const src = video.src;
+                            if (!src.includes('?')) {
+                                video.src = src + '?autoplay=1';
+                            } else if (!src.includes('autoplay')) {
+                                video.src = src + '&autoplay=1';
+                            }
+                        } else {
+                            video.play();
+                        }
+                    }
+                }
+            };
+
+            // Pause all videos
+            window.pauseAllVideos = function() {
+                document.querySelectorAll('#quickViewModal video').forEach(video => {
+                    video.pause();
+                });
+            };
+
+            // Pause all background sliders when modal opens
+            window.pauseAllSliders = function() {
+                // Pause hero slider if exists
+                if (window.sliders && window.sliders.hero) {
+                    window.sliders.hero.autoplay.stop();
+                }
+                // Pause other sliders
+                if (window.sliders) {
+                    Object.keys(window.sliders).forEach(key => {
+                        if (window.sliders[key] && window.sliders[key].autoplay) {
+                            window.sliders[key].autoplay.stop();
+                        }
+                    });
+                }
+            };
+
+            // Resume sliders when modal closes
+            window.resumeAllSliders = function() {
+                if (window.sliders) {
+                    Object.keys(window.sliders).forEach(key => {
+                        if (window.sliders[key] && window.sliders[key].autoplay) {
+                            window.sliders[key].autoplay.start();
+                        }
+                    });
+                }
+            };
+
+            // Handle quick view button clicks
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.quick-view-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const productId = e.target.closest('.quick-view-btn').getAttribute(
+                        'data-product-id');
+                    window.showQuickView(productId);
+                }
+            });
+
+            // Resume sliders when modal closes
+            const quickViewModal = document.getElementById('quickViewModal');
+            if (quickViewModal) {
+                quickViewModal.addEventListener('hidden.bs.modal', function() {
+                    resumeAllSliders();
+                    pauseAllVideos();
+                });
+            }
         });
     </script>
 @endsection

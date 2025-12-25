@@ -158,11 +158,24 @@ class ProductImageController extends Controller
     // Bulk actions
     public function bulkAction(Request $request, Product $product)
     {
+        // Decode JSON payloads from the frontend form (hidden inputs) so validation sees arrays
+        $idsInput = $request->input('ids');
+        if (is_string($idsInput)) {
+            $decoded = json_decode($idsInput, true);
+            $request->merge(['ids' => is_array($decoded) ? $decoded : []]);
+        }
+
+        $displayOrderInput = $request->input('display_order');
+        if (is_string($displayOrderInput)) {
+            $decoded = json_decode($displayOrderInput, true);
+            $request->merge(['display_order' => is_array($decoded) ? $decoded : []]);
+        }
+
         $request->validate([
             'action' => 'required|in:set_primary,set_featured,delete,update_order',
             'ids' => 'required|array',
             'ids.*' => 'exists:product_images,id',
-            'display_order' => 'sometimes|array',
+            'display_order' => 'required_if:action,update_order|array',
         ]);
 
         $ids = $request->ids;
@@ -196,7 +209,9 @@ class ProductImageController extends Controller
                 break;
 
             case 'update_order':
-                foreach ($request->display_order as $id => $order) {
+                $orders = $request->display_order ?? [];
+
+                foreach ($orders as $id => $order) {
                     ProductImage::where('id', $id)->update(['display_order' => $order]);
                 }
                 $message = 'Display order updated successfully.';
