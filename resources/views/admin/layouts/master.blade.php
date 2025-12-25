@@ -139,6 +139,13 @@
                         </a>
                     </li>
 
+                    <li class="{{ request()->routeIs('admin.shop-to-transport-rates.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.shop-to-transport-rates.index') }}">
+                            <i class="fas fa-coins"></i>
+                            <span class="menu-text">Shop to Transport Rates</span>
+                        </a>
+                    </li>
+
                     <li class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.reviews.index') }}">
                             <i class="fas fa-star"></i>

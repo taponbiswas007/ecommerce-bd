@@ -116,15 +116,55 @@ class ShippingCalculator
             $total += $cost;
         }
 
-        // Add shop -> transport base fee (per order)
-        $shopToTransport = (float) config('shipping.shop_to_transport_base', 50);
-        $total += $shopToTransport;
+        // Add shop -> transport fee per package (lookup from DB, fallback to config)
+        $shopToTransportRate = 0;
+        if ($transportCompanyId) {
+            // Calculate shop-to-transport fee per package type (not per order)
+            $stFeeBreakdown = [];
+            foreach ($packageCounts as $pkgType => $pkgQty) {
+                // Try upazila-specific rate
+                $stRate = \App\Models\ShopToTransportRate::where('package_type', $pkgType)
+                    ->where('upazila', $upazila)
+                    ->where('is_active', true)
+                    ->value('rate');
+
+                // Fallback to district
+                if ($stRate === null) {
+                    $stRate = \App\Models\ShopToTransportRate::where('package_type', $pkgType)
+                        ->where('district', $district)
+                        ->where('is_active', true)
+                        ->value('rate');
+                }
+
+                // Fallback to global default
+                if ($stRate === null) {
+                    $stRate = \App\Models\ShopToTransportRate::where('package_type', $pkgType)
+                        ->whereNull('district')
+                        ->whereNull('upazila')
+                        ->where('is_active', true)
+                        ->value('rate');
+                }
+
+                // Fallback to config
+                if ($stRate === null) {
+                    $stRate = (float) config('shipping.shop_to_transport_base', 50);
+                }
+
+                $stCost = round((float) $stRate * $pkgQty, 2);
+                $shopToTransportRate += $stCost;
+                $stFeeBreakdown[] = ['package_type' => $pkgType, 'quantity' => $pkgQty, 'st_rate' => $stRate, 'st_cost' => $stCost];
+            }
+        } else {
+            $shopToTransportRate = (float) config('shipping.shop_to_transport_base', 50);
+        }
+
+        $total += $shopToTransportRate;
 
         return [
             'total' => round($total, 2),
             'breakdown' => $breakdown,
             'packages' => $packageCounts,
-            'shop_to_transport' => $shopToTransport,
+            'shop_to_transport' => $shopToTransportRate,
         ];
     }
 }

@@ -25,8 +25,8 @@ class CheckoutController extends Controller
         $district = Auth::check() ? Auth::user()->district : null;
         $upazila = Auth::check() ? Auth::user()->upazila : null;
 
-        // Pass district list from DeliveryCharge table (distinct districts)
-        $districts = \App\Models\DeliveryCharge::distinct()->pluck('district')->filter()->values()->toArray();
+        // Use config locations directly
+        $districts = array_keys(config('locations', []));
 
         // Shipping amount (legacy numeric) — also compute detailed estimate using ShippingCalculator
         $shipping = Cart::shipping($district, $upazila);

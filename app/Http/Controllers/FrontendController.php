@@ -15,7 +15,7 @@ class FrontendController extends Controller
     public function index()
     {
         // Get featured products
-        $featuredProducts = Product::with(['images', 'category'])
+        $featuredProducts = Product::with(['primaryImage', 'images', 'category'])
             ->where('is_featured', true)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -41,7 +41,7 @@ class FrontendController extends Controller
             ->get();
 
         // Get flash sale products - products with discount_price
-        $flashSaleProducts = Product::with('images')
+        $flashSaleProducts = Product::with(['primaryImage', 'images'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->whereNotNull('discount_price')
@@ -51,7 +51,7 @@ class FrontendController extends Controller
             ->get();
 
         // Get new arrivals
-        $newArrivals = Product::with('images')
+        $newArrivals = Product::with(['primaryImage', 'images'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')
@@ -81,7 +81,7 @@ class FrontendController extends Controller
      */
     public function shop(Request $request)
     {
-        $query = Product::with(['images', 'category'])
+        $query = Product::with(['primaryImage', 'category'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0);
 
@@ -180,7 +180,7 @@ class FrontendController extends Controller
         // Get all child category IDs including parent
         $categoryIds = $category->children->pluck('id')->push($category->id);
 
-        $products = Product::with('images')
+        $products = Product::with(['primaryImage', 'images'])
             ->whereIn('category_id', $categoryIds)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -212,7 +212,7 @@ class FrontendController extends Controller
      */
     public function flashSale()
     {
-        $products = Product::with('images')
+        $products = Product::with(['primaryImage', 'images'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->whereNotNull('discount_price')
@@ -228,7 +228,7 @@ class FrontendController extends Controller
      */
     public function newArrivals()
     {
-        $products = Product::with('images')
+        $products = Product::with(['primaryImage', 'images'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')

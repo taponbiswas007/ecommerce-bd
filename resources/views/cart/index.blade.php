@@ -406,8 +406,8 @@
                                     <!-- Product Image -->
                                     <div class="col-md-3 mb-3 mb-md-0">
                                         <a href="{{ route('product.show', $item->product->slug) }}">
-                                            @if ($item->product->images && $item->product->images->count() > 0)
-                                                <img src="{{ asset('storage/' . $item->product->images->first()->image_path) }}"
+                                            @if ($item->product->primaryImage)
+                                                <img src="{{ asset('storage/' . $item->product->primaryImage->image_path) }}"
                                                     alt="{{ $item->product->name }}" class="cart-item-image img-fluid">
                                             @else
                                                 <img src="https://via.placeholder.com/300x200?text=No+Image"

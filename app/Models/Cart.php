@@ -35,7 +35,7 @@ class Cart extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class)->with('images');
+        return $this->belongsTo(Product::class)->with(['primaryImage', 'images']);
     }
 
     // Accessor for display price
@@ -73,12 +73,12 @@ class Cart extends Model
     public static function items()
     {
         if (Auth::check()) {
-            return self::with('product.images')
+            return self::with('product.primaryImage', 'product.images')
                 ->where('user_id', Auth::id())
                 ->get();
         } else {
             $sessionId = session()->getId();
-            return self::with('product.images')
+            return self::with('product.primaryImage', 'product.images')
                 ->where('session_id', $sessionId)
                 ->whereNull('user_id')
                 ->get();

@@ -203,6 +203,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('transport-companies', \App\Http\Controllers\Admin\TransportCompanyController::class);
     Route::resource('package-rates', \App\Http\Controllers\Admin\PackageRateController::class);
     Route::resource('packaging-rules', \App\Http\Controllers\Admin\PackagingRuleController::class);
+    Route::resource('shop-to-transport-rates', \App\Http\Controllers\Admin\ShopToTransportRateController::class);
 
     // Review Management
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');

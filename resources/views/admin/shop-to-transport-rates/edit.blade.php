@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-md-12">
-                <h2>Edit Package Rate</h2>
+                <h2>Edit Shop to Transport Rate</h2>
             </div>
         </div>
 
@@ -13,11 +13,12 @@
                 <div class="card">
                     <div class="card-body">
                         <form method="POST"
-                            action="{{ route('admin.package-rates.update', $packageRate->id ?? $rate->id) }}">
+                            action="{{ route('admin.shop-to-transport-rates.update', $shopToTransportRate->id) }}">
                             @csrf
                             @method('PUT')
-                            @include('admin.package-rates._form')
-                            <a href="{{ route('admin.package-rates.index') }}" class="btn btn-secondary ms-2">Cancel</a>
+                            @include('admin.shop-to-transport-rates._form')
+                            <a href="{{ route('admin.shop-to-transport-rates.index') }}"
+                                class="btn btn-secondary ms-2">Cancel</a>
                         </form>
                     </div>
                 </div>

@@ -29,7 +29,13 @@ class PackagingRuleController extends Controller
             'units_per' => 'required|numeric|min:0.0001',
         ]);
 
-        PackagingRule::create($request->only(['product_id', 'unit_name', 'units_per', 'priority', 'is_active']));
+        PackagingRule::create([
+            'product_id' => $request->product_id,
+            'unit_name' => $request->unit_name,
+            'units_per' => $request->units_per,
+            'priority' => $request->priority ?? 10,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+        ]);
         return redirect()->route('admin.packaging-rules.index')->with('success', 'Saved');
     }
 
@@ -47,7 +53,13 @@ class PackagingRuleController extends Controller
             'units_per' => 'required|numeric|min:0.0001',
         ]);
 
-        $packagingRule->update($request->only(['product_id', 'unit_name', 'units_per', 'priority', 'is_active']));
+        $packagingRule->update([
+            'product_id' => $request->product_id,
+            'unit_name' => $request->unit_name,
+            'units_per' => $request->units_per,
+            'priority' => $request->priority ?? 10,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+        ]);
         return redirect()->route('admin.packaging-rules.index')->with('success', 'Updated');
     }
 

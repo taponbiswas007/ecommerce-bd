@@ -23,6 +23,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Seed transport companies and packaging rule example
-        $this->call([\Database\Seeders\TransportSeeder::class, \Database\Seeders\PackagingRuleSeeder::class]);
+        $this->call([\Database\Seeders\TransportSeeder::class, \Database\Seeders\PackagingRuleSeeder::class, \Database\Seeders\ShopToTransportRateSeeder::class]);
     }
 }

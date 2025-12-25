@@ -110,14 +110,6 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Transport name (optional)</label>
-                        <input type="text" name="transport_name" value="{{ old('transport_name') }}"
-                            class="form-control @error('transport_name') is-invalid @enderror">
-                        @error('transport_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
 
                     <div class="mb-3">
                         <label class="form-label">Address</label>
@@ -234,7 +226,8 @@
                                 <ul class="small">
                                     @foreach ($detailed['breakdown'] as $row)
                                         <li>{{ $row['quantity'] }} × {{ $row['package_type'] }} @
-                                            {{ number_format($row['rate'], 2) }} = {{ number_format($row['cost'], 2) }}</li>
+                                            {{ number_format($row['rate'], 2) }} = {{ number_format($row['cost'], 2) }}
+                                        </li>
                                     @endforeach
                                 </ul>
                             @endif
@@ -420,31 +413,23 @@
                 function loadUpazilas(district, selected) {
                     if (!district) return;
 
+                    // Load from config (locations) directly
+                    var locations = @json(config('locations', []));
+                    var upazilas = locations[district] || [];
+
                     $('#shipping_upazila_list').empty();
-                    $('#shipping_upazila_loading').show();
 
-                    $.getJSON('{{ url('/delivery-charges/upazilas') }}', {
-                            district
-                        })
-                        .done(function(data) {
-                            $('#shipping_upazila_loading').hide();
+                    upazilas.forEach(function(up) {
+                        $('#shipping_upazila_list').append(
+                            `<a href="#" class="dropdown-item shipping-upazila-item" data-value="${up}">${up}</a>`
+                        );
+                    });
 
-                            data.forEach(function(up) {
-                                $('#shipping_upazila_list').append(
-                                    `<a href="#" class="dropdown-item shipping-upazila-item" data-value="${up}">${up}</a>`
-                                );
-                            });
+                    $('#shipping_upazila_list').append(
+                        `<a href="#" class="dropdown-item shipping-upazila-item" data-value="__other__">Other (not listed)</a>`
+                    );
 
-                            $('#shipping_upazila_list').append(
-                                `<a href="#" class="dropdown-item shipping-upazila-item" data-value="__other__">Other (not listed)</a>`
-                            );
-
-                            if (selected) setUpazila(selected, selected);
-                        })
-                        .fail(function() {
-                            $('#shipping_upazila_loading').hide();
-                            $('#shipping_upazila_error').text('Failed to load upazilas').show();
-                        });
+                    if (selected) setUpazila(selected, selected);
                 }
 
                 // Initial load
