@@ -39,6 +39,8 @@ class TaxCalculator
             'vat_amount' => round($vatAmount, 2),
             'vat_percentage' => $vatPercentage,
             'included' => $isIncluded,
+            // Amount that will be added to the total (zero when included)
+            'addable_amount' => $isIncluded ? 0 : round($vatAmount, 2),
         ];
     }
 
@@ -74,6 +76,8 @@ class TaxCalculator
             'ait_amount' => round($aitAmount, 2),
             'ait_percentage' => $aitPercentage,
             'included' => $isIncluded,
+            // Amount that will be added to the total (zero when included)
+            'addable_amount' => $isIncluded ? 0 : round($aitAmount, 2),
         ];
     }
 
@@ -93,21 +97,14 @@ class TaxCalculator
         $ait = self::calculateAit($product, $totalPrice);
 
         // Calculate the final price
-        $finalPrice = $totalPrice;
-
-        if (!$vat['included'] && $vat['vat_amount'] > 0) {
-            $finalPrice += $vat['vat_amount'];
-        }
-
-        if (!$ait['included'] && $ait['ait_amount'] > 0) {
-            $finalPrice += $ait['ait_amount'];
-        }
+        $finalPrice = $totalPrice + $vat['addable_amount'] + $ait['addable_amount'];
 
         return [
             'base_price' => $basePrice,
             'total_base_price' => $totalPrice,
             'vat' => $vat,
             'ait' => $ait,
+            'tax_to_add' => round($vat['addable_amount'] + $ait['addable_amount'], 2),
             'final_price' => round($finalPrice, 2),
             'quantity' => $quantity,
             'summary' => [
@@ -192,8 +189,8 @@ class TaxCalculator
     public static function getSummaryForItems($items)
     {
         $totalBasePrice = 0;
-        $totalVat = 0;
-        $totalAit = 0;
+        $totalVatAddable = 0;
+        $totalAitAddable = 0;
 
         foreach ($items as $item) {
             $product = $item['product'];
@@ -203,16 +200,21 @@ class TaxCalculator
             $taxes = self::calculateTaxes($product, $price, $quantity);
 
             $totalBasePrice += $taxes['total_base_price'];
-            $totalVat += $taxes['vat']['vat_amount'];
-            $totalAit += $taxes['ait']['ait_amount'];
+            $totalVatAddable += $taxes['vat']['addable_amount'];
+            $totalAitAddable += $taxes['ait']['addable_amount'];
         }
+
+        $totalTax = $totalVatAddable + $totalAitAddable;
+
+        // Final price adds only the addable portions
+        $finalPrice = $totalBasePrice + $totalTax;
 
         return [
             'base_price' => round($totalBasePrice, 2),
-            'vat_amount' => round($totalVat, 2),
-            'ait_amount' => round($totalAit, 2),
-            'total_tax' => round($totalVat + $totalAit, 2),
-            'final_price' => round($totalBasePrice + $totalVat + $totalAit, 2),
+            'vat_amount' => round($totalVatAddable, 2),
+            'ait_amount' => round($totalAitAddable, 2),
+            'total_tax' => round($totalTax, 2),
+            'final_price' => round($finalPrice, 2),
         ];
     }
 }

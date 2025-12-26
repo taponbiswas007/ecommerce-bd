@@ -35,7 +35,8 @@ class CheckoutController extends Controller
         } catch (\Throwable $e) {
             $detailed = null;
         }
-        $tax = Cart::tax($subtotal - $discount);
+        $taxSummary = Cart::taxSummary($discount);
+        $tax = $taxSummary['total_tax'];
         $total = Cart::grandTotal($couponCode, $district, $upazila);
 
         // Transport companies from DB (optional)
@@ -53,6 +54,7 @@ class CheckoutController extends Controller
             'subtotal',
             'discount',
             'tax',
+            'taxSummary',
             'shipping',
             'total',
             'couponCode',
@@ -89,7 +91,8 @@ class CheckoutController extends Controller
         $subtotal = Cart::subtotal();
         $couponCode = session('coupon_code');
         $discount = Cart::discount($couponCode);
-        $tax = Cart::tax($subtotal - $discount);
+        $taxSummary = Cart::taxSummary($discount);
+        $tax = $taxSummary['total_tax'];
         $shipping = Cart::shipping($request->shipping_district, $request->shipping_upazila, $request->transport_company_id ?? null, $request->shipping_method ?? 'transport');
         $total = Cart::grandTotal($couponCode, $request->shipping_district, $request->shipping_upazila);
 

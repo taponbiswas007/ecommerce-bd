@@ -211,6 +211,24 @@
                         <span>Discount</span>
                         <strong>-{{ number_format($discount, 2) }}</strong>
                     </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span>VAT</span>
+                            <div class="small text-muted">
+                                {{ ($taxSummary['vat_amount'] ?? 0) > 0 ? 'Will be added' : 'Included/Not applicable' }}
+                            </div>
+                        </div>
+                        <strong>{{ number_format($taxSummary['vat_amount'] ?? 0, 2) }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span>AIT</span>
+                            <div class="small text-muted">
+                                {{ ($taxSummary['ait_amount'] ?? 0) > 0 ? 'Will be added' : 'Included/Not applicable' }}
+                            </div>
+                        </div>
+                        <strong>{{ number_format($taxSummary['ait_amount'] ?? 0, 2) }}</strong>
+                    </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span>Tax</span>
                         <strong>{{ number_format($tax, 2) }}</strong>

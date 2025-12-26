@@ -27,7 +27,8 @@ class CartController extends Controller
         $shipping = Cart::shipping($district, $upazila);
 
         // Calculate tax on discounted subtotal
-        $tax = Cart::tax($subtotal - $discount);
+        $taxSummary = Cart::taxSummary($discount);
+        $tax = $taxSummary['total_tax'];
 
         // Grand total
         $total = Cart::grandTotal($couponCode, $district, $upazila);
@@ -37,6 +38,7 @@ class CartController extends Controller
             'subtotal',
             'discount',
             'tax',
+            'taxSummary',
             'shipping',
             'total',
             'totalItems',

@@ -548,6 +548,28 @@
                             </div>
 
                             <div class="summary-row">
+                                <span class="summary-label">VAT</span>
+                                <span class="summary-value">
+                                    <div class="d-flex flex-column text-end">
+                                        <span>৳{{ number_format($taxSummary['vat_amount'] ?? 0, 2) }}</span>
+                                        <small
+                                            class="text-muted">{{ ($taxSummary['vat_amount'] ?? 0) > 0 ? 'Will be added' : 'Included/Not applicable' }}</small>
+                                    </div>
+                                </span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span class="summary-label">AIT</span>
+                                <span class="summary-value">
+                                    <div class="d-flex flex-column text-end">
+                                        <span>৳{{ number_format($taxSummary['ait_amount'] ?? 0, 2) }}</span>
+                                        <small
+                                            class="text-muted">{{ ($taxSummary['ait_amount'] ?? 0) > 0 ? 'Will be added' : 'Included/Not applicable' }}</small>
+                                    </div>
+                                </span>
+                            </div>
+
+                            <div class="summary-row">
                                 <span class="summary-label">Tax</span>
                                 <span class="summary-value">৳{{ number_format($tax, 2) }}</span>
                             </div>

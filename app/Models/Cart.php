@@ -127,13 +127,56 @@ class Cart extends Model
         return $discount;
     }
 
-    public static function tax($subtotal = null)
+    public static function taxSummary($discount = 0.0)
     {
-        if ($subtotal === null) {
-            $subtotal = self::subtotal();
+        $items = self::items();
+
+        if ($items->isEmpty()) {
+            return [
+                'base_price' => 0.0,
+                'vat_amount' => 0.0,
+                'ait_amount' => 0.0,
+                'total_tax' => 0.0,
+                'final_price' => 0.0,
+            ];
         }
-        // Assume 5% tax; adjust as needed
-        return $subtotal * 0.05;
+
+        $payload = [];
+        foreach ($items as $item) {
+            if (!$item->product) {
+                continue;
+            }
+            $payload[] = [
+                'product' => $item->product,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+            ];
+        }
+
+        $summary = \App\Services\TaxCalculator::getSummaryForItems($payload);
+
+        // Apply discount proportionally to tax amounts (simple ratio)
+        $base = $summary['base_price'];
+        $discountedBase = max(0, $base - $discount);
+        $ratio = $base > 0 ? $discountedBase / $base : 0;
+
+        $vatAmount = round($summary['vat_amount'] * $ratio, 2);
+        $aitAmount = round($summary['ait_amount'] * $ratio, 2);
+        $totalTax = round($vatAmount + $aitAmount, 2);
+
+        return [
+            'base_price' => round($discountedBase, 2),
+            'vat_amount' => $vatAmount,
+            'ait_amount' => $aitAmount,
+            'total_tax' => $totalTax,
+            'final_price' => round($discountedBase + $totalTax, 2),
+        ];
+    }
+
+    public static function tax($discount = 0.0)
+    {
+        $summary = self::taxSummary($discount);
+        return $summary['total_tax'];
     }
 
     public static function shipping($district = null, $upazila = null, $transportCompanyId = null, $method = 'transport')
@@ -175,7 +218,8 @@ class Cart extends Model
     {
         $subtotal = self::subtotal();
         $discount = self::discount($couponCode);
-        $tax = self::tax($subtotal - $discount);
+        $taxSummary = self::taxSummary($discount);
+        $tax = $taxSummary['total_tax'];
         $shipping = self::shipping($district, $upazila);
         return $subtotal - $discount + $tax + $shipping;
     }

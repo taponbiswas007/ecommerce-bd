@@ -38,9 +38,13 @@ class VatAitSetting extends Model
      */
     public static function current()
     {
-        return self::where('effective_from', '<=', now())
+        return self::where(function ($query) {
+            $query->whereNull('effective_from')
+                ->orWhere('effective_from', '<=', now());
+        })
             ->whereNull('deleted_at')
             ->latest('effective_from')
+            ->latest('id')
             ->first() ?? self::createDefaults();
     }
 
@@ -56,6 +60,7 @@ class VatAitSetting extends Model
             'default_ait_percentage' => 2.00,
             'ait_enabled' => true,
             'ait_included_in_price' => false,
+            'effective_from' => now(),
         ]);
     }
 

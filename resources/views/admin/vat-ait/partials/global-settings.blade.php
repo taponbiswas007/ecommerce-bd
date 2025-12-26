@@ -16,6 +16,7 @@
                             <div class="form-group mb-3">
                                 <label for="vat_enabled" class="form-label fw-bold">Enable VAT</label>
                                 <div class="form-check form-switch">
+                                    <input type="hidden" name="vat_enabled" value="0">
                                     <input class="form-check-input" type="checkbox" id="vat_enabled" name="vat_enabled"
                                         value="1" {{ $settings->vat_enabled ? 'checked' : '' }}
                                         onchange="updateVatFields()">
@@ -77,6 +78,7 @@
                             <div class="form-group mb-3">
                                 <label for="ait_enabled" class="form-label fw-bold">Enable AIT</label>
                                 <div class="form-check form-switch">
+                                    <input type="hidden" name="ait_enabled" value="0">
                                     <input class="form-check-input" type="checkbox" id="ait_enabled" name="ait_enabled"
                                         value="1" {{ $settings->ait_enabled ? 'checked' : '' }}
                                         onchange="updateAitFields()">

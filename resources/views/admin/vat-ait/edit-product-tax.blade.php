@@ -4,6 +4,29 @@
 
 @section('content')
     <div class="container-fluid py-4">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>There were some issues:</strong>
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         <!-- Header -->
         <div class="row mb-4">
             <div class="col">
@@ -302,34 +325,27 @@
         function toggleVatFields() {
             const checked = document.getElementById('override_vat').checked;
             document.getElementById('vat_percentage_group').style.display = checked ? 'block' : 'none';
+
+            // Auto-uncheck VAT exempt when override is disabled
+            if (!checked) {
+                document.getElementById('vat_exempt').checked = false;
+            }
         }
 
         function toggleAitFields() {
             const checked = document.getElementById('override_ait').checked;
             document.getElementById('ait_percentage_group').style.display = checked ? 'block' : 'none';
+
+            // Auto-uncheck AIT exempt when override is disabled
+            if (!checked) {
+                document.getElementById('ait_exempt').checked = false;
+            }
         }
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             toggleVatFields();
             toggleAitFields();
-
-            // Validate form before submit
-            document.getElementById('taxForm').addEventListener('submit', function(e) {
-                const hasAnyOverride =
-                    document.getElementById('override_vat').checked ||
-                    document.getElementById('override_ait').checked ||
-                    document.getElementById('vat_exempt').checked ||
-                    document.getElementById('ait_exempt').checked;
-
-                if (!hasAnyOverride) {
-                    e.preventDefault();
-                    alert(
-                        'You must either override VAT, override AIT, or exempt the product from at least one tax.'
-                    );
-                    return false;
-                }
-            });
         });
     </script>
 @endsection

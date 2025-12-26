@@ -7,7 +7,11 @@ use App\Models\VatAitSetting;
 use App\Models\ProductTaxOverride;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class VatAitController extends Controller
 {
@@ -27,47 +31,151 @@ class VatAitController extends Controller
      */
     public function updateSettings(Request $request)
     {
+        $current = VatAitSetting::current();
+
         $validated = $request->validate([
-            'default_vat_percentage' => 'required|numeric|min:0|max:100',
-            'vat_included_in_price' => 'required|in:0,1',
-            'default_ait_percentage' => 'required|numeric|min:0|max:100',
-            'ait_included_in_price' => 'required|in:0,1',
+            // VAT
+            'vat_enabled' => 'required|in:0,1',
+            'default_vat_percentage' => 'nullable|numeric|min:0|max:100|required_if:vat_enabled,1',
+            'vat_included_in_price' => 'nullable|in:0,1|required_if:vat_enabled,1',
+            // AIT
+            'ait_enabled' => 'required|in:0,1',
+            'default_ait_percentage' => 'nullable|numeric|min:0|max:100|required_if:ait_enabled,1',
+            'ait_included_in_price' => 'nullable|in:0,1|required_if:ait_enabled,1',
+            // Other
             'ait_exempt_categories' => 'nullable|string',
             'notes' => 'nullable|string|max:1000',
-            'effective_from' => 'nullable|date_format:Y-m-d\TH:i',
+            'effective_from' => 'nullable|date_format:Y-m-d\\TH:i',
         ]);
 
-        // Explicitly set checkbox values (HTML doesn't send unchecked values)
-        $validated['vat_enabled'] = $request->has('vat_enabled');
-        $validated['ait_enabled'] = $request->has('ait_enabled');
-
-        // Convert select field values to boolean
-        $validated['vat_included_in_price'] = (bool) (int) $request->input('vat_included_in_price', 0);
-        $validated['ait_included_in_price'] = (bool) (int) $request->input('ait_included_in_price', 0);
+        // Note: do not convert booleans here; keys may be missing when disabled.
+        // We normalize and backfill further below after validation and date handling.
 
         // Handle datetime-local format conversion
-        if ($request->has('effective_from') && $request->effective_from) {
-            try {
-                $effectiveFrom = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i', $request->effective_from);
-                $validated['effective_from'] = $effectiveFrom->format('Y-m-d H:i:s');
+        try {
+            if ($request->has('effective_from') && $request->effective_from) {
+                try {
+                    $tz = config('app.timezone');
+                    $effectiveFrom = \Carbon\Carbon::createFromFormat('Y-m-d\\TH:i', $request->effective_from, $tz);
+                    $validated['effective_from'] = $effectiveFrom->format('Y-m-d H:i:s');
 
-                if ($effectiveFrom->isFuture()) {
-                    // Create new settings record for future effective date
-                    $settings = VatAitSetting::create($validated);
-                    return back()->with('success', 'New VAT/AIT setting scheduled for ' . $effectiveFrom->format('M d, Y H:i'));
+                    if ($effectiveFrom->isFuture()) {
+                        // Create new settings record for future effective date
+                        VatAitSetting::create($validated);
+                        return back()->with('success', 'New VAT/AIT setting scheduled for ' . $effectiveFrom->format('M d, Y H:i'));
+                    }
+                } catch (\Exception $e) {
+                    return back()->withErrors(['effective_from' => 'Invalid date format']);
                 }
-            } catch (\Exception $e) {
-                return back()->withErrors(['effective_from' => 'Invalid date format']);
+            } else {
+                // If no date provided, treat as immediate effect
+                $validated['effective_from'] = now()->format('Y-m-d H:i:s');
             }
-        } else {
-            $validated['effective_from'] = null;
+
+            // Normalize booleans
+            $vatEnabled = (bool) ((int) $request->input('vat_enabled', 0));
+            $aitEnabled = (bool) ((int) $request->input('ait_enabled', 0));
+            $validated['vat_enabled'] = $vatEnabled;
+            $validated['ait_enabled'] = $aitEnabled;
+
+            // Backfill missing fields when inputs are disabled in UI
+            if (!array_key_exists('default_vat_percentage', $validated) || $validated['default_vat_percentage'] === null) {
+                $validated['default_vat_percentage'] = $current->default_vat_percentage;
+            }
+            if (!array_key_exists('vat_included_in_price', $validated) || $validated['vat_included_in_price'] === null) {
+                $validated['vat_included_in_price'] = (int) $current->vat_included_in_price;
+            }
+            if (!array_key_exists('default_ait_percentage', $validated) || $validated['default_ait_percentage'] === null) {
+                $validated['default_ait_percentage'] = $current->default_ait_percentage;
+            }
+            if (!array_key_exists('ait_included_in_price', $validated) || $validated['ait_included_in_price'] === null) {
+                $validated['ait_included_in_price'] = (int) $current->ait_included_in_price;
+            }
+
+            // Convert to boolean for included_in_price fields
+            $validated['vat_included_in_price'] = (bool) ((int) $validated['vat_included_in_price']);
+            $validated['ait_included_in_price'] = (bool) ((int) $validated['ait_included_in_price']);
+
+            // Change detection and scheduling logic
+            $fields = [
+                'default_vat_percentage',
+                'vat_enabled',
+                'vat_included_in_price',
+                'default_ait_percentage',
+                'ait_enabled',
+                'ait_included_in_price',
+                'ait_exempt_categories',
+                'notes',
+            ];
+
+            $incoming = [];
+            foreach ($fields as $f) {
+                if (array_key_exists($f, $validated)) {
+                    $incoming[$f] = $validated[$f];
+                }
+            }
+
+            // If effective_from is future → schedule, else update current
+            $eff = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $validated['effective_from']);
+            if ($eff->isFuture()) {
+                // If there is already a scheduled row at the same time, update it instead of inserting
+                $existingScheduled = VatAitSetting::where('effective_from', $validated['effective_from'])->first();
+                if ($existingScheduled) {
+                    $existingScheduled->update($incoming);
+                    return back()->with('success', 'Scheduled VAT/AIT settings updated for ' . $eff->format('M d, Y H:i'));
+                }
+
+                // If latest scheduled has same values, avoid duplicate insert
+                $latestScheduled = VatAitSetting::where('effective_from', '>', now())
+                    ->orderByDesc('effective_from')
+                    ->first();
+                if ($latestScheduled) {
+                    $same = true;
+                    foreach ($incoming as $k => $v) {
+                        if ($latestScheduled->$k != $v) {
+                            $same = false;
+                            break;
+                        }
+                    }
+                    if ($same) {
+                        return back()->with('success', 'No changes to schedule. Latest scheduled settings already match.');
+                    }
+                }
+
+                // Create new scheduled settings
+                VatAitSetting::create($validated);
+                return back()->with('success', 'New VAT/AIT setting scheduled for ' . $eff->format('M d, Y H:i'));
+            }
+
+            // Immediate update path
+            $currentValues = [];
+            foreach ($fields as $f) {
+                $currentValues[$f] = $current->$f;
+            }
+            $noChanges = true;
+            foreach ($fields as $f) {
+                if ($currentValues[$f] != ($incoming[$f] ?? $currentValues[$f])) {
+                    $noChanges = false;
+                    break;
+                }
+            }
+            if ($noChanges) {
+                return back()->with('success', 'No changes detected.');
+            }
+
+            $settings = VatAitSetting::current();
+            $settings->update($validated);
+
+            return back()->with('success', 'VAT/AIT settings updated successfully!');
+        } catch (Throwable $t) {
+            Log::error('Failed to save VAT/AIT settings', [
+                'error' => $t->getMessage(),
+                'trace' => $t->getTraceAsString(),
+                'payload' => $validated,
+                'user_id' => FacadesAuth::user()?->id,
+            ]);
+            return back()->with('error', 'Failed to save VAT/AIT settings. Please try again or contact support.');
         }
-
-        // Update current settings
-        $settings = VatAitSetting::current();
-        $settings->update($validated);
-
-        return back()->with('success', 'VAT/AIT settings updated successfully!');
     }
 
     /**
@@ -99,6 +207,27 @@ class VatAitController extends Controller
      */
     public function updateProductTax(Request $request, Product $product)
     {
+        // Convert datetime-local format to database format before validation
+        if ($request->has('effective_from') && $request->effective_from) {
+            try {
+                $tz = config('app.timezone');
+                $efFrom = \Carbon\Carbon::createFromFormat('Y-m-d\\TH:i', $request->effective_from, $tz);
+                $request->merge(['effective_from' => $efFrom->format('Y-m-d H:i:s')]);
+            } catch (\Exception $e) {
+                return back()->withErrors(['effective_from' => 'Invalid date format for effective_from']);
+            }
+        }
+
+        if ($request->has('effective_until') && $request->effective_until) {
+            try {
+                $tz = config('app.timezone');
+                $efUntil = \Carbon\Carbon::createFromFormat('Y-m-d\\TH:i', $request->effective_until, $tz);
+                $request->merge(['effective_until' => $efUntil->format('Y-m-d H:i:s')]);
+            } catch (\Exception $e) {
+                return back()->withErrors(['effective_until' => 'Invalid date format for effective_until']);
+            }
+        }
+
         $validated = $request->validate([
             'vat_percentage' => 'nullable|numeric|min:0|max:100',
             'vat_included_in_price' => 'nullable',
@@ -136,13 +265,22 @@ class VatAitController extends Controller
             return back()->with('success', 'Tax override removed. Product will use global settings.');
         }
 
-        // Create or update override
-        $override = $product->taxOverride ?? new ProductTaxOverride();
-        $override->product_id = $product->id;
-        $override->fill($validated);
-        $override->save();
+        try {
+            // Create or update override
+            $override = $product->taxOverride ?? new ProductTaxOverride();
+            $override->product_id = $product->id;
+            $override->fill($validated);
+            $override->save();
 
-        return back()->with('success', 'Product tax configuration updated successfully!');
+            return back()->with('success', 'Product tax configuration updated successfully!');
+        } catch (Throwable $t) {
+            Log::error('Failed to save product tax override', [
+                'product_id' => $product->id,
+                'error' => $t->getMessage(),
+                'payload' => $validated,
+            ]);
+            return back()->with('error', 'Failed to save product tax settings. Please try again.')->withInput();
+        }
     }
 
     /**
@@ -150,9 +288,16 @@ class VatAitController extends Controller
      */
     public function removeProductTax(Product $product)
     {
-        $product->taxOverride?->delete();
-
-        return back()->with('success', 'Tax override removed. Product will use global settings.');
+        try {
+            $product->taxOverride?->delete();
+            return back()->with('success', 'Tax override removed. Product will use global settings.');
+        } catch (Throwable $t) {
+            Log::error('Failed to remove product tax override', [
+                'product_id' => $product->id,
+                'error' => $t->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to remove product tax override.');
+        }
     }
 
     /**
@@ -172,39 +317,47 @@ class VatAitController extends Controller
             'reason' => 'nullable|string|max:500',
         ]);
 
-        foreach ($validated['product_ids'] as $productId) {
-            $product = Product::find($productId);
-            if (!$product) continue;
+        try {
+            foreach ($validated['product_ids'] as $productId) {
+                $product = Product::find($productId);
+                if (!$product) continue;
 
-            $override = $product->taxOverride ?? new ProductTaxOverride();
-            $override->product_id = $productId;
+                $override = $product->taxOverride ?? new ProductTaxOverride();
+                $override->product_id = $productId;
 
-            if ($request->has('override_vat')) {
-                $override->override_vat = $validated['override_vat'];
-                $override->vat_percentage = $validated['vat_percentage'] ?? null;
+                if ($request->has('override_vat')) {
+                    $override->override_vat = $validated['override_vat'];
+                    $override->vat_percentage = $validated['vat_percentage'] ?? null;
+                }
+
+                if ($request->has('override_ait')) {
+                    $override->override_ait = $validated['override_ait'];
+                    $override->ait_percentage = $validated['ait_percentage'] ?? null;
+                }
+
+                if ($request->has('vat_exempt')) {
+                    $override->vat_exempt = $validated['vat_exempt'];
+                }
+
+                if ($request->has('ait_exempt')) {
+                    $override->ait_exempt = $validated['ait_exempt'];
+                }
+
+                if ($request->has('reason')) {
+                    $override->reason = $validated['reason'];
+                }
+
+                $override->save();
             }
 
-            if ($request->has('override_ait')) {
-                $override->override_ait = $validated['override_ait'];
-                $override->ait_percentage = $validated['ait_percentage'] ?? null;
-            }
-
-            if ($request->has('vat_exempt')) {
-                $override->vat_exempt = $validated['vat_exempt'];
-            }
-
-            if ($request->has('ait_exempt')) {
-                $override->ait_exempt = $validated['ait_exempt'];
-            }
-
-            if ($request->has('reason')) {
-                $override->reason = $validated['reason'];
-            }
-
-            $override->save();
+            return back()->with('success', 'Tax settings updated for ' . count($validated['product_ids']) . ' products!');
+        } catch (Throwable $t) {
+            Log::error('Failed bulk product tax update', [
+                'error' => $t->getMessage(),
+                'payload' => $validated,
+            ]);
+            return back()->with('error', 'Bulk update failed. Please try again.');
         }
-
-        return back()->with('success', 'Tax settings updated for ' . count($validated['product_ids']) . ' products!');
     }
 
     /**
