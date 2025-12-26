@@ -772,7 +772,36 @@
                             </span>
                         @endif
                     </div>
-                    <div class="tax-info">VAT included</div>
+                    <!-- Tax Information -->
+                    @php
+                        use App\Services\TaxCalculator;
+                        $priceToCalculate = $product->discount_price ?? $product->base_price;
+                        $taxBreakdown = TaxCalculator::getPriceBreakdown($product, $priceToCalculate);
+                    @endphp
+                    <div class="tax-info">
+                        @if ($taxBreakdown['vat_percentage'] > 0)
+                            <small class="d-block">
+                                <i class="fas fa-check-circle text-success me-1"></i>
+                                VAT ({{ $taxBreakdown['vat_percentage'] }}%)
+                                @if ($taxBreakdown['vat_included'])
+                                    <span class="text-muted">included in price</span>
+                                @else
+                                    <span class="text-danger">will be added</span>
+                                @endif
+                            </small>
+                        @endif
+                        @if ($taxBreakdown['ait_percentage'] > 0)
+                            <small class="d-block">
+                                <i class="fas fa-check-circle text-success me-1"></i>
+                                AIT ({{ $taxBreakdown['ait_percentage'] }}%)
+                                @if ($taxBreakdown['ait_included'])
+                                    <span class="text-muted">included in price</span>
+                                @else
+                                    <span class="text-danger">will be added</span>
+                                @endif
+                            </small>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Short Description -->

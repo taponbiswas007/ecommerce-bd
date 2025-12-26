@@ -155,6 +155,13 @@
                         </a>
                     </li>
 
+                    <li class="{{ request()->routeIs('admin.vat-ait.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.vat-ait.index') }}">
+                            <i class="fas fa-percent"></i>
+                            <span class="menu-text">VAT & AIT</span>
+                        </a>
+                    </li>
+
                     <li class="has-submenu">
                         <a href="#">
                             <i class="fas fa-chart-bar"></i>

@@ -196,8 +196,91 @@ class Product extends Model
 
         return $this->wishlists()->where('user_id', Auth::id())->exists();
     }
+
     public function wishlists(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'wishlists')->withTimestamps();
+    }
+
+    /**
+     * Get the tax override for this product
+     */
+    public function taxOverride()
+    {
+        return $this->hasOne(ProductTaxOverride::class);
+    }
+
+    /**
+     * Get the effective VAT percentage for this product
+     */
+    public function getEffectiveVatPercentage()
+    {
+        $override = $this->taxOverride;
+
+        if ($override && $override->isActive()) {
+            $vatPercentage = $override->getEffectiveVatPercentage();
+            if ($vatPercentage !== null) {
+                return $vatPercentage;
+            }
+        }
+
+        return VatAitSetting::current()->vat_enabled ? VatAitSetting::current()->default_vat_percentage : 0;
+    }
+
+    /**
+     * Get the effective AIT percentage for this product
+     */
+    public function getEffectiveAitPercentage()
+    {
+        $override = $this->taxOverride;
+
+        if ($override && $override->isActive()) {
+            $aitPercentage = $override->getEffectiveAitPercentage();
+            if ($aitPercentage !== null) {
+                return $aitPercentage;
+            }
+        }
+
+        // Check if category is exempt from AIT
+        $settings = VatAitSetting::current();
+        if ($this->category && $settings->isCategoryAitExempt($this->category_id)) {
+            return 0;
+        }
+
+        return $settings->ait_enabled ? $settings->default_ait_percentage : 0;
+    }
+
+    /**
+     * Check if VAT is included in the price
+     */
+    public function isVatIncluded()
+    {
+        $override = $this->taxOverride;
+
+        if ($override && $override->isActive()) {
+            $included = $override->getVatIncludedInPrice();
+            if ($included !== null) {
+                return $included;
+            }
+        }
+
+        return VatAitSetting::current()->vat_included_in_price;
+    }
+
+    /**
+     * Check if AIT is included in the price
+     */
+    public function isAitIncluded()
+    {
+        $override = $this->taxOverride;
+
+        if ($override && $override->isActive()) {
+            $included = $override->getAitIncludedInPrice();
+            if ($included !== null) {
+                return $included;
+            }
+        }
+
+        return VatAitSetting::current()->ait_included_in_price;
     }
 }

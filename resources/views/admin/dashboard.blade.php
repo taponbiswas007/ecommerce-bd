@@ -101,7 +101,7 @@
                         </div>
                     </div>
                 </div>
-                <canvas id="salesChart" height="250"></canvas>
+                {{-- <canvas id="salesChart" height="250"></canvas> --}}
             </div>
         </div>
 
@@ -110,7 +110,7 @@
                 <div class="chart-header">
                     <h5>Order Status</h5>
                 </div>
-                <canvas id="orderStatusChart" height="250"></canvas>
+                {{-- <canvas id="orderStatusChart" height="250"></canvas> --}}
             </div>
         </div>
     </div>

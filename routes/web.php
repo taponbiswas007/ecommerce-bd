@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProductPriceController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Admin\VatAitController;
 use App\Http\Controllers\Auth\SocialLoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -204,6 +205,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('package-rates', \App\Http\Controllers\Admin\PackageRateController::class);
     Route::resource('packaging-rules', \App\Http\Controllers\Admin\PackagingRuleController::class);
     Route::resource('shop-to-transport-rates', \App\Http\Controllers\Admin\ShopToTransportRateController::class);
+
+    // VAT & AIT Management
+    Route::prefix('vat-ait')->name('vat-ait.')->group(function () {
+        Route::get('/', [VatAitController::class, 'index'])->name('index');
+        Route::post('/update-settings', [VatAitController::class, 'updateSettings'])->name('update-settings');
+
+        Route::get('/products', [VatAitController::class, 'productTaxes'])->name('products');
+        Route::get('/products/{product}/edit', [VatAitController::class, 'editProductTax'])->name('edit-product');
+        Route::post('/products/{product}/update', [VatAitController::class, 'updateProductTax'])->name('update-product');
+        Route::post('/products/{product}/remove', [VatAitController::class, 'removeProductTax'])->name('remove-product');
+        Route::post('/products/bulk-update', [VatAitController::class, 'bulkUpdateProductTax'])->name('bulk-update');
+        Route::get('/products/search', [VatAitController::class, 'searchProductTax'])->name('search');
+        Route::get('/products/export', [VatAitController::class, 'exportProductTax'])->name('export');
+
+        Route::get('/history', [VatAitController::class, 'history'])->name('history');
+        Route::get('/report', [VatAitController::class, 'report'])->name('report');
+    });
 
     // Review Management
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');

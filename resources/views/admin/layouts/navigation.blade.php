@@ -73,6 +73,10 @@
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <i class="fas fa-star mr-2"></i> Reviews
                                 </a>
+                                <a href="{{ route('admin.vat-ait.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-percent mr-2"></i> VAT & AIT
+                                </a>
                                 <a href="{{ route('admin.settings.index') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <i class="fas fa-cog mr-2"></i> Settings
@@ -303,6 +307,11 @@
             <a href="{{ route('admin.reviews.index') }}"
                 class="{{ request()->routeIs('admin.reviews*') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block rounded-md px-3 py-2 text-base font-medium">
                 <i class="fas fa-star mr-2"></i> Reviews
+            </a>
+
+            <a href="{{ route('admin.vat-ait.index') }}"
+                class="{{ request()->routeIs('admin.vat-ait*') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block rounded-md px-3 py-2 text-base font-medium">
+                <i class="fas fa-percent mr-2"></i> VAT & AIT
             </a>
         </div>
 
