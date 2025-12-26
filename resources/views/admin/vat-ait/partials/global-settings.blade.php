@@ -251,35 +251,36 @@
         </div>
     </div>
 </div>
+@push('scripts')
+    <script>
+        function addCategoryId(categoryId) {
+            const textarea = document.getElementById('ait_exempt_categories');
+            const currentValue = textarea.value.trim();
 
-<script>
-    function addCategoryId(categoryId) {
-        const textarea = document.getElementById('ait_exempt_categories');
-        const currentValue = textarea.value.trim();
-
-        if (currentValue) {
-            textarea.value = currentValue + ', ' + categoryId;
-        } else {
-            textarea.value = categoryId;
+            if (currentValue) {
+                textarea.value = currentValue + ', ' + categoryId;
+            } else {
+                textarea.value = categoryId;
+            }
         }
-    }
 
-    function updateVatFields() {
-        const enabled = document.getElementById('vat_enabled').checked;
-        document.getElementById('default_vat_percentage').disabled = !enabled;
-        document.getElementById('vat_included_in_price').disabled = !enabled;
-    }
+        function updateVatFields() {
+            const enabled = document.getElementById('vat_enabled').checked;
+            document.getElementById('default_vat_percentage').disabled = !enabled;
+            document.getElementById('vat_included_in_price').disabled = !enabled;
+        }
 
-    function updateAitFields() {
-        const enabled = document.getElementById('ait_enabled').checked;
-        document.getElementById('default_ait_percentage').disabled = !enabled;
-        document.getElementById('ait_included_in_price').disabled = !enabled;
-        document.getElementById('ait_exempt_categories').disabled = !enabled;
-    }
+        function updateAitFields() {
+            const enabled = document.getElementById('ait_enabled').checked;
+            document.getElementById('default_ait_percentage').disabled = !enabled;
+            document.getElementById('ait_included_in_price').disabled = !enabled;
+            document.getElementById('ait_exempt_categories').disabled = !enabled;
+        }
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        updateVatFields();
-        updateAitFields();
-    });
-</script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateVatFields();
+            updateAitFields();
+        });
+    </script>
+@endpush
