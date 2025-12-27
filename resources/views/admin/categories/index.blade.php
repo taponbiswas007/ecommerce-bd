@@ -20,10 +20,6 @@
 
 @push('styles')
     <style>
-        .card>.table-responsive {
-            overflow-x: auto;
-        }
-
         .category-image {
             width: 48px;
             height: 48px;
@@ -282,7 +278,7 @@
 
                 <!-- Categories Table -->
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" style="min-width: 1100px;">
+                    <table class="table table-hover mb-0">
                         <thead class="bg-light">
                             <tr>
                                 <th width="50" class="ps-4">

@@ -22,6 +22,9 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- SimpleBar (custom scrollbar) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.css" />
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/style.css') }}">
 
@@ -37,9 +40,12 @@
                     <i class="fas fa-store"></i>
                 </div>
                 <h3>EcommerceBD</h3>
+                <div class="sidebar-toggle">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
             </div>
 
-            <nav class="sidebar-menu">
+            <nav class="sidebar-menu" data-simplebar>
                 <ul>
                     <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <a href="{{ route('admin.dashboard') }}">
@@ -207,7 +213,18 @@
                     <button class="toggle-sidebar d-lg-none">
                         <i class="fas fa-bars"></i>
                     </button>
+                    <!-- Add these buttons to header-right section -->
+                    <button class="theme-toggle" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
 
+                    <button class="fullscreen-toggle header-icon" title="Toggle Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+
+                    <button class="toggle-sidebar d-none d-lg-inline" title="Toggle Sidebar">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
                     <div class="header-search">
                         <i class="fas fa-search"></i>
                         <input type="text" class="form-control"
@@ -233,7 +250,7 @@
                             <div class="dropdown-header bg-primary text-white py-3">
                                 <h6 class="mb-0">Notifications ({{ $totalNotifications }})</h6>
                             </div>
-                            <div class="dropdown-body" style="max-height: 300px; overflow-y: auto;">
+                            <div class="dropdown-body" style="max-height: 300px;" data-simplebar>
                                 @if ($pendingOrders > 0)
                                     <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}"
                                         class="dropdown-item py-3 border-bottom">
@@ -315,7 +332,7 @@
                             <div class="dropdown-header bg-info text-white py-3">
                                 <h6 class="mb-0">Messages (3)</h6>
                             </div>
-                            <div class="dropdown-body" style="max-height: 300px; overflow-y: auto;">
+                            <div class="dropdown-body" style="max-height: 300px;" data-simplebar>
                                 <a href="#" class="dropdown-item py-3 border-bottom">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-shrink-0">
@@ -436,95 +453,215 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
+    <!-- SimpleBar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+
+
     <script>
-        // Toggle submenus on all screen sizes
-        document.querySelectorAll('.has-submenu > a').forEach(function(item) {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const submenu = this.nextElementSibling;
-                const parent = this.parentElement;
-
-                // Close all other open submenus in the same sidebar
-                const allSubmenus = document.querySelectorAll('.submenu.show');
-                const allParents = document.querySelectorAll('.has-submenu.open');
-
-                allSubmenus.forEach(function(menu) {
-                    if (menu !== submenu) {
-                        menu.classList.remove('show');
-                    }
-                });
-
-                allParents.forEach(function(p) {
-                    if (p !== parent) {
-                        p.classList.remove('open');
-                    }
-                });
-
-                // Toggle current submenu
-                if (submenu.classList.contains('show')) {
-                    submenu.classList.remove('show');
-                    parent.classList.remove('open');
-                } else {
-                    submenu.classList.add('show');
-                    parent.classList.add('open');
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-apply SimpleBar to common scrollable containers
+            document.querySelectorAll('.table-responsive, .table-container').forEach(function(el) {
+                if (!el.hasAttribute('data-simplebar')) {
+                    el.setAttribute('data-simplebar', '');
                 }
             });
-        });
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
+            const adminWrapper = document.querySelector('.admin-wrapper');
             const sidebar = document.querySelector('.admin-sidebar');
-            const toggleBtn = document.querySelector('.toggle-sidebar');
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const mobileToggle = document.querySelector('.toggle-sidebar.d-lg-none');
+            const desktopToggle = document.querySelector('.toggle-sidebar.d-none.d-lg-inline');
+            const themeToggle = document.querySelector('.theme-toggle');
+            const fullscreenToggle = document.querySelector('.fullscreen-toggle');
 
-            if (window.innerWidth <= 992 &&
-                sidebar.classList.contains('show') &&
-                !sidebar.contains(e.target) &&
-                !toggleBtn.contains(e.target)) {
+            // Initialize theme
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon(currentTheme);
+
+            // Toggle sidebar visibility (desktop button on sidebar)
+            function toggleSidebarVisibility() {
+                adminWrapper.classList.toggle('sidebar-hidden');
                 sidebar.classList.remove('show');
             }
-        });
 
-        // Initialize SweetAlert
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleSidebarVisibility();
+                });
             }
+
+            // Toggle sidebar visibility (desktop header button)
+            if (desktopToggle) {
+                desktopToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleSidebarVisibility();
+                });
+            }
+
+            // Mobile sidebar toggle
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    adminWrapper.classList.remove('sidebar-hidden');
+                    sidebar.classList.toggle('show');
+                });
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 992 &&
+                    sidebar.classList.contains('show') &&
+                    !sidebar.contains(e.target) &&
+                    !mobileToggle.contains(e.target)) {
+                    sidebar.classList.remove('show');
+                }
+            });
+
+            // Toggle submenus
+            document.querySelectorAll('.has-submenu > a').forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 992) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    const submenu = this.nextElementSibling;
+                    const parent = this.parentElement;
+
+                    // Close all other open submenus at the same level
+                    const allSubmenus = document.querySelectorAll('.submenu.show');
+                    const allParents = document.querySelectorAll('.has-submenu.open');
+
+                    allSubmenus.forEach(function(menu) {
+                        if (menu !== submenu && !menu.contains(submenu)) {
+                            menu.classList.remove('show');
+                        }
+                    });
+
+                    allParents.forEach(function(p) {
+                        if (p !== parent && !p.contains(parent)) {
+                            p.classList.remove('open');
+                        }
+                    });
+
+                    // Toggle current submenu
+                    if (submenu.classList.contains('show')) {
+                        submenu.classList.remove('show');
+                        parent.classList.remove('open');
+                    } else {
+                        submenu.classList.add('show');
+                        parent.classList.add('open');
+                    }
+                });
+            });
+
+            // Theme toggle
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+
+                    // Dispatch theme change event
+                    window.dispatchEvent(new CustomEvent('themeChanged', {
+                        detail: newTheme
+                    }));
+                });
+            }
+
+            function updateThemeIcon(theme) {
+                if (!themeToggle) return;
+
+                const icon = themeToggle.querySelector('i');
+                if (icon) {
+                    icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            }
+
+            // Fullscreen toggle
+            if (fullscreenToggle) {
+                fullscreenToggle.addEventListener('click', function() {
+                    const entering = !adminWrapper.classList.contains('fullscreen');
+                    adminWrapper.classList.toggle('fullscreen');
+                    if (entering) {
+                        adminWrapper.classList.add('sidebar-hidden');
+                        sidebar.classList.remove('show');
+                    } else {
+                        adminWrapper.classList.remove('sidebar-hidden');
+                    }
+
+                    const icon = this.querySelector('i');
+                    if (adminWrapper.classList.contains('fullscreen')) {
+                        icon.className = 'fas fa-compress';
+                    } else {
+                        icon.className = 'fas fa-expand';
+                    }
+                });
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    sidebar.classList.remove('show');
+                }
+            });
+
+            // Initialize SweetAlert
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
+            // Flash Messages
+            @if (session('success'))
+                Toast.fire({
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg'),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color')
+                });
+            @endif
+
+            @if (session('error'))
+                Toast.fire({
+                    icon: 'error',
+                    title: '{{ session('error') }}',
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg'),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color')
+                });
+            @endif
+
+            @if (session('warning'))
+                Toast.fire({
+                    icon: 'warning',
+                    title: '{{ session('warning') }}',
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg'),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color')
+                });
+            @endif
+
+            @if (session('info'))
+                Toast.fire({
+                    icon: 'info',
+                    title: '{{ session('info') }}',
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg'),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color')
+                });
+            @endif
         });
-
-        // Flash Messages
-        @if (session('success'))
-            Toast.fire({
-                icon: 'success',
-                title: '{{ session('success') }}'
-            });
-        @endif
-
-        @if (session('error'))
-            Toast.fire({
-                icon: 'error',
-                title: '{{ session('error') }}'
-            });
-        @endif
-
-        @if (session('warning'))
-            Toast.fire({
-                icon: 'warning',
-                title: '{{ session('warning') }}'
-            });
-        @endif
-
-        @if (session('info'))
-            Toast.fire({
-                icon: 'info',
-                title: '{{ session('info') }}'
-            });
-        @endif
     </script>
 
     @stack('scripts')
