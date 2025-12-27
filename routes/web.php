@@ -187,6 +187,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/categories/data', [CategoryController::class, 'getCategories'])->name('categories.data');
     Route::get('/categories/check-slug', [CategoryController::class, 'checkSlug'])->name('categories.check-slug');
 
+    // Trashed categories
+    Route::get('/categories-trashed', [CategoryController::class, 'trashed'])->name('categories.trashed');
+    Route::post('/categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
+    Route::delete('/categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])->name('categories.force-delete');
+    Route::post('/categories/bulk-restore', [CategoryController::class, 'bulkRestore'])->name('categories.bulk-restore');
+    Route::post('/categories/bulk-force-delete', [CategoryController::class, 'bulkForceDelete'])->name('categories.bulk-force-delete');
+
     // Order Management
     Route::resource('orders', OrderController::class);
     Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');

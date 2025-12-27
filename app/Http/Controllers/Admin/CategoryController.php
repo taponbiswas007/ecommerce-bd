@@ -45,7 +45,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories',
+            'name' => 'required|string|max:255|unique:categories,name,NULL,id,deleted_at,NULL',
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -59,7 +59,7 @@ class CategoryController extends Controller
         try {
             $slug = Str::slug($request->name);
 
-            // Check if slug already exists
+            // Check if slug already exists (excluding soft deleted)
             $slugCount = Category::where('slug', $slug)->count();
             if ($slugCount > 0) {
                 $slug = $slug . '-' . ($slugCount + 1);
@@ -147,7 +147,7 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+            'name' => 'required|string|max:255|unique:categories,name,' . $id . ',id,deleted_at,NULL',
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -249,21 +249,12 @@ class CategoryController extends Controller
         }
 
         try {
-            // Delete image if exists
-            if ($category->image && Storage::disk('public')->exists($category->image)) {
-                Storage::disk('public')->delete($category->image);
-
-                // Also delete thumbnail if exists
-                $thumbPath = dirname($category->image) . '/thumb_' . basename($category->image);
-                if (Storage::disk('public')->exists($thumbPath)) {
-                    Storage::disk('public')->delete($thumbPath);
-                }
-            }
-
+            // Soft delete only - do NOT delete images
+            // Images will be deleted when force delete is executed from trashed view
             $category->delete();
 
             return redirect()->route('admin.categories.index')
-                ->with('success', 'Category deleted successfully!');
+                ->with('success', 'Category moved to trash! Visit trashed categories to restore or permanently delete.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error deleting category: ' . $e->getMessage());
         }
@@ -351,20 +342,10 @@ class CategoryController extends Controller
                         return back()->with('error', 'Cannot delete categories with subcategories.');
                     }
 
-                    // Delete images
-                    foreach ($categories as $category) {
-                        if ($category->image && Storage::disk('public')->exists($category->image)) {
-                            Storage::disk('public')->delete($category->image);
-
-                            $thumbPath = dirname($category->image) . '/thumb_' . basename($category->image);
-                            if (Storage::disk('public')->exists($thumbPath)) {
-                                Storage::disk('public')->delete($thumbPath);
-                            }
-                        }
-                    }
-
+                    // Soft delete only - do NOT delete images
+                    // Images will be deleted when force delete is executed from trashed view
                     Category::whereIn('id', $request->ids)->delete();
-                    $message = 'Categories deleted successfully!';
+                    $message = 'Categories moved to trash! Visit trashed categories to restore or permanently delete.';
                     break;
 
                 case 'activate':
@@ -483,5 +464,113 @@ class CategoryController extends Controller
         }
 
         return response()->json(['slug' => $slug]);
+    }
+
+    /**
+     * Display trashed categories
+     */
+    public function trashed()
+    {
+        $categories = Category::onlyTrashed()
+            ->with(['parent' => function ($query) {
+                $query->withTrashed();
+            }])
+            ->withCount('products')
+            ->orderBy('deleted_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.categories.trashed', compact('categories'));
+    }
+
+    /**
+     * Restore a soft deleted category
+     */
+    public function restore($id)
+    {
+        try {
+            $category = Category::onlyTrashed()->findOrFail($id);
+            $category->restore();
+
+            return back()->with('success', 'Category restored successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error restoring category: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Permanently delete a category
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $category = Category::onlyTrashed()->findOrFail($id);
+
+            // Delete image if exists
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+
+                $thumbPath = dirname($category->image) . '/thumb_' . basename($category->image);
+                if (Storage::disk('public')->exists($thumbPath)) {
+                    Storage::disk('public')->delete($thumbPath);
+                }
+            }
+
+            $category->forceDelete();
+
+            return back()->with('success', 'Category permanently deleted!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error deleting category: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk restore categories
+     */
+    public function bulkRestore(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:categories,id'
+        ]);
+
+        try {
+            Category::onlyTrashed()->whereIn('id', $request->ids)->restore();
+            return back()->with('success', 'Categories restored successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error restoring categories: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk force delete categories
+     */
+    public function bulkForceDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:categories,id'
+        ]);
+
+        try {
+            $categories = Category::onlyTrashed()->whereIn('id', $request->ids)->get();
+
+            foreach ($categories as $category) {
+                // Delete images
+                if ($category->image && Storage::disk('public')->exists($category->image)) {
+                    Storage::disk('public')->delete($category->image);
+
+                    $thumbPath = dirname($category->image) . '/thumb_' . basename($category->image);
+                    if (Storage::disk('public')->exists($thumbPath)) {
+                        Storage::disk('public')->delete($thumbPath);
+                    }
+                }
+            }
+
+            Category::onlyTrashed()->whereIn('id', $request->ids)->forceDelete();
+
+            return back()->with('success', 'Categories permanently deleted!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error deleting categories: ' . $e->getMessage());
+        }
     }
 }

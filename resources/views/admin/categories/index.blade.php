@@ -10,360 +10,532 @@
 @endsection
 
 @section('page-actions')
-    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus me-2"></i> Add New Category
+    <a href="{{ route('admin.categories.trashed') }}" class="btn btn-light btn-hover-soft-danger btn-sm me-2">
+        <i class="fas fa-trash-restore me-1"></i> Trashed Categories
+    </a>
+    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-hover-shadow">
+        <i class="fas fa-plus me-1"></i> New Category
     </a>
 @endsection
 
 @push('styles')
     <style>
+        .card>.table-responsive {
+            overflow-x: auto;
+        }
+
         .category-image {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             object-fit: cover;
-            border-radius: 5px;
+            border-radius: 8px;
+            border: 2px solid #f0f2f5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-image-placeholder {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
         }
 
         .sortable-handle {
             cursor: move;
-            color: #6c757d;
+            color: #8a8d93;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background: #f8f9fa;
         }
 
         .sortable-handle:hover {
+            background: #e9ecef;
             color: #4361ee;
         }
 
-        .category-tree {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .category-tree li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .category-tree li:last-child {
-            border-bottom: none;
-        }
-
-        .subcategory {
-            padding-left: 30px !important;
+        .category-badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 20px;
         }
 
         .category-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            border-radius: 5px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
 
         .category-item:hover {
-            background-color: #f8f9fa;
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.03) 0%, rgba(67, 97, 238, 0) 100%);
+            border-left-color: #4361ee;
         }
 
-        .category-info {
+        .subcategory-item {
+            background: #fafbfe;
+            border-left: 3px solid #e9ecef;
+        }
+
+        .subcategory-item:hover {
+            background: #f0f2f8;
+            border-left-color: #8a8d93;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+
+        .status-inactive {
+            background: rgba(235, 87, 87, 0.1);
+            color: #eb5757;
+        }
+
+        .table-actions {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        tr:hover .table-actions {
+            opacity: 1;
+        }
+
+        .order-input {
+            width: 70px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .order-input:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .select-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .products-count {
+            min-width: 36px;
+            height: 36px;
+            background: #f8f9fa;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+        }
+
+        .card-header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 20px 25px;
+            overflow: visible;
+        }
+
+        .card-body {
+            overflow: visible;
+            padding: 0;
+        }
+
+        .card-header-gradient .card-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 15px;
+            width: 200px;
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-box:focus {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+
+        .bulk-actions-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .bulk-actions-btn:hover {
+            background: #f8f9fa;
+            border-color: #4361ee;
+            transform: translateY(-1px);
+        }
+
+        .btn-hover-soft-danger:hover {
+            background: rgba(235, 87, 87, 0.1);
+            border-color: rgba(235, 87, 87, 0.2);
+            color: #eb5757;
+        }
+
+        .btn-hover-shadow:hover {
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            transform: translateY(-2px);
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">All Categories</h5>
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 200px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
+    <div class="container-fluid">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header card-header-gradient">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-0">Category Management</h5>
+                        <small class="opacity-75">Organize and manage your product categories</small>
+                    </div>
+                    <div>
+                        <input type="text" class="search-box" placeholder="Search categories...">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <!-- Bulk Actions Bar -->
+                <div class="bg-light p-3 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-light bulk-actions-btn dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="fas fa-layer-group me-2"></i> Bulk Actions
+                                </button>
+                                <div class="dropdown-menu shadow">
+                                    <button class="dropdown-item py-2" onclick="bulkAction('activate')">
+                                        <i class="fas fa-check-circle text-success me-2"></i> Activate Selected
+                                    </button>
+                                    <button class="dropdown-item py-2" onclick="bulkAction('deactivate')">
+                                        <i class="fas fa-times-circle text-danger me-2"></i> Deactivate Selected
+                                    </button>
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-item py-2 text-danger" onclick="bulkAction('delete')">
+                                        <i class="fas fa-trash-alt me-2"></i> Move to Trash
+                                    </button>
+                                </div>
+                                <button type="button" class="btn btn-light bulk-actions-btn" onclick="saveOrder()">
+                                    <i class="fas fa-save me-2"></i> Save Order
                                 </button>
                             </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span id="selectedCount" class="badge bg-primary rounded-pill px-3 py-2">
+                                <i class="fas fa-check-circle me-1"></i>
+                                <span class="count">0</span> selected
+                            </span>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <!-- Bulk Actions -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-                                    Bulk Actions
-                                </button>
-                                <div class="dropdown-menu">
-                                    <button class="dropdown-item" onclick="bulkAction('activate')">
-                                        <i class="fas fa-check-circle text-success me-2"></i> Activate
-                                    </button>
-                                    <button class="dropdown-item" onclick="bulkAction('deactivate')">
-                                        <i class="fas fa-times-circle text-danger me-2"></i> Deactivate
-                                    </button>
-                                    <div class="dropdown-divider"></div>
-                                    <button class="dropdown-item text-danger" onclick="bulkAction('delete')">
-                                        <i class="fas fa-trash me-2"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-light ms-2" onclick="saveOrder()">
-                                <i class="fas fa-save me-2"></i> Save Order
-                            </button>
-                        </div>
-                        <div class="col-md-6 text-end">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="selectAll">
-                                <label class="form-check-label" for="selectAll">Select All</label>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Categories Table -->
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th width="50">
-                                        <input type="checkbox" class="form-check-input" id="checkAll">
-                                    </th>
-                                    <th width="60">Order</th>
-                                    <th>Category</th>
-                                    <th>Products</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sortable-categories">
-                                @forelse($categories as $category)
-                                    <tr data-id="{{ $category->id }}" class="sortable-item">
-                                        <td>
-                                            <input type="checkbox" class="form-check-input category-checkbox"
-                                                value="{{ $category->id }}">
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="sortable-handle me-2">
-                                                    <i class="fas fa-bars"></i>
-                                                </span>
-                                                <input type="number" class="form-control form-control-sm order-input"
-                                                    value="{{ $category->order }}" style="width: 60px;" min="0">
+                <!-- Categories Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" style="min-width: 1100px;">
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="50" class="ps-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input select-checkbox" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th width="100" class="text-muted small fw-normal">ORDER</th>
+                                <th class="text-muted small fw-normal">CATEGORY</th>
+                                <th width="120" class="text-muted small fw-normal text-center">PRODUCTS</th>
+                                <th width="120" class="text-muted small fw-normal text-center">STATUS</th>
+                                <th width="150" class="text-muted small fw-normal text-end pe-4">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sortable-categories">
+                            @forelse($categories as $category)
+                                <!-- Main Category -->
+                                <tr data-id="{{ $category->id }}" class="category-item align-middle">
+                                    <td class="ps-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input select-checkbox category-checkbox"
+                                                type="checkbox" value="{{ $category->id }}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="sortable-handle">
+                                                <i class="fas fa-bars"></i>
+                                            </span>
+                                            <input type="number" class="form-control order-input"
+                                                value="{{ $category->order }}" min="0">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div>
+                                                @if ($category->image)
+                                                    <img src="{{ asset('storage/' . $category->image) }}"
+                                                        alt="{{ $category->name }}" class="category-image">
+                                                @else
+                                                    <div class="category-image-placeholder">
+                                                        <i class="fas fa-tag"></i>
+                                                    </div>
+                                                @endif
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    @if ($category->image)
-                                                        <img src="{{ asset('storage/' . $category->image) }}"
-                                                            alt="{{ $category->name }}" class="category-image">
-                                                    @else
-                                                        <div
-                                                            class="category-image bg-light d-flex align-items-center justify-content-center">
-                                                            <i class="fas fa-tag text-muted"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h6 class="mb-0">{{ $category->name }}</h6>
+                                            <div>
+                                                <h6 class="mb-1 fw-semibold">{{ $category->name }}</h6>
+                                                <div class="d-flex align-items-center gap-2">
                                                     @if ($category->parent)
-                                                        <small class="text-muted">
+                                                        <span class="badge category-badge bg-light text-muted">
                                                             <i class="fas fa-level-up-alt fa-rotate-90 me-1"></i>
-                                                            Parent: {{ $category->parent->name }}
-                                                        </small>
+                                                            {{ $category->parent->name }}
+                                                        </span>
                                                     @else
-                                                        <small class="text-success">
-                                                            <i class="fas fa-folder me-1"></i>
+                                                        <span
+                                                            class="badge category-badge bg-primary bg-opacity-10 text-primary">
+                                                            <i class="fas fa-star me-1"></i>
                                                             Main Category
-                                                        </small>
+                                                        </span>
                                                     @endif
                                                     @if ($category->description)
-                                                        <p class="text-muted mb-0 small">
-                                                            {{ Str::limit($category->description, 50) }}</p>
+                                                        <span class="text-muted small">
+                                                            {{ Str::limit($category->description, 40) }}
+                                                        </span>
                                                     @endif
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-primary rounded-pill">
-                                                {{ $category->products_count }}
-                                            </span>
-                                        </td>
-                                        <td>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="products-count mx-auto">
+                                            {{ $category->products_count }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center">
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input status-toggle" type="checkbox"
                                                     data-id="{{ $category->id }}"
                                                     {{ $category->is_active ? 'checked' : '' }}>
-                                                <label class="form-check-label">
-                                                    {{ $category->is_active ? 'Active' : 'Inactive' }}
-                                                </label>
+                                            </div>
+                                            <span
+                                                class="status-badge ms-2 {{ $category->is_active ? 'status-active' : 'status-inactive' }}">
+                                                {{ $category->is_active ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="pe-4">
+                                        <div class="table-actions d-flex justify-content-end gap-1">
+                                            <a href="{{ route('admin.categories.show', $category->id) }}"
+                                                class="btn btn-sm btn-light btn-icon rounded-circle" title="View"
+                                                data-bs-toggle="tooltip">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.categories.edit', $category->id) }}"
+                                                class="btn btn-sm btn-light btn-icon rounded-circle" title="Edit"
+                                                data-bs-toggle="tooltip">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button"
+                                                class="btn btn-sm btn-light btn-icon rounded-circle text-danger confirm-delete"
+                                                data-id="{{ $category->id }}" data-name="{{ $category->name }}"
+                                                title="Delete" data-bs-toggle="tooltip">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Subcategories -->
+                                @foreach ($category->children as $child)
+                                    <tr data-id="{{ $child->id }}" class="subcategory-item align-middle">
+                                        <td class="ps-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input select-checkbox category-checkbox"
+                                                    type="checkbox" value="{{ $child->id }}">
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="btn-group">
-                                                <a href="{{ route('admin.categories.show', $category->id) }}"
-                                                    class="btn btn-sm btn-info" title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('admin.categories.edit', $category->id) }}"
-                                                    class="btn btn-sm btn-primary" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger confirm-delete"
-                                                    data-id="{{ $category->id }}" data-name="{{ $category->name }}"
-                                                    title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                            <div class="d-flex align-items-center gap-2 ps-3">
+                                                <span class="sortable-handle">
+                                                    <i class="fas fa-bars"></i>
+                                                </span>
+                                                <input type="number" class="form-control order-input"
+                                                    value="{{ $child->order }}" min="0">
                                             </div>
                                         </td>
-                                    </tr>
-
-                                    <!-- Subcategories -->
-                                    @foreach ($category->children as $child)
-                                        <tr data-id="{{ $child->id }}" class="sortable-item subcategory-row">
-                                            <td>
-                                                <input type="checkbox" class="form-check-input category-checkbox"
-                                                    value="{{ $child->id }}">
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <span class="sortable-handle me-2">
-                                                        <i class="fas fa-bars"></i>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="ps-3">
+                                                    <i class="fas fa-arrow-right text-muted me-2"></i>
+                                                    @if ($child->image)
+                                                        <img src="{{ asset('storage/' . $child->image) }}"
+                                                            alt="{{ $child->name }}" class="category-image">
+                                                    @else
+                                                        <div class="category-image-placeholder">
+                                                            <i class="fas fa-tag"></i>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1 fw-semibold">{{ $child->name }}</h6>
+                                                    <span class="badge category-badge bg-light text-muted">
+                                                        <i class="fas fa-folder me-1"></i>
+                                                        {{ $category->name }}
                                                     </span>
-                                                    <input type="number" class="form-control form-control-sm order-input"
-                                                        value="{{ $child->order }}" style="width: 60px;" min="0">
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-shrink-0">
-                                                        <i class="fas fa-arrow-right text-muted me-3"></i>
-                                                        @if ($child->image)
-                                                            <img src="{{ asset('storage/' . $child->image) }}"
-                                                                alt="{{ $child->name }}" class="category-image">
-                                                        @else
-                                                            <div
-                                                                class="category-image bg-light d-flex align-items-center justify-content-center">
-                                                                <i class="fas fa-tag text-muted"></i>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h6 class="mb-0">{{ $child->name }}</h6>
-                                                        <small class="text-muted">
-                                                            <i class="fas fa-level-up-alt fa-rotate-90 me-1"></i>
-                                                            Parent: {{ $category->name }}
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-primary rounded-pill">
-                                                    {{ $child->products_count }}
-                                                </span>
-                                            </td>
-                                            <td>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="products-count mx-auto">
+                                                {{ $child->products_count }}
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input status-toggle" type="checkbox"
                                                         data-id="{{ $child->id }}"
                                                         {{ $child->is_active ? 'checked' : '' }}>
-                                                    <label class="form-check-label">
-                                                        {{ $child->is_active ? 'Active' : 'Inactive' }}
-                                                    </label>
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a href="{{ route('admin.categories.show', $child->id) }}"
-                                                        class="btn btn-sm btn-info" title="View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a href="{{ route('admin.categories.edit', $child->id) }}"
-                                                        class="btn btn-sm btn-primary" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button type="button" class="btn btn-sm btn-danger confirm-delete"
-                                                        data-id="{{ $child->id }}" data-name="{{ $child->name }}"
-                                                        title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-4">
-                                            <i class="fas fa-tags fa-3x text-muted mb-3"></i>
-                                            <h4>No Categories Found</h4>
-                                            <p class="text-muted">Start by creating your first category</p>
-                                            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-                                                <i class="fas fa-plus me-2"></i> Create Category
-                                            </a>
+                                                <span
+                                                    class="status-badge ms-2 {{ $child->is_active ? 'status-active' : 'status-inactive' }}">
+                                                    {{ $child->is_active ? 'Active' : 'Inactive' }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="pe-4">
+                                            <div class="table-actions d-flex justify-content-end gap-1">
+                                                <a href="{{ route('admin.categories.show', $child->id) }}"
+                                                    class="btn btn-sm btn-light btn-icon rounded-circle" title="View"
+                                                    data-bs-toggle="tooltip">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.categories.edit', $child->id) }}"
+                                                    class="btn btn-sm btn-light btn-icon rounded-circle" title="Edit"
+                                                    data-bs-toggle="tooltip">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-light btn-icon rounded-circle text-danger confirm-delete"
+                                                    data-id="{{ $child->id }}" data-name="{{ $child->name }}"
+                                                    title="Delete" data-bs-toggle="tooltip">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <i class="fas fa-tags"></i>
+                                            </div>
+                                            <h4 class="mb-3">No Categories Found</h4>
+                                            <p class="text-muted mb-4">Start organizing your products by creating
+                                                categories</p>
+                                            <a href="{{ route('admin.categories.create') }}"
+                                                class="btn btn-primary btn-hover-shadow">
+                                                <i class="fas fa-plus me-2"></i> Create Your First Category
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-                    <!-- Pagination -->
-                    @if ($categories->hasPages())
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="text-muted">
-                                Showing {{ $categories->firstItem() }} to {{ $categories->lastItem() }} of
-                                {{ $categories->total() }} entries
-                            </div>
-                            <div>
-                                {{ $categories->links() }}
-                            </div>
+                <!-- Pagination -->
+                @if ($categories->hasPages())
+                    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+                        <div class="text-muted small">
+                            <i class="fas fa-list me-1"></i>
+                            Showing {{ $categories->firstItem() }} to {{ $categories->lastItem() }} of
+                            {{ $categories->total() }} entries
                         </div>
-                    @endif
-                </div>
+                        <div>
+                            {{ $categories->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
+
+        <!-- Delete Form (used by sweet alert) -->
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+        </form>
+
+        <!-- Bulk Action Form -->
+        <form id="bulkActionForm" method="POST" action="{{ route('admin.categories.bulk-action') }}">
+            @csrf
+            <input type="hidden" name="action" id="bulkAction">
+        </form>
     </div>
 
-    <!-- Delete Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete <strong id="deleteCategoryName"></strong>?</p>
-                    <p class="text-danger"><small>This action cannot be undone.</small></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bulk Action Form -->
-    <form id="bulkActionForm" method="POST" action="{{ route('admin.categories.bulk-action') }}">
-        @csrf
-        <input type="hidden" name="action" id="bulkAction">
-        <input type="hidden" name="ids" id="bulkIds">
-    </form>
 @endsection
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
-        // Initialize sortable
+        // Initialize tooltips
         document.addEventListener('DOMContentLoaded', function() {
-            // Make table rows sortable
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Initialize sortable
             const sortableTable = document.getElementById('sortable-categories');
             if (sortableTable) {
                 new Sortable(sortableTable, {
@@ -387,26 +559,49 @@
             }
 
             // Select all checkboxes
-            document.getElementById('selectAll')?.addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.category-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.category-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                    updateSelectedCount();
                 });
-            });
+            }
 
             // Individual checkbox changes
             document.querySelectorAll('.category-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     updateSelectAllCheckbox();
+                    updateSelectedCount();
                 });
             });
 
             function updateSelectAllCheckbox() {
                 const checkboxes = document.querySelectorAll('.category-checkbox');
-                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
                 const selectAll = document.getElementById('selectAll');
                 if (selectAll) {
-                    selectAll.checked = allChecked;
+                    selectAll.checked = checkedCount > 0 && checkedCount === checkboxes.length;
+                    selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+                }
+            }
+
+            function updateSelectedCount() {
+                const checkboxes = document.querySelectorAll('.category-checkbox:checked');
+                const countElement = document.querySelector('#selectedCount .count');
+                const badge = document.getElementById('selectedCount');
+                if (countElement) {
+                    countElement.textContent = checkboxes.length;
+
+                    if (checkboxes.length > 0) {
+                        badge.classList.add('bg-primary');
+                        badge.classList.remove('bg-secondary');
+                    } else {
+                        badge.classList.remove('bg-primary');
+                        badge.classList.add('bg-secondary');
+                    }
                 }
             }
 
@@ -415,6 +610,7 @@
                 toggle.addEventListener('change', function() {
                     const categoryId = this.getAttribute('data-id');
                     const status = this.checked ? 1 : 0;
+                    const statusBadge = this.closest('td').querySelector('.status-badge');
 
                     fetch(`/admin/categories/${categoryId}/status`, {
                             method: 'POST',
@@ -430,13 +626,18 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                const label = this.nextElementSibling;
-                                if (label) {
-                                    label.textContent = status ? 'Active' : 'Inactive';
+                                if (statusBadge) {
+                                    statusBadge.textContent = status ? 'Active' : 'Inactive';
+                                    statusBadge.classList.remove(status ? 'status-inactive' :
+                                        'status-active');
+                                    statusBadge.classList.add(status ? 'status-active' :
+                                        'status-inactive');
                                 }
                                 Toast.fire({
                                     icon: 'success',
-                                    title: 'Status updated successfully!'
+                                    title: 'Status updated successfully!',
+                                    background: '#4361ee',
+                                    color: 'white'
                                 });
                             }
                         })
@@ -453,16 +654,31 @@
 
             // Delete confirmation
             document.querySelectorAll('.confirm-delete').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const categoryId = this.getAttribute('data-id');
                     const categoryName = this.getAttribute('data-name');
 
-                    document.getElementById('deleteCategoryName').textContent = categoryName;
-                    document.getElementById('deleteForm').action =
-                    `/admin/categories/${categoryId}`;
-
-                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                    deleteModal.show();
+                    Swal.fire({
+                        title: 'Move to Trash?',
+                        text: 'Move "' + categoryName + '" to trash?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#4361ee',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, move to trash',
+                        cancelButtonText: 'Cancel',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'btn-hover-shadow'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('deleteForm').action =
+                                `/admin/categories/${categoryId}`;
+                            document.getElementById('deleteForm').submit();
+                        }
+                    });
                 });
             });
         });
@@ -470,10 +686,10 @@
         // Save order
         function saveOrder() {
             const items = [];
-            document.querySelectorAll('.sortable-item').forEach((row, index) => {
+            document.querySelectorAll('[data-id]').forEach((row) => {
                 const categoryId = row.getAttribute('data-id');
                 const orderInput = row.querySelector('.order-input');
-                const order = orderInput ? orderInput.value : index + 1;
+                const order = orderInput ? orderInput.value : 0;
 
                 items.push({
                     id: categoryId,
@@ -497,7 +713,9 @@
                     if (data.success) {
                         Toast.fire({
                             icon: 'success',
-                            title: data.message || 'Order saved successfully!'
+                            title: 'Order saved successfully!',
+                            background: '#4361ee',
+                            color: 'white'
                         });
                     } else {
                         Toast.fire({
@@ -532,13 +750,15 @@
 
             if (action === 'delete') {
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will delete " + selectedIds.length + " category(s). This action cannot be undone!",
-                    icon: 'warning',
+                    title: 'Move to Trash?',
+                    text: "Move " + selectedIds.length + " category(s) to trash?",
+                    icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonColor: '#4361ee',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, move to trash',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
                         performBulkAction(action, selectedIds);
@@ -550,9 +770,21 @@
         }
 
         function performBulkAction(action, ids) {
+            const form = document.getElementById('bulkActionForm');
+            const oldIdInputs = form.querySelectorAll('input[name="ids[]"]');
+            oldIdInputs.forEach(input => input.remove());
+
             document.getElementById('bulkAction').value = action;
-            document.getElementById('bulkIds').value = JSON.stringify(ids);
-            document.getElementById('bulkActionForm').submit();
+
+            ids.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            form.submit();
         }
     </script>
 @endpush
