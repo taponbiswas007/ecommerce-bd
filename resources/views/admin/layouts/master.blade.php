@@ -10,6 +10,12 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    {{-- google font --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -415,7 +421,7 @@
             </header>
 
             <!-- Content -->
-            <div class="admin-content">
+            <div class="admin-content" data-simplebar data-simplebar-auto-hide="false">
                 <!-- Breadcrumb -->
                 <div class="card border-0 shadow-sm mb-4 rounded-1">
                     <div class="card-body p-3">
@@ -431,15 +437,20 @@
 
 
                 <!-- Page Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="mb-1">@yield('page-title', 'Dashboard')</h4>
-                        <p class="text-muted mb-0">@yield('page-subtitle', 'Welcome back, ' . Auth::user()->name . '!')</p>
-                    </div>
-                    <div>
-                        @yield('page-actions')
+                <div class="card border-0 shadow-sm mb-4 rounded-1">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                            <div>
+                                <h4 class="mb-1">@yield('page-title', 'Dashboard')</h4>
+                                <p class="text-muted mb-0">@yield('page-subtitle', 'Welcome back, ' . Auth::user()->name . '!')</p>
+                            </div>
+                            <div>
+                                @yield('page-actions')
+                            </div>
+                        </div>
                     </div>
                 </div>
+
 
                 <!-- Main Content -->
                 @yield('content')
@@ -460,12 +471,31 @@
     <script>
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto-apply SimpleBar to common scrollable containers
-            document.querySelectorAll('.table-responsive, .table-container').forEach(function(el) {
-                if (!el.hasAttribute('data-simplebar')) {
-                    el.setAttribute('data-simplebar', '');
+            // Initialize SimpleBar on all data-simplebar elements
+            const simplebarElements = document.querySelectorAll('[data-simplebar]');
+            simplebarElements.forEach(function(el) {
+                if (!el.SimpleBar) {
+                    new SimpleBar(el, {
+                        autoHide: el.getAttribute('data-simplebar-auto-hide') !== 'false',
+                        scrollbarMinSize: 25,
+                        scrollbarMaxSize: 100
+                    });
                 }
             });
+
+            // Auto-apply SimpleBar to common scrollable containers
+            document.querySelectorAll(
+                '.table-responsive, .modal-body, .dropdown-body, .card-body[style*="max-height"]').forEach(
+                function(el) {
+                    if (!el.hasAttribute('data-simplebar') && !el.SimpleBar) {
+                        el.setAttribute('data-simplebar', '');
+                        new SimpleBar(el, {
+                            autoHide: true,
+                            scrollbarMinSize: 25,
+                            scrollbarMaxSize: 80
+                        });
+                    }
+                });
 
             const adminWrapper = document.querySelector('.admin-wrapper');
             const sidebar = document.querySelector('.admin-sidebar');

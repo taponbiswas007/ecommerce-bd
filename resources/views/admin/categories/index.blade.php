@@ -4,6 +4,12 @@
 @section('page-title', 'Product Categories')
 @section('page-subtitle', 'Manage your product categories')
 
+@push('head')
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+@endpush
+
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
     <li class="breadcrumb-item active">Categories</li>
@@ -199,18 +205,76 @@
         }
 
         .bulk-actions-btn {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-weight: 500;
-            transition: all 0.2s;
+            background: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #2c3e50;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.05),
+                0 1px 2px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
         .bulk-actions-btn:hover {
-            background: #f8f9fa;
-            border-color: #4361ee;
+            background: #f8fafc;
+            box-shadow:
+                0 4px 8px rgba(0, 0, 0, 0.08),
+                0 2px 4px rgba(0, 0, 0, 0.12);
             transform: translateY(-1px);
+            color: #4361ee;
+        }
+
+        .bulk-actions-btn:active {
+            transform: translateY(0);
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, 0.1),
+                0 0 1px rgba(0, 0, 0, 0.12);
+            transition-duration: 0.1s;
+        }
+
+        .bulk-actions-btn:focus {
+            outline: none;
+            box-shadow:
+                0 0 0 2px rgba(67, 97, 238, 0.15),
+                0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Optional: Add a subtle indicator for active state */
+        .bulk-actions-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #4361ee;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .bulk-actions-btn:hover::after {
+            width: 70%;
+        }
+
+        /* Disabled state for better UX */
+        .bulk-actions-btn:disabled {
+            background: #f8f9fa;
+            color: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .bulk-actions-btn:disabled:hover {
+            background: #f8f9fa;
+            box-shadow: none;
+            transform: none;
         }
 
         .btn-hover-soft-danger:hover {
@@ -228,9 +292,9 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm pb-4">
             <div class="card-header card-header-gradient">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
                     <div>
                         <h5 class="card-title mb-0">Category Management</h5>
                         <small class="opacity-75">Organize and manage your product categories</small>
@@ -244,7 +308,7 @@
                 <!-- Bulk Actions Bar -->
                 <div class="bg-light p-3 border-bottom">
                     <div class="row g-3 align-items-center">
-                        <div class="col-sm-9">
+                        <div class="col-12">
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <button type="button" class="btn btn-light bulk-actions-btn dropdown-toggle"
                                     data-bs-toggle="dropdown">
@@ -267,12 +331,6 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-sm-3 text-end">
-                            <span id="selectedCount" class="badge bg-primary rounded-pill px-3 py-2">
-                                <i class="fas fa-check-circle me-1"></i>
-                                <span class="count">0</span> selected
-                            </span>
-                        </div>
                     </div>
                 </div>
 
@@ -282,9 +340,16 @@
                         <thead class="bg-light">
                             <tr>
                                 <th width="50" class="ps-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input select-checkbox" type="checkbox" id="selectAll">
+                                    <div class="d-flex justify-content-center align-items-center gap-2 w-100">
+                                        <div class="form-check">
+                                            <input class="form-check-input select-checkbox" type="checkbox" id="selectAll">
+                                        </div>
+                                        <span id="selectedCount" class="badge bg-primary rounded-pill px-3 py-2">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            <span class="count">0</span>
+                                        </span>
                                     </div>
+
                                 </th>
                                 <th width="100" class="text-muted small fw-normal">ORDER</th>
                                 <th class="text-muted small fw-normal">CATEGORY</th>
@@ -294,6 +359,7 @@
                             </tr>
                         </thead>
                         <tbody id="sortable-categories">
+                            @php $orderIndex = 1; @endphp
                             @forelse($categories as $category)
                                 <!-- Main Category -->
                                 <tr data-id="{{ $category->id }}" class="category-item align-middle">
@@ -309,7 +375,7 @@
                                                 <i class="fas fa-bars"></i>
                                             </span>
                                             <input type="number" class="form-control order-input"
-                                                value="{{ $category->order }}" min="0">
+                                                value="{{ $orderIndex++ }}" min="0">
                                         </div>
                                     </td>
                                     <td>
@@ -326,7 +392,7 @@
                                             </div>
                                             <div>
                                                 <h6 class="mb-1 fw-semibold">{{ $category->name }}</h6>
-                                                <div class="d-flex align-items-center flex-column gap-2">
+                                                <div class="d-flex align-items-start flex-column gap-2">
                                                     <div class="d-flex align-items-center gap-1">
                                                         @if ($category->parent)
                                                             <span class="badge category-badge bg-light text-muted">
@@ -405,7 +471,7 @@
                                                     <i class="fas fa-bars"></i>
                                                 </span>
                                                 <input type="number" class="form-control order-input"
-                                                    value="{{ $child->order }}" min="0">
+                                                    value="{{ $orderIndex++ }}" min="0">
                                             </div>
                                         </td>
                                         <td>
@@ -548,9 +614,12 @@
 
             // Update order numbers after sorting
             function updateOrderNumbers() {
-                document.querySelectorAll('.sortable-item').forEach((row, index) => {
+                // Get all table rows with data-id attribute
+                const rows = document.querySelectorAll('tr[data-id]');
+                rows.forEach((row, index) => {
                     const orderInput = row.querySelector('.order-input');
                     if (orderInput) {
+                        // Update the order value to match the current position
                         orderInput.value = index + 1;
                     }
                 });
@@ -723,50 +792,104 @@
         // Save order
         function saveOrder() {
             const items = [];
-            document.querySelectorAll('[data-id]').forEach((row) => {
+            const rows = document.querySelectorAll('tr[data-id]');
+
+            if (rows.length === 0) {
+                if (typeof Toast !== 'undefined') {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'No categories to reorder'
+                    });
+                } else {
+                    alert('No categories to reorder');
+                }
+                return;
+            }
+
+            rows.forEach((row) => {
                 const categoryId = row.getAttribute('data-id');
                 const orderInput = row.querySelector('.order-input');
-                const order = orderInput ? orderInput.value : 0;
+                const order = orderInput ? parseInt(orderInput.value) || 0 : 0;
 
                 items.push({
-                    id: categoryId,
+                    id: parseInt(categoryId),
                     order: order
                 });
             });
+
+            // Disable save button during request
+            const saveBtn = event.target;
+            const originalHTML = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...';
 
             fetch('{{ route('admin.categories.reorder') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         categories: items
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Order saved successfully!',
-                            background: '#4361ee',
-                            color: 'white'
-                        });
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.message || 'Category order has been saved successfully!',
+                                confirmButtonColor: '#4361ee',
+                                timer: 1500,
+                                showConfirmButton: false,
+                                willClose: () => {
+                                    // Reload page with cache-busting parameter
+                                    window.location.href = window.location.pathname + '?t=' + Date.now();
+                                }
+                            });
+                        } else {
+                            alert('Order saved successfully!');
+                            window.location.href = window.location.pathname + '?t=' + Date.now();
+                        }
                     } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.message || 'Error saving order'
-                        });
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: data.message || 'Error saving order',
+                                confirmButtonColor: '#4361ee'
+                            });
+                        } else {
+                            alert(data.message || 'Error saving order');
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Error saving order'
-                    });
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Error saving order. Please try again.',
+                            confirmButtonColor: '#4361ee'
+                        });
+                    } else {
+                        alert('Error saving order. Please try again.');
+                    }
+                })
+                .finally(() => {
+                    // Re-enable button
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalHTML;
                 });
         }
 
