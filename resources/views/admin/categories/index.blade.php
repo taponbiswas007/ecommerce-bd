@@ -243,9 +243,9 @@
             <div class="card-body p-0">
                 <!-- Bulk Actions Bar -->
                 <div class="bg-light p-3 border-bottom">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center gap-2">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-sm-9">
+                            <div class="d-flex align-items-center flex-wrap gap-2">
                                 <button type="button" class="btn btn-light bulk-actions-btn dropdown-toggle"
                                     data-bs-toggle="dropdown">
                                     <i class="fas fa-layer-group me-2"></i> Bulk Actions
@@ -267,7 +267,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-6 text-end">
+                        <div class="col-sm-3 text-end">
                             <span id="selectedCount" class="badge bg-primary rounded-pill px-3 py-2">
                                 <i class="fas fa-check-circle me-1"></i>
                                 <span class="count">0</span> selected
@@ -278,7 +278,7 @@
 
                 <!-- Categories Table -->
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" style="min-width: 950px">
                         <thead class="bg-light">
                             <tr>
                                 <th width="50" class="ps-4">
@@ -326,19 +326,21 @@
                                             </div>
                                             <div>
                                                 <h6 class="mb-1 fw-semibold">{{ $category->name }}</h6>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    @if ($category->parent)
-                                                        <span class="badge category-badge bg-light text-muted">
-                                                            <i class="fas fa-level-up-alt fa-rotate-90 me-1"></i>
-                                                            {{ $category->parent->name }}
-                                                        </span>
-                                                    @else
-                                                        <span
-                                                            class="badge category-badge bg-primary bg-opacity-10 text-primary">
-                                                            <i class="fas fa-star me-1"></i>
-                                                            Main Category
-                                                        </span>
-                                                    @endif
+                                                <div class="d-flex align-items-center flex-column gap-2">
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        @if ($category->parent)
+                                                            <span class="badge category-badge bg-light text-muted">
+                                                                <i class="fas fa-level-up-alt fa-rotate-90 me-1"></i>
+                                                                {{ $category->parent->name }}
+                                                            </span>
+                                                        @else
+                                                            <span
+                                                                class="badge category-badge bg-primary bg-opacity-10 text-primary">
+                                                                <i class="fas fa-star me-1"></i>
+                                                                Main Category
+                                                            </span>
+                                                        @endif
+                                                    </div>
                                                     @if ($category->description)
                                                         <span class="text-muted small">
                                                             {{ Str::limit($category->description, 40) }}
@@ -603,47 +605,86 @@
 
             // Status toggle
             document.querySelectorAll('.status-toggle').forEach(toggle => {
-                toggle.addEventListener('change', function() {
+                toggle.addEventListener('change', function(e) {
+                    const toggleSwitch = this;
                     const categoryId = this.getAttribute('data-id');
-                    const status = this.checked ? 1 : 0;
-                    const statusBadge = this.closest('td').querySelector('.status-badge');
+                    const newStatus = this.checked ? 1 : 0;
+                    const oldStatus = !this.checked ? 1 : 0;
+
+                    // Find the status badge in the parent flex container
+                    const container = this.closest('.d-flex');
+                    const statusBadge = container ? container.querySelector('.status-badge') : null;
+
+                    // Disable toggle during request
+                    toggleSwitch.disabled = true;
 
                     fetch(`/admin/categories/${categoryId}/status`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'X-Requested-With': 'XMLHttpRequest'
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
                             },
                             body: JSON.stringify({
-                                status: status
+                                status: newStatus
                             })
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.success) {
+                                // Update the status badge
                                 if (statusBadge) {
-                                    statusBadge.textContent = status ? 'Active' : 'Inactive';
-                                    statusBadge.classList.remove(status ? 'status-inactive' :
-                                        'status-active');
-                                    statusBadge.classList.add(status ? 'status-active' :
-                                        'status-inactive');
+                                    statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
+                                    if (newStatus) {
+                                        statusBadge.classList.remove('status-inactive');
+                                        statusBadge.classList.add('status-active');
+                                    } else {
+                                        statusBadge.classList.remove('status-active');
+                                        statusBadge.classList.add('status-inactive');
+                                    }
                                 }
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Status updated successfully!',
-                                    background: '#4361ee',
-                                    color: 'white'
-                                });
+
+                                // Show success message
+                                if (typeof Toast !== 'undefined') {
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Status updated successfully!'
+                                    });
+                                }
+                            } else {
+                                // Revert checkbox on failure
+                                toggleSwitch.checked = oldStatus;
+                                if (typeof Toast !== 'undefined') {
+                                    Toast.fire({
+                                        icon: 'error',
+                                        title: data.message || 'Error updating status'
+                                    });
+                                }
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            this.checked = !this.checked;
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Error updating status'
-                            });
+                            // Revert checkbox on error
+                            toggleSwitch.checked = oldStatus;
+
+                            if (typeof Toast !== 'undefined') {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Error updating status. Please try again.'
+                                });
+                            } else {
+                                alert('Error updating status. Please try again.');
+                            }
+                        })
+                        .finally(() => {
+                            // Re-enable toggle
+                            toggleSwitch.disabled = false;
                         });
                 });
             });

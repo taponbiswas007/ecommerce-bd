@@ -1,8 +1,8 @@
 /* Bootstrap */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
 
 /* Font Awesome */
-@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Custom Scrollbar */
 :root {
@@ -11,41 +11,8 @@
     --transition-speed: 0.3s;
 }
 
-/* Custom Scrollbar for entire project */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Dark theme scrollbar */
-[data-theme="dark"] ::-webkit-scrollbar-track {
-    background: #2d3748;
-}
-
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-    background: #4a5568;
-}
-
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-    background: #718096;
-}
-
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
     overflow-x: hidden;
@@ -75,9 +42,9 @@ body {
     transform: translateX(0);
 }
 
-    .admin-sidebar.collapsed {
-        width: var(--sidebar-width-expanded);
-    }
+.admin-sidebar.collapsed {
+    width: var(--sidebar-width-expanded);
+}
 .admin-wrapper.sidebar-hidden .admin-sidebar {
     transform: translateX(-100%);
 }
@@ -282,7 +249,8 @@ body {
 .admin-main {
     flex: 1;
     margin-left: var(--sidebar-width-expanded);
-    transition: margin-left var(--transition-speed), width var(--transition-speed);
+    transition: margin-left var(--transition-speed),
+        width var(--transition-speed);
     width: calc(100% - var(--sidebar-width-expanded));
     min-height: 100vh;
 }
@@ -636,7 +604,8 @@ body {
     padding: 25px;
     margin-bottom: 25px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    transition: transform var(--transition-speed),
+        box-shadow var(--transition-speed);
     border: 1px solid var(--bs-border-color);
 }
 
@@ -652,10 +621,10 @@ body {
 
 /* ... Rest of your existing card, chart, and table styles ... */
 /* Bootstrap */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
 
 /* Font Awesome */
-@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Custom Styles */
 :root {
@@ -675,15 +644,9 @@ body {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fb;
     overflow-x: hidden;
-}
-
-/* Admin Layout */
-.admin-wrapper {
-    display: flex;
-    min-height: 100vh;
 }
 
 /* Sidebar Styles */
@@ -1208,10 +1171,10 @@ body {
 }
 
 /* Bootstrap */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
 
 /* Font Awesome */
-@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Custom Scrollbar */
 :root {
@@ -1219,26 +1182,6 @@ body {
     --sidebar-width-expanded: 260px;
     --header-height: 70px;
     --transition-speed: 0.3s;
-}
-
-/* Custom Scrollbar for entire project */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
 }
 
 /* Dark theme scrollbar */
@@ -1252,20 +1195,6 @@ body {
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
     background: #718096;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
-    overflow-x: hidden;
-    transition: background-color var(--transition-speed);
-}
-
-/* Admin Layout */
-.admin-wrapper {
-    display: flex;
-    min-height: 100vh;
 }
 
 /* Sidebar Styles */
@@ -1485,8 +1414,8 @@ body {
 /* Sidebar Toggle Button */
 .sidebar-toggle {
     position: absolute;
-    right: -12px;
-    top: 80px;
+    right: 0px;
+    top: 27px;
     width: 24px;
     height: 24px;
     background: var(--bs-primary);
@@ -1874,7 +1803,8 @@ body {
     padding: 25px;
     margin-bottom: 25px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    transition: transform var(--transition-speed),
+        box-shadow var(--transition-speed);
     border: 1px solid var(--bs-border-color);
 }
 

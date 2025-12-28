@@ -40,7 +40,7 @@
                     <i class="fas fa-store"></i>
                 </div>
                 <h3>EcommerceBD</h3>
-                <div class="sidebar-toggle">
+                <div class="sidebar-toggle d-lg-none d-flex align-items-center justify-content-center">
                     <i class="fas fa-chevron-left"></i>
                 </div>
             </div>
@@ -213,17 +213,12 @@
                     <button class="toggle-sidebar d-lg-none">
                         <i class="fas fa-bars"></i>
                     </button>
+                    <button class="fullscreen-toggle d-lg-inline d-none header-icon" title="Toggle Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
                     <!-- Add these buttons to header-right section -->
                     <button class="theme-toggle" title="Toggle Theme">
                         <i class="fas fa-moon"></i>
-                    </button>
-
-                    <button class="fullscreen-toggle header-icon" title="Toggle Fullscreen">
-                        <i class="fas fa-expand"></i>
-                    </button>
-
-                    <button class="toggle-sidebar d-none d-lg-inline" title="Toggle Sidebar">
-                        <i class="fas fa-chevron-left"></i>
                     </button>
                     <div class="header-search">
                         <i class="fas fa-search"></i>
@@ -422,13 +417,18 @@
             <!-- Content -->
             <div class="admin-content">
                 <!-- Breadcrumb -->
-                <nav aria-label="breadcrumb" class="mb-4">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i
-                                    class="fas fa-home"></i></a></li>
-                        @yield('breadcrumb')
-                    </ol>
-                </nav>
+                <div class="card border-0 shadow-sm mb-4 rounded-1">
+                    <div class="card-body p-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i
+                                            class="fas fa-home"></i></a></li>
+                                @yield('breadcrumb')
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
 
                 <!-- Page Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
