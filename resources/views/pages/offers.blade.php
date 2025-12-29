@@ -17,7 +17,7 @@
         <!-- Flash Sale Banner -->
         <div class="row mb-5">
             <div class="col-12">
-                <div class="card border-0 bg-gradient-danger text-white shadow-lg overflow-hidden">
+                <div class="card border bg-gradient-danger text-white shadow-lg overflow-hidden">
                     <div class="row g-0">
                         <div class="col-md-8">
                             <div class="card-body p-5">
@@ -79,7 +79,7 @@
 
             @forelse($featuredOffers as $product)
                 <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                    <div class="card product-card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card product-card h-100 border shadow-sm hover-lift">
                         <div class="position-relative">
                             @if ($product->discount_price)
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-3">
@@ -195,7 +195,7 @@
 
             @forelse($discountedProducts as $product)
                 <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                    <div class="card product-card h-100 border-0 shadow-sm">
+                    <div class="card product-card h-100 border shadow-sm">
                         <div class="position-relative">
                             @if ($product->discount_price)
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">
@@ -286,7 +286,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-lift">
+                <div class="card border shadow-sm h-100 hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
                             <i class="fas fa-mobile-alt fa-3x text-primary"></i>
@@ -301,7 +301,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-lift">
+                <div class="card border shadow-sm h-100 hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
                             <i class="fas fa-laptop fa-3x text-success"></i>
@@ -316,7 +316,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-lift">
+                <div class="card border shadow-sm h-100 hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
                             <i class="fas fa-tv fa-3x text-warning"></i>
@@ -334,7 +334,7 @@
         <!-- Newsletter Subscription -->
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <div class="card border-0 bg-gradient-primary text-white shadow-lg">
+                <div class="card border bg-gradient-primary text-white shadow-lg">
                     <div class="card-body p-5 text-center">
                         <h2 class="card-title mb-3">Never Miss a Deal!</h2>
                         <p class="card-text mb-4">Subscribe to our newsletter and be the first to know about exclusive

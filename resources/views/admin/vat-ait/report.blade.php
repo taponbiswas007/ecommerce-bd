@@ -22,7 +22,7 @@
         <!-- Statistics Cards -->
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -57,7 +57,7 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -76,7 +76,7 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>

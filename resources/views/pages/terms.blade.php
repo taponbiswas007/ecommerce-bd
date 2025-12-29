@@ -17,7 +17,7 @@
         <!-- Terms Content -->
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body p-4 p-md-5">
 
                         <!-- Introduction -->
@@ -239,7 +239,7 @@
                 <!-- Quick Links -->
                 <div class="row mt-4">
                     <div class="col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm">
+                        <div class="card border shadow-sm">
                             <div class="card-body p-4">
                                 <h5 class="card-title mb-3">
                                     <i class="fas fa-shield-alt text-primary me-2"></i> Privacy Policy
@@ -255,7 +255,7 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm">
+                        <div class="card border shadow-sm">
                             <div class="card-body p-4">
                                 <h5 class="card-title mb-3">
                                     <i class="fas fa-exchange-alt text-success me-2"></i> Returns Policy

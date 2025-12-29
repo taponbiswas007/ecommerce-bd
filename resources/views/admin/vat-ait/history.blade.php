@@ -63,7 +63,7 @@
                                             <h6 class="mb-3"><i class="fas fa-percent text-info me-2"></i>VAT Settings
                                             </h6>
                                             <div class="list-group list-group-flush">
-                                                <div class="list-group-item px-0 py-2 border-0">
+                                                <div class="list-group-item px-0 py-2 border">
                                                     <strong>Status:</strong>
                                                     @if ($setting->vat_enabled)
                                                         <span class="badge bg-success">Enabled</span>
@@ -71,10 +71,10 @@
                                                         <span class="badge bg-danger">Disabled</span>
                                                     @endif
                                                 </div>
-                                                <div class="list-group-item px-0 py-2 border-0">
+                                                <div class="list-group-item px-0 py-2 border">
                                                     <strong>Percentage:</strong> {{ $setting->default_vat_percentage }}%
                                                 </div>
-                                                <div class="list-group-item px-0 py-2 border-0">
+                                                <div class="list-group-item px-0 py-2 border">
                                                     <strong>Handling:</strong>
                                                     {{ $setting->vat_included_in_price ? 'Included in Price' : 'Added at Checkout' }}
                                                 </div>
@@ -86,7 +86,7 @@
                                             <h6 class="mb-3"><i class="fas fa-percent text-info me-2"></i>AIT Settings
                                             </h6>
                                             <div class="list-group list-group-flush">
-                                                <div class="list-group-item px-0 py-2 border-0">
+                                                <div class="list-group-item px-0 py-2 border">
                                                     <strong>Status:</strong>
                                                     @if ($setting->ait_enabled)
                                                         <span class="badge bg-success">Enabled</span>
@@ -94,10 +94,10 @@
                                                         <span class="badge bg-danger">Disabled</span>
                                                     @endif
                                                 </div>
-                                                <div class="list-group-item px-0 py-2 border-0">
+                                                <div class="list-group-item px-0 py-2 border">
                                                     <strong>Percentage:</strong> {{ $setting->default_ait_percentage }}%
                                                 </div>
-                                                <div class="list-group-item px-0 py-2 border-0">
+                                                <div class="list-group-item px-0 py-2 border">
                                                     <strong>Handling:</strong>
                                                     {{ $setting->ait_included_in_price ? 'Included in Price' : 'Added at Checkout' }}
                                                 </div>

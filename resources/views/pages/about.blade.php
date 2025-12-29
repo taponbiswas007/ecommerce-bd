@@ -48,7 +48,7 @@
         <!-- Mission & Vision -->
         <div class="row mb-5">
             <div class="col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border shadow-sm">
                     <div class="card-body p-4">
                         <div class="text-center mb-4">
                             <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3">
@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border shadow-sm">
                     <div class="card-body p-4">
                         <div class="text-center mb-4">
                             <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3">
@@ -89,7 +89,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
                             <i class="fas fa-award fa-2x text-info"></i>
@@ -103,7 +103,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
                             <i class="fas fa-users fa-2x text-warning"></i>
@@ -118,7 +118,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
                             <i class="fas fa-lightbulb fa-2x text-success"></i>
@@ -140,7 +140,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm hover-lift">
+                <div class="card border shadow-sm hover-lift">
                     <div class="card-body text-center p-4">
                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d" alt="John Smith"
                             class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
@@ -154,7 +154,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm hover-lift">
+                <div class="card border shadow-sm hover-lift">
                     <div class="card-body text-center p-4">
                         <img src="https://images.unsplash.com/photo-1494790108755-2616b786d4d9" alt="Sarah Johnson"
                             class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
@@ -168,7 +168,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm hover-lift">
+                <div class="card border shadow-sm hover-lift">
                     <div class="card-body text-center p-4">
                         <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e" alt="Michael Chen"
                             class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
@@ -185,7 +185,7 @@
         <!-- Call to Action -->
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <div class="card border-0 bg-gradient-primary text-white shadow-lg">
+                <div class="card border bg-gradient-primary text-white shadow-lg">
                     <div class="card-body p-5">
                         <h2 class="card-title mb-3">Join Our Journey</h2>
                         <p class="card-text mb-4">

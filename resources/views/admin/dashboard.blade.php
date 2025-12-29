@@ -218,7 +218,7 @@
                     <div class="list-group list-group-flush">
                         @forelse($topProducts as $product)
                             <a href="{{ route('admin.products.show', $product->id) }}"
-                                class="list-group-item list-group-item-action border-0 py-3">
+                                class="list-group-item list-group-item-action border py-3">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
                                         <img src="{{ $product->primary_image ? asset('storage/' . $product->primary_image->image_path) : 'https://via.placeholder.com/50' }}"
@@ -258,7 +258,7 @@
     <!-- Quick Stats -->
     <div class="row">
         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card border-0 bg-primary bg-gradient text-white">
+            <div class="card border bg-primary bg-gradient text-white">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -274,7 +274,7 @@
         </div>
 
         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card border-0 bg-warning bg-gradient text-white">
+            <div class="card border bg-warning bg-gradient text-white">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -290,7 +290,7 @@
         </div>
 
         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card border-0 bg-danger bg-gradient text-white">
+            <div class="card border bg-danger bg-gradient text-white">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -306,7 +306,7 @@
         </div>
 
         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card border-0 bg-success bg-gradient text-white">
+            <div class="card border bg-success bg-gradient text-white">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>

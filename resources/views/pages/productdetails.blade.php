@@ -1117,7 +1117,7 @@
                 <div class="row">
                     @foreach ($relatedProducts as $relatedProduct)
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                            <div class="card product-card h-100 border-0 shadow-sm">
+                            <div class="card product-card h-100 border shadow-sm">
                                 <a href="{{ route('product.show', $relatedProduct->slug) }}"
                                     class="text-decoration-none">
                                     <div class="position-relative overflow-hidden">
@@ -1169,7 +1169,7 @@
     <div class="modal fade" id="zoomModal" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header border-0">
+                <div class="modal-header border">
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">

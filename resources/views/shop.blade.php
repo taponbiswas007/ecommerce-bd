@@ -469,7 +469,7 @@
         <div class="row">
             <!-- Sidebar Filters -->
             <div class="col-lg-3 mb-4">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title mb-3">
                             <i class="fas fa-filter"></i> Filters
@@ -714,7 +714,7 @@
     <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
+                <div class="modal-header border pb-0">
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-0">

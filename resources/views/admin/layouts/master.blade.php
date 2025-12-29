@@ -36,6 +36,35 @@
 
     <!-- Preloader Styles -->
     <style>
+        /* Fix z-index hierarchy for modals */
+        .admin-sidebar {
+            z-index: 1000 !important;
+        }
+
+        .admin-header {
+            z-index: 1010 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+
+        .modal {
+            z-index: 1055 !important;
+        }
+
+        .modal-dialog {
+            z-index: 1056 !important;
+        }
+
+        .modal-content {
+            z-index: 1057 !important;
+        }
+
+        .swal2-container {
+            z-index: 10000 !important;
+        }
+
         .preloader {
             position: fixed;
             top: 0;
@@ -616,7 +645,7 @@
             <!-- Content -->
             <div class="admin-content" data-simplebar data-simplebar-auto-hide="false">
                 <!-- Breadcrumb -->
-                <div class="card border-0 shadow-sm mb-4 rounded-1">
+                <div class="card border shadow-sm mb-4 rounded-1">
                     <div class="card-body p-3">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0">
@@ -630,7 +659,7 @@
 
 
                 <!-- Page Header -->
-                <div class="card border-0 shadow-sm mb-4 rounded-1">
+                <div class="card border shadow-sm mb-4 rounded-1">
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                             <div>

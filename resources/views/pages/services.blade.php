@@ -23,7 +23,7 @@
 
             <!-- Service 1 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-4 mb-4">
                             <i class="fas fa-shopping-cart fa-3x text-primary"></i>
@@ -45,7 +45,7 @@
 
             <!-- Service 2 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-4 mb-4">
                             <i class="fas fa-truck fa-3x text-success"></i>
@@ -69,7 +69,7 @@
 
             <!-- Service 3 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-4 mb-4">
                             <i class="fas fa-headset fa-3x text-warning"></i>
@@ -91,7 +91,7 @@
 
             <!-- Service 4 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-4 mb-4">
                             <i class="fas fa-cogs fa-3x text-info"></i>
@@ -113,7 +113,7 @@
 
             <!-- Service 5 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-4 mb-4">
                             <i class="fas fa-tools fa-3x text-danger"></i>
@@ -137,7 +137,7 @@
 
             <!-- Service 6 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card h-100 border shadow-sm hover-lift">
                     <div class="card-body p-4 text-center">
                         <div class="bg-purple bg-opacity-10 rounded-circle d-inline-flex p-4 mb-4">
                             <i class="fas fa-exchange-alt fa-3x" style="color: #7b2cbf;"></i>
@@ -168,7 +168,7 @@
             </div>
 
             <div class="col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border shadow-sm">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-start">
                             <div class="bg-primary bg-opacity-10 rounded p-3 me-4">
@@ -190,7 +190,7 @@
             </div>
 
             <div class="col-md-6 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border shadow-sm">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-start">
                             <div class="bg-success bg-opacity-10 rounded p-3 me-4">
@@ -283,7 +283,7 @@
         <!-- Call to Action -->
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <div class="card border-0 bg-gradient-primary text-white shadow-lg">
+                <div class="card border bg-gradient-primary text-white shadow-lg">
                     <div class="card-body p-5">
                         <h2 class="card-title mb-3">Need Our Services?</h2>
                         <p class="card-text mb-4">

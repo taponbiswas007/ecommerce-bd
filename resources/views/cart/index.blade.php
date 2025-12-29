@@ -496,7 +496,7 @@
                         @if (!$requiresLogin)
                             <!-- Coupon Section -->
                             <div class="coupon-section mb-4">
-                                <div class="card border-0 shadow-sm">
+                                <div class="card border shadow-sm">
                                     <div class="card-body">
                                         <h6 class="card-title mb-3"><i class="fas fa-ticket-alt me-2"></i> Have a Coupon?
                                         </h6>

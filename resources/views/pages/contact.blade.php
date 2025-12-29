@@ -18,7 +18,7 @@
         <div class="row">
             <!-- Contact Information -->
             <div class="col-lg-4 mb-5 mb-lg-0">
-                <div class="card border-0 shadow-sm h-100">
+                <div class="card border shadow-sm h-100">
                     <div class="card-body p-4">
                         <h3 class="card-title mb-4">Get in Touch</h3>
 
@@ -124,7 +124,7 @@
 
             <!-- Contact Form -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body p-4 p-md-5">
                         <h3 class="card-title mb-4">Send us a Message</h3>
 
@@ -247,7 +247,7 @@
                 </div>
 
                 <!-- FAQ Section -->
-                <div class="card border-0 shadow-sm mt-4">
+                <div class="card border shadow-sm mt-4">
                     <div class="card-body p-4">
                         <h4 class="card-title mb-4">Frequently Asked Questions</h4>
 
@@ -306,7 +306,7 @@
         <!-- Map Section -->
         <div class="row mt-5">
             <div class="col-12">
-                <div class="card border-0 shadow-sm">
+                <div class="card border shadow-sm">
                     <div class="card-body p-0">
                         <div class="p-4 border-bottom">
                             <h4 class="card-title mb-0">Find Our Store</h4>
