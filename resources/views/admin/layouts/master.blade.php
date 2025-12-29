@@ -34,10 +34,203 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/style.css') }}">
 
+    <!-- Preloader Styles -->
+    <style>
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .preloader-content {
+            text-align: center;
+        }
+
+        .preloader-logo {
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .preloader-logo i {
+            font-size: 4rem;
+            color: #ffffff;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .preloader-spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .preloader-spinner::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-sizing: border-box;
+            inset: 2px;
+        }
+
+        .preloader-spinner::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #ffffff;
+            border-right-color: #ffffff;
+            box-sizing: border-box;
+            inset: 2px;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .preloader-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .preloader-text {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .preloader-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+
+        .preloader-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+
+            0%,
+            20% {
+                content: '';
+            }
+
+            40% {
+                content: '.';
+            }
+
+            60% {
+                content: '..';
+            }
+
+            80%,
+            100% {
+                content: '...';
+            }
+        }
+
+        .preloader-subtext {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .preloader-progress {
+            width: 250px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .preloader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+
     @stack('styles')
 </head>
 
 <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <img src="{{ asset('assets/images/LOGO.webp') }}" alt="EcommerceBD Logo">
+            </div>
+
+            <div class="preloader-spinner">
+                <div class="preloader-percentage" id="percentage">0%</div>
+            </div>
+
+            <div class="preloader-text">
+                Loading<span class="preloader-dots"></span>
+            </div>
+
+            <p class="preloader-subtext">Please wait while we prepare your dashboard</p>
+
+            <div class="preloader-progress">
+                <div class="preloader-progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="admin-wrapper">
         <!-- Sidebar -->
         <aside class="admin-sidebar">
@@ -469,6 +662,45 @@
 
 
     <script>
+        // Preloader functionality
+        (function() {
+            const preloader = document.getElementById('preloader');
+            const progressBar = document.getElementById('progressBar');
+            const percentage = document.getElementById('percentage');
+            let progress = 0;
+
+            // Simulate loading progress
+            const loadingInterval = setInterval(function() {
+                if (progress < 90) {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+
+                    progressBar.style.width = progress + '%';
+                    percentage.textContent = Math.floor(progress) + '%';
+                }
+            }, 200);
+
+            // On page load complete
+            window.addEventListener('load', function() {
+                clearInterval(loadingInterval);
+
+                // Complete to 100%
+                progress = 100;
+                progressBar.style.width = '100%';
+                percentage.textContent = '100%';
+
+                // Hide preloader after short delay
+                setTimeout(function() {
+                    preloader.classList.add('hidden');
+
+                    // Remove from DOM after animation
+                    setTimeout(function() {
+                        preloader.remove();
+                    }, 600);
+                }, 400);
+            });
+        })();
+
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize SimpleBar on all data-simplebar elements
