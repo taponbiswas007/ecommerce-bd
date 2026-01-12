@@ -468,7 +468,7 @@
 @endpush
 
 @section('content')
-    <div class="container-fluid">
+    <div class="">
         <div class="card border shadow-sm pb-4">
             <div class="card-header card-header-gradient">
                 <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
