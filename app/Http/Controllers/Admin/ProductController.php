@@ -198,10 +198,21 @@ class ProductController extends Controller
         DB::transaction(function () use ($product) {
             // Delete product attributes
             $product->attributesRows()->delete();
-            // Delete product images and their files
+            // Delete product images and all their file sizes
             foreach ($product->images as $image) {
-                if ($image->image && \Storage::disk($image->disk ?? 'public')->exists($image->image)) {
-                    \Storage::disk($image->disk ?? 'public')->delete($image->image);
+                $paths = [];
+                if ($image->image_path) {
+                    $paths[] = $image->image_path;
+                    $filename = basename($image->image_path);
+                    $dir = dirname($image->image_path);
+                    $paths[] = $dir . '/large_' . $filename;
+                    $paths[] = $dir . '/medium_' . $filename;
+                    $paths[] = $dir . '/thumb_' . $filename;
+                }
+                foreach ($paths as $path) {
+                    if (Storage::disk($image->disk ?? 'public')->exists($path)) {
+                        Storage::disk($image->disk ?? 'public')->delete($path);
+                    }
                 }
                 $image->delete();
             }

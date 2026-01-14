@@ -125,6 +125,32 @@ class ProductImageController extends Controller
             $data['is_featured'] = false;
         }
 
+        // If a new image file is uploaded, delete all old image sizes
+        if ($request->hasFile('image')) {
+            $oldPath = $image->image_path;
+            $paths = [];
+            if ($oldPath) {
+                $paths[] = $oldPath;
+                $filename = basename($oldPath);
+                $dir = dirname($oldPath);
+                $paths[] = $dir . '/large_' . $filename;
+                $paths[] = $dir . '/medium_' . $filename;
+                $paths[] = $dir . '/thumb_' . $filename;
+            }
+            foreach ($paths as $path) {
+                if (Storage::disk($image->disk ?? 'public')->exists($path)) {
+                    Storage::disk($image->disk ?? 'public')->delete($path);
+                }
+            }
+
+            // Save new image and sizes
+            $newFile = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $newFile->getClientOriginalExtension();
+            $path = $newFile->storeAs('products/' . $product->id, $filename, 'public');
+            $this->createImageSizes($newFile, $product->id, $filename);
+            $data['image_path'] = $path;
+        }
+
         $image->update($data);
 
         return redirect()->route('admin.products.images.index', $product->id)
@@ -136,14 +162,25 @@ class ProductImageController extends Controller
     {
         // Store image path before deletion
         $imagePath = $image->image_path;
-
         $isPrimary = $image->is_primary;
 
-        // Delete the image record
-        $image->delete();
+        // Delete all image sizes
+        $paths = [];
+        if ($imagePath) {
+            $paths[] = $imagePath;
+            $filename = basename($imagePath);
+            $dir = dirname($imagePath);
+            $paths[] = $dir . '/large_' . $filename;
+            $paths[] = $dir . '/medium_' . $filename;
+            $paths[] = $dir . '/thumb_' . $filename;
+        }
+        foreach ($paths as $path) {
+            if (Storage::disk($image->disk ?? 'public')->exists($path)) {
+                Storage::disk($image->disk ?? 'public')->delete($path);
+            }
+        }
 
-        // Delete the actual file
-        Storage::disk('public')->delete($imagePath);
+        $image->delete();
 
         // If we deleted the primary image, set a new primary
         if ($isPrimary && $product->images()->count() > 0) {
@@ -222,11 +259,25 @@ class ProductImageController extends Controller
                 foreach ($ids as $id) {
                     $image = ProductImage::find($id);
                     if ($image) {
-                        $deleted = Storage::disk('public')->delete($image->image_path);
+                        $paths = [];
+                        $imagePath = $image->image_path;
+                        if ($imagePath) {
+                            $paths[] = $imagePath;
+                            $filename = basename($imagePath);
+                            $dir = dirname($imagePath);
+                            $paths[] = $dir . '/large_' . $filename;
+                            $paths[] = $dir . '/medium_' . $filename;
+                            $paths[] = $dir . '/thumb_' . $filename;
+                        }
+                        foreach ($paths as $path) {
+                            if (Storage::disk($image->disk ?? 'public')->exists($path)) {
+                                Storage::disk($image->disk ?? 'public')->delete($path);
+                            }
+                        }
                         Log::info('BulkDelete', [
                             'id' => $id,
                             'image_path' => $image->image_path,
-                            'file_deleted' => $deleted,
+                            'all_files_deleted' => $paths,
                         ]);
                         $image->delete();
                     } else {
