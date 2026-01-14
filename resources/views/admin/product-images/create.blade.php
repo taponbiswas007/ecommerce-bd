@@ -110,7 +110,7 @@
                         @csrf
 
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-xl-8">
                                 <!-- Upload Area -->
                                 <div class="mb-4">
                                     <div class="upload-area" id="uploadArea">
@@ -196,7 +196,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-xl-4">
                                 <!-- Upload Summary -->
                                 <div class="card mb-4">
                                     <div class="card-header">

@@ -158,6 +158,13 @@ class ProductImageController extends Controller
     // Bulk actions
     public function bulkAction(Request $request, Product $product)
     {
+        Log::info('BulkAction request', [
+            'all' => $request->all(),
+            'ids' => $request->input('ids'),
+            'ids_array' => $request->input('ids', []),
+            'display_order' => $request->input('display_order'),
+        ]);
+
         // Decode JSON payloads from the frontend form (hidden inputs) so validation sees arrays
         $idsInput = $request->input('ids');
         if (is_string($idsInput)) {
@@ -171,12 +178,26 @@ class ProductImageController extends Controller
             $request->merge(['display_order' => is_array($decoded) ? $decoded : []]);
         }
 
-        $request->validate([
-            'action' => 'required|in:set_primary,set_featured,delete,update_order',
-            'ids' => 'required|array',
-            'ids.*' => 'exists:product_images,id',
-            'display_order' => 'required_if:action,update_order|array',
-        ]);
+
+        // Cast ids to integers for validation
+        $ids = array_map('intval', (array) $request->input('ids', []));
+        $request->merge(['ids' => $ids]);
+
+
+        try {
+            $request->validate([
+                'action' => 'required|in:set_primary,set_featured,delete,update_order',
+                'ids' => 'required|array',
+                'ids.*' => 'exists:product_images,id',
+                'display_order' => 'array|nullable',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('BulkDelete validation failed', [
+                'errors' => $e->errors(),
+                'input' => $request->all(),
+            ]);
+            throw $e;
+        }
 
         $ids = $request->ids;
 
@@ -201,8 +222,15 @@ class ProductImageController extends Controller
                 foreach ($ids as $id) {
                     $image = ProductImage::find($id);
                     if ($image) {
-                        Storage::disk('public')->delete($image->image_path);
+                        $deleted = Storage::disk('public')->delete($image->image_path);
+                        Log::info('BulkDelete', [
+                            'id' => $id,
+                            'image_path' => $image->image_path,
+                            'file_deleted' => $deleted,
+                        ]);
                         $image->delete();
+                    } else {
+                        Log::warning('BulkDelete: Image not found', ['id' => $id]);
                     }
                 }
                 $message = count($ids) . ' images deleted successfully.';

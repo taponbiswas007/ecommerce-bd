@@ -47,7 +47,7 @@
         .image-container {
             position: relative;
             width: 100%;
-            height: 200px;
+            aspect-ratio: 1/1.03;
             overflow: hidden;
             background-color: #f8f9fa;
             border-radius: 5px 5px 0 0;
@@ -149,7 +149,7 @@
                     @if ($images->count() > 0)
                         <div class="row" id="sortable-images">
                             @foreach ($images as $image)
-                                <div class="col-md-3 col-sm-6 mb-4" data-id="{{ $image->id }}">
+                                <div class="col-lg-4 col-md-6 col-xl-3 mb-4" data-id="{{ $image->id }}">
                                     <div
                                         class="card image-card {{ $image->is_primary ? 'primary' : '' }} {{ $image->is_featured ? 'featured' : '' }}">
                                         <!-- Checkbox -->
@@ -195,7 +195,8 @@
                                         <!-- Image -->
                                         <div class="image-container">
                                             <img src="{{ $image->image_url }}" alt="{{ $image->alt_text }}"
-                                                class="img-fluid" loading="lazy">
+                                                class="img-fluid" loading="lazy"
+                                                style="width:100%; height:100%; object-fit:cover;">
                                         </div>
 
                                         <!-- Card Body -->
@@ -261,7 +262,6 @@
     <form id="bulkActionForm" method="POST" action="{{ route('admin.products.images.bulk-action', $product->id) }}">
         @csrf
         <input type="hidden" name="action" id="bulkAction">
-        <input type="hidden" name="ids" id="bulkIds">
         <input type="hidden" name="display_order" id="bulkDisplayOrder">
     </form>
 @endsection
@@ -463,6 +463,10 @@
             const bulkIds = document.getElementById('bulkIds');
             if (bulkIds) bulkIds.value = '';
             form.submit();
+            // Force reload after short delay to ensure UI updates
+            setTimeout(() => {
+                window.location.reload();
+            }, 1200);
         }
 
 

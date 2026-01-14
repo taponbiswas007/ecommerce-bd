@@ -51,224 +51,181 @@
 @endpush
 
 @section('content')
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <form action="{{ route('admin.products.update', $product->id) }}" method="POST"
-                        enctype="multipart/form-data" id="productForm">
-                        @csrf
-                        @method('PUT')
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data"
+        id="productForm">
+        @csrf
+        @method('PUT')
+
+        <div class="row">
+            <!-- Basic Information -->
+            <div class="col-xl-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name *</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                                name="name" value="{{ old('name', $product->name) }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="row">
-                            <!-- Basic Information -->
-                            <div class="col-md-8">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Basic Information</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">Product Name *</label>
-                                            <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                id="name" name="name" value="{{ old('name', $product->name) }}"
-                                                required>
-                                            @error('name')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category_id" class="form-label">Category *</label>
+                                    <select class="form-select @error('category_id') is-invalid @enderror" id="category_id"
+                                        name="category_id" required>
+                                        <option value="">Select Category</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('category_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="unit_id" class="form-label">Unit *</label>
+                                    <select class="form-select @error('unit_id') is-invalid @enderror" id="unit_id"
+                                        name="unit_id" required>
+                                        <option value="">Select Unit</option>
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}"
+                                                {{ old('unit_id', $product->unit_id) == $unit->id ? 'selected' : '' }}>
+                                                {{ $unit->name }} ({{ $unit->short_code }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('unit_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
 
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="category_id" class="form-label">Category *</label>
-                                                    <select class="form-select @error('category_id') is-invalid @enderror"
-                                                        id="category_id" name="category_id" required>
-                                                        <option value="">Select Category</option>
-                                                        @foreach ($categories as $category)
-                                                            <option value="{{ $category->id }}"
-                                                                {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                                                {{ $category->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('category_id')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="unit_id" class="form-label">Unit *</label>
-                                                    <select class="form-select @error('unit_id') is-invalid @enderror"
-                                                        id="unit_id" name="unit_id" required>
-                                                        <option value="">Select Unit</option>
-                                                        @foreach ($units as $unit)
-                                                            <option value="{{ $unit->id }}"
-                                                                {{ old('unit_id', $product->unit_id) == $unit->id ? 'selected' : '' }}>
-                                                                {{ $unit->name }} ({{ $unit->short_code }})
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('unit_id')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="base_price" class="form-label">Base Price *</label>
-                                                    <div class="input-group">
-                                                        <span
-                                                            class="input-group-text">{{ config('app.currency_symbol') }}</span>
-                                                        <input type="number"
-                                                            class="form-control @error('base_price') is-invalid @enderror"
-                                                            id="base_price" name="base_price" step="0.01" min="0"
-                                                            value="{{ old('base_price', $product->base_price) }}" required>
-                                                        @error('base_price')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="discount_price" class="form-label">Discount Price</label>
-                                                    <div class="input-group">
-                                                        <span
-                                                            class="input-group-text">{{ config('app.currency_symbol') }}</span>
-                                                        <input type="number"
-                                                            class="form-control @error('discount_price') is-invalid @enderror"
-                                                            id="discount_price" name="discount_price" step="0.01"
-                                                            min="0"
-                                                            value="{{ old('discount_price', $product->discount_price) }}">
-                                                        @error('discount_price')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                    <small class="text-muted">Leave empty for no discount</small>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="short_description" class="form-label">Short Description</label>
-                                            <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description"
-                                                name="short_description" rows="3">{{ old('short_description', $product->short_description) }}</textarea>
-                                            <small class="text-muted">Brief description displayed in product listings (max
-                                                500 characters)</small>
-                                            @error('short_description')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="full_description" class="form-label">Full Description</label>
-                                            <textarea class="form-control @error('full_description') is-invalid @enderror" id="full_description"
-                                                name="full_description">{{ old('full_description', $product->full_description) }}</textarea>
-                                            @error('full_description')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="base_price" class="form-label">Base Price *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ config('app.currency_symbol') }}</span>
+                                        <input type="number" class="form-control @error('base_price') is-invalid @enderror"
+                                            id="base_price" name="base_price" step="0.01" min="0"
+                                            value="{{ old('base_price', $product->base_price) }}" required>
+                                        @error('base_price')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
-
-                                <!-- Inventory -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Inventory</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="discount_price" class="form-label">Discount Price</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ config('app.currency_symbol') }}</span>
+                                        <input type="number"
+                                            class="form-control @error('discount_price') is-invalid @enderror"
+                                            id="discount_price" name="discount_price" step="0.01" min="0"
+                                            value="{{ old('discount_price', $product->discount_price) }}">
+                                        @error('discount_price')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="stock_quantity" class="form-label">Stock Quantity
-                                                        *</label>
-                                                    <input type="number"
-                                                        class="form-control @error('stock_quantity') is-invalid @enderror"
-                                                        id="stock_quantity" name="stock_quantity" min="0"
-                                                        value="{{ old('stock_quantity', $product->stock_quantity) }}"
-                                                        required>
-                                                    @error('stock_quantity')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="min_order_quantity" class="form-label">Minimum Order
-                                                        Quantity *</label>
-                                                    <input type="number"
-                                                        class="form-control @error('min_order_quantity') is-invalid @enderror"
-                                                        id="min_order_quantity" name="min_order_quantity" min="1"
-                                                        value="{{ old('min_order_quantity', $product->min_order_quantity) }}"
-                                                        required>
-                                                    @error('min_order_quantity')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <small class="text-muted">Leave empty for no discount</small>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Attributes -->
-                                <div class="card mb-4">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-0">Attributes</h5>
-                                        <button type="button" class="btn btn-sm btn-primary"
-                                            onclick="addAttributeRow()">
-                                            <i class="fas fa-plus me-1"></i> Add Attribute
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="attributesContainer">
-                                            <!-- Existing attributes -->
-                                            @php
-                                                $attributes = $product->attribute_pairs ?? [];
-                                            @endphp
+                        <div class="mb-3">
+                            <label for="short_description" class="form-label">Short Description</label>
+                            <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description"
+                                name="short_description" rows="3">{{ old('short_description', $product->short_description) }}</textarea>
+                            <small class="text-muted">Brief description displayed in product listings (max
+                                500 characters)</small>
+                            @error('short_description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                            @if ($attributes && count($attributes) > 0)
-                                                @foreach ($attributes as $key => $value)
-                                                    <div class="row attribute-row mb-2">
-                                                        <div class="col-md-5">
-                                                            <input type="text" class="form-control attribute-key"
-                                                                placeholder="Attribute name (e.g., Color)"
-                                                                value="{{ $key }}">
-                                                        </div>
-                                                        <div class="col-md-5">
-                                                            <input type="text" class="form-control attribute-value"
-                                                                placeholder="Attribute value (e.g., Red, Blue, Green)"
-                                                                value="{{ $value }}">
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <button type="button"
-                                                                class="btn btn-danger w-100 btn-remove-attribute">
-                                                                <i class="fas fa-times"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            @endif
-                                        </div>
-                                        <small class="text-muted">Add custom attributes for this product (e.g., Color,
-                                            Size, Material)</small>
-                                    </div>
+                        <div class="mb-3">
+                            <label for="full_description" class="form-label">Full Description</label>
+                            <textarea class="form-control @error('full_description') is-invalid @enderror" id="full_description"
+                                name="full_description">{{ old('full_description', $product->full_description) }}</textarea>
+                            @error('full_description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Inventory</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="stock_quantity" class="form-label">Stock Quantity
+                                        *</label>
+                                    <input type="number"
+                                        class="form-control @error('stock_quantity') is-invalid @enderror"
+                                        id="stock_quantity" name="stock_quantity" min="0"
+                                        value="{{ old('stock_quantity', $product->stock_quantity) }}" required>
+                                    @error('stock_quantity')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="min_order_quantity" class="form-label">Minimum Order
+                                        Quantity *</label>
+                                    <input type="number"
+                                        class="form-control @error('min_order_quantity') is-invalid @enderror"
+                                        id="min_order_quantity" name="min_order_quantity" min="1"
+                                        value="{{ old('min_order_quantity', $product->min_order_quantity) }}" required>
+                                    @error('min_order_quantity')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                <!-- Hidden template for attribute rows -->
-                                <template id="attributeTemplate">
+                <!-- Attributes -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Attributes</h5>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="addAttributeRow()">
+                            <i class="fas fa-plus me-1"></i> Add Attribute
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="attributesContainer">
+                            <!-- Existing attributes -->
+                            @if ($product->attributesRows && $product->attributesRows->count() > 0)
+                                @foreach ($product->attributesRows as $attribute)
                                     <div class="row attribute-row mb-2">
                                         <div class="col-md-5">
                                             <input type="text" class="form-control attribute-key"
-                                                placeholder="Attribute name (e.g., Color)">
+                                                placeholder="Attribute name (e.g., Color)" value="{{ $attribute->key }}">
                                         </div>
                                         <div class="col-md-5">
                                             <input type="text" class="form-control attribute-value"
-                                                placeholder="Attribute value (e.g., Red, Blue, Green)">
+                                                placeholder="Attribute value (e.g., Red, Blue, Green)"
+                                                value="{{ $attribute->value }}">
                                         </div>
                                         <div class="col-md-2">
                                             <button type="button" class="btn btn-danger w-100 btn-remove-attribute">
@@ -276,207 +233,218 @@
                                             </button>
                                         </div>
                                     </div>
-                                </template>
-                            </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        <small class="text-muted">Add custom attributes for this product (e.g., Color,
+                            Size, Material)</small>
+                    </div>
+                </div>
 
-                            <!-- Sidebar -->
-                            <div class="col-md-4">
-                                <!-- Status & Featured -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Publish</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch mb-3">
-                                                <input class="form-check-input" type="checkbox" id="is_active"
-                                                    name="is_active" value="1"
-                                                    {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="is_active">Active</label>
-                                            </div>
+                <!-- SEO -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">SEO Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="meta_title" class="form-label">Meta Title</label>
+                            <input type="text" class="form-control @error('meta_title') is-invalid @enderror"
+                                id="meta_title" name="meta_title" value="{{ old('meta_title', $product->meta_title) }}">
+                            <small class="text-muted">Recommended: 50-60 characters</small>
+                            @error('meta_title')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="is_featured"
-                                                    name="is_featured" value="1"
-                                                    {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="is_featured">Featured Product</label>
-                                            </div>
-                                        </div>
+                        <div class="mb-3">
+                            <label for="meta_description" class="form-label">Meta Description</label>
+                            <textarea class="form-control @error('meta_description') is-invalid @enderror" id="meta_description"
+                                name="meta_description" rows="3">{{ old('meta_description', $product->meta_description) }}</textarea>
+                            <small class="text-muted">Recommended: 150-160 characters</small>
+                            @error('meta_description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                        <div class="d-grid gap-2">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-save me-2"></i> Update Product
-                                            </button>
-                                            <a href="{{ route('admin.products.index') }}" class="btn btn-light">
-                                                Cancel
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="mb-3">
+                            <label for="meta_keywords" class="form-label">Meta Keywords</label>
+                            <input type="text" class="form-control @error('meta_keywords') is-invalid @enderror"
+                                id="meta_keywords" name="meta_keywords"
+                                value="{{ old('meta_keywords', $product->meta_keywords) }}">
+                            <small class="text-muted">Separate keywords with commas</small>
+                            @error('meta_keywords')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="card mb-3">
-                                    <div class="card-header fw-bold">Deal of the Day</div>
-                                    <div class="card-body">
+                <!-- Hidden template for attribute rows -->
+                <template id="attributeTemplate">
+                    <div class="row attribute-row mb-2">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control attribute-key"
+                                placeholder="Attribute name (e.g., Color)">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control attribute-value"
+                                placeholder="Attribute value (e.g., Red, Blue, Green)">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger w-100 btn-remove-attribute">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
 
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" name="is_deal"
-                                                value="1"
-                                                {{ old('is_deal', $product->is_deal ?? false) ? 'checked' : '' }}>
-                                            <label class="form-check-label">Set as Deal of the Day</label>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Deal End Time</label>
-                                            <input type="datetime-local" name="deal_end_at" class="form-control"
-                                                value="{{ old('deal_end_at', isset($product->deal_end_at) ? $product->deal_end_at->format('Y-m-d\TH:i') : '') }}">
-                                        </div>
-
-                                    </div>
-                                </div>
+            <!-- Sidebar -->
+            <div class="col-xl-4">
 
 
-                                <!-- Shipping Information -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Shipping Information</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label for="weight" class="form-label">Weight (kg)</label>
-                                            <input type="number"
-                                                class="form-control @error('weight') is-invalid @enderror" id="weight"
-                                                name="weight" step="0.01" min="0"
-                                                value="{{ old('weight', $product->weight) }}">
-                                            @error('weight')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Deal of the Day</div>
+                    <div class="card-body">
 
-                                        <div class="mb-3">
-                                            <label for="dimensions" class="form-label">Dimensions (L×W×H)</label>
-                                            <input type="text"
-                                                class="form-control @error('dimensions') is-invalid @enderror"
-                                                id="dimensions" name="dimensions" placeholder="e.g., 10×5×2"
-                                                value="{{ old('dimensions', $product->dimensions) }}">
-                                            @error('dimensions')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" name="is_deal" value="1"
+                                {{ old('is_deal', $product->is_deal ?? false) ? 'checked' : '' }}>
+                            <label class="form-check-label">Set as Deal of the Day</label>
+                        </div>
 
-                                <!-- Media -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Media</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label for="video_url" class="form-label">Video URL</label>
-                                            <input type="url"
-                                                class="form-control @error('video_url') is-invalid @enderror"
-                                                id="video_url" name="video_url"
-                                                placeholder="https://youtube.com/watch?v=..."
-                                                value="{{ old('video_url', $product->video_url) }}">
-                                            @error('video_url')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <small class="text-muted">YouTube or Vimeo URL</small>
-                                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deal End Time</label>
+                            <input type="datetime-local" name="deal_end_at" class="form-control"
+                                value="{{ old('deal_end_at', isset($product->deal_end_at) ? $product->deal_end_at->format('Y-m-d\TH:i') : '') }}">
+                        </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label">Product Images</label>
-                                            <a href="{{ route('admin.products.show', $product->id) }}#images"
-                                                class="btn btn-sm btn-info w-100 mb-2">
-                                                <i class="fas fa-images me-2"></i> Manage Images
-                                            </a>
-                                            <small class="text-muted">Click above to manage product images</small>
-                                        </div>
-                                    </div>
-                                </div>
+                    </div>
+                </div>
 
-                                <!-- Product Stats -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Product Statistics</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">Views</label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $product->view_count }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Sold</label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $product->sold_count }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Average Rating</label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control"
-                                                    value="{{ number_format($product->average_rating, 1) }}" readonly>
-                                                <span class="input-group-text">
-                                                    <i class="fas fa-star text-warning"></i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Total Reviews</label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $product->total_reviews }}" readonly>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- SEO -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">SEO Settings</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label for="meta_title" class="form-label">Meta Title</label>
-                                            <input type="text"
-                                                class="form-control @error('meta_title') is-invalid @enderror"
-                                                id="meta_title" name="meta_title"
-                                                value="{{ old('meta_title', $product->meta_title) }}">
-                                            <small class="text-muted">Recommended: 50-60 characters</small>
-                                            @error('meta_title')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                <!-- Shipping Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Shipping Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="weight" class="form-label">Weight (kg)</label>
+                            <input type="number" class="form-control @error('weight') is-invalid @enderror"
+                                id="weight" name="weight" step="0.01" min="0"
+                                value="{{ old('weight', $product->weight) }}">
+                            @error('weight')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                        <div class="mb-3">
-                                            <label for="meta_description" class="form-label">Meta Description</label>
-                                            <textarea class="form-control @error('meta_description') is-invalid @enderror" id="meta_description"
-                                                name="meta_description" rows="3">{{ old('meta_description', $product->meta_description) }}</textarea>
-                                            <small class="text-muted">Recommended: 150-160 characters</small>
-                                            @error('meta_description')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                        <div class="mb-3">
+                            <label for="dimensions" class="form-label">Dimensions (L×W×H)</label>
+                            <input type="text" class="form-control @error('dimensions') is-invalid @enderror"
+                                id="dimensions" name="dimensions" placeholder="e.g., 10×5×2"
+                                value="{{ old('dimensions', $product->dimensions) }}">
+                            @error('dimensions')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
 
-                                        <div class="mb-3">
-                                            <label for="meta_keywords" class="form-label">Meta Keywords</label>
-                                            <input type="text"
-                                                class="form-control @error('meta_keywords') is-invalid @enderror"
-                                                id="meta_keywords" name="meta_keywords"
-                                                value="{{ old('meta_keywords', $product->meta_keywords) }}">
-                                            <small class="text-muted">Separate keywords with commas</small>
-                                            @error('meta_keywords')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Media -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Media</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="video_url" class="form-label">Video URL</label>
+                            <input type="url" class="form-control @error('video_url') is-invalid @enderror"
+                                id="video_url" name="video_url" placeholder="https://youtube.com/watch?v=..."
+                                value="{{ old('video_url', $product->video_url) }}">
+                            @error('video_url')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">YouTube or Vimeo URL</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Product Images</label>
+                            <a href="{{ route('admin.products.show', $product->id) }}#images"
+                                class="btn btn-sm btn-info w-100 mb-2">
+                                <i class="fas fa-images me-2"></i> Manage Images
+                            </a>
+                            <small class="text-muted">Click above to manage product images</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Stats -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Product Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Views</label>
+                            <input type="text" class="form-control" value="{{ $product->view_count }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sold</label>
+                            <input type="text" class="form-control" value="{{ $product->sold_count }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Average Rating</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control"
+                                    value="{{ number_format($product->average_rating, 1) }}" readonly>
+                                <span class="input-group-text">
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
                             </div>
                         </div>
-                    </form>
+                        <div class="mb-3">
+                            <label class="form-label">Total Reviews</label>
+                            <input type="text" class="form-control" value="{{ $product->total_reviews }}" readonly>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Status & Featured -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Publish</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                                    value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">Active</label>
+                            </div>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured"
+                                    value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_featured">Featured Product</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Update Product
+                            </button>
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-light">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div>
+    </form>
 @endsection
 
 @push('scripts')

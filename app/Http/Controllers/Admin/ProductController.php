@@ -74,8 +74,8 @@ class ProductController extends Controller
 
         // Extract attributes rows
         $attributeRows = $this->buildAttributeRows($request->input('attributes') ?? []);
-            // Prevent array field from being inserted into products table
-            unset($validated['attributes']);
+        // Prevent array field from being inserted into products table
+        unset($validated['attributes']);
 
         // 🔥 If deal selected, remove previous deal
         if ($request->boolean('is_deal')) {
@@ -194,14 +194,30 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // Check if product has any orders before deleting
-        // You might want to add this check based on your order system
-
-                    unset($validated['attributes']);
-        $product->delete();
+        // Delete all related items: attributes, images, etc.
+        DB::transaction(function () use ($product) {
+            // Delete product attributes
+            $product->attributesRows()->delete();
+            // Delete product images and their files
+            foreach ($product->images as $image) {
+                if ($image->image && \Storage::disk($image->disk ?? 'public')->exists($image->image)) {
+                    \Storage::disk($image->disk ?? 'public')->delete($image->image);
+                }
+                $image->delete();
+            }
+            // Delete product prices
+            $product->prices()->delete();
+            // Delete packaging rules
+            $product->packagingRules()->delete();
+            // Delete tax override
+            $product->taxOverride()->delete();
+            // Detach from wishlists
+            $product->wishlists()->detach();
+            $product->delete();
+        });
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Product deleted successfully.');
+            ->with('success', 'Product and all related items deleted successfully.');
     }
 
     public function bulkAction(Request $request)

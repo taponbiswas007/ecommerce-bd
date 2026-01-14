@@ -98,7 +98,7 @@
                                     <th width="50">
                                         <input type="checkbox" class="form-check-input" id="checkAll">
                                     </th>
-                                    <th>Product</th>
+                                    <th style="min-width: 400px">Product</th>
                                     <th>Category</th>
                                     <th>Price</th>
                                     <th>Stock</th>
@@ -273,6 +273,17 @@
         </div>
     </div>
 
+
+
+    <!-- Bulk Action Form -->
+    <form id="bulkActionForm" method="POST" action="{{ route('admin.products.bulk-action') }}">
+        @csrf
+        <input type="hidden" name="action" id="bulkAction">
+        <input type="hidden" name="ids" id="bulkIds">
+    </form>
+@endsection
+
+@section('modalpopup')
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -296,13 +307,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Bulk Action Form -->
-    <form id="bulkActionForm" method="POST" action="{{ route('admin.products.bulk-action') }}">
-        @csrf
-        <input type="hidden" name="action" id="bulkAction">
-        <input type="hidden" name="ids" id="bulkIds">
-    </form>
 @endsection
 
 @push('scripts')
