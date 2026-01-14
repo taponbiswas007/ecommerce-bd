@@ -1,0 +1,8 @@
+/* Fix Bootstrap modal backdrop z-index issue for admin modals */
+.modal-backdrop.show {
+    z-index: 1050 !important;
+}
+
+.modal {
+    z-index: 1060 !important;
+}

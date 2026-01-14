@@ -23,6 +23,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.css">
+    <link rel="stylesheet" href="/assets/css/modal-fix.css">
     <style>
         .image-card {
             border: 2px solid transparent;
@@ -127,13 +128,6 @@
                                     Bulk Actions
                                 </button>
                                 <div class="dropdown-menu">
-                                    <button class="dropdown-item" onclick="bulkAction('set_primary')">
-                                        <i class="fas fa-star text-success me-2"></i> Set as Primary
-                                    </button>
-                                    <button class="dropdown-item" onclick="bulkAction('set_featured')">
-                                        <i class="fas fa-award text-warning me-2"></i> Set as Featured
-                                    </button>
-                                    <div class="dropdown-divider"></div>
                                     <button class="dropdown-item text-danger" onclick="bulkAction('delete')">
                                         <i class="fas fa-trash me-2"></i> Delete
                                     </button>
@@ -261,6 +255,17 @@
         </div>
     </div>
 
+
+
+    <!-- Bulk Action Form -->
+    <form id="bulkActionForm" method="POST" action="{{ route('admin.products.images.bulk-action', $product->id) }}">
+        @csrf
+        <input type="hidden" name="action" id="bulkAction">
+        <input type="hidden" name="ids" id="bulkIds">
+        <input type="hidden" name="display_order" id="bulkDisplayOrder">
+    </form>
+@endsection
+@section('modalpopup')
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -306,16 +311,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Bulk Action Form -->
-    <form id="bulkActionForm" method="POST" action="{{ route('admin.products.images.bulk-action', $product->id) }}">
-        @csrf
-        <input type="hidden" name="action" id="bulkAction">
-        <input type="hidden" name="ids" id="bulkIds">
-        <input type="hidden" name="display_order" id="bulkDisplayOrder">
-    </form>
 @endsection
-
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
@@ -451,10 +447,24 @@
         }
 
         function performBulkAction(action, ids) {
+            const form = document.getElementById('bulkActionForm');
+            // Remove any previous ids[] hidden inputs
+            Array.from(form.querySelectorAll('input[name="ids[]"]')).forEach(e => e.remove());
+            // Add new ids[] hidden inputs
+            ids.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
             document.getElementById('bulkAction').value = action;
-            document.getElementById('bulkIds').value = JSON.stringify(ids);
-            document.getElementById('bulkActionForm').submit();
+            // Remove the old bulkIds field if present
+            const bulkIds = document.getElementById('bulkIds');
+            if (bulkIds) bulkIds.value = '';
+            form.submit();
         }
+
 
         // Set as primary
         async function setPrimary(imageId) {
@@ -467,29 +477,30 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
-                    // Update UI
                     document.querySelectorAll('.image-card').forEach(card => {
                         card.classList.remove('primary');
+                        // Remove badge if exists
+                        let badge = card.querySelector('.badge.bg-success');
+                        if (badge) badge.remove();
                     });
-
                     const card = document.querySelector(`[data-id="${imageId}"] .image-card`);
                     if (card) {
                         card.classList.add('primary');
+                        // Add badge if not exists
+                        let badgeContainer = card.querySelector('.image-badges');
+                        if (badgeContainer && !badgeContainer.querySelector('.bg-success')) {
+                            let badge = document.createElement('span');
+                            badge.className = 'badge bg-success badge-sm';
+                            badge.innerHTML = '<i class="fas fa-star"></i> Primary';
+                            badgeContainer.appendChild(badge);
+                        }
                     }
-
                     Toast.fire({
                         icon: 'success',
                         title: data.message
                     });
-
-                    // Reload after 1 second
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -511,35 +522,78 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
-                    // Update UI
                     document.querySelectorAll('.image-card').forEach(card => {
                         card.classList.remove('featured');
+                        // Remove badge if exists
+                        let badge = card.querySelector('.badge.bg-warning');
+                        if (badge) badge.remove();
                     });
-
                     const card = document.querySelector(`[data-id="${imageId}"] .image-card`);
                     if (card) {
                         card.classList.add('featured');
+                        // Add badge if not exists
+                        let badgeContainer = card.querySelector('.image-badges');
+                        if (badgeContainer && !badgeContainer.querySelector('.bg-warning')) {
+                            let badge = document.createElement('span');
+                            badge.className = 'badge bg-warning badge-sm';
+                            badge.innerHTML = '<i class="fas fa-award"></i> Featured';
+                            badgeContainer.appendChild(badge);
+                        }
                     }
-
                     Toast.fire({
                         icon: 'success',
                         title: data.message
                     });
-
-                    // Reload after 1 second
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 Toast.fire({
                     icon: 'error',
                     title: 'Error setting featured image'
+                });
+            }
+        }
+
+        // Save order (AJAX version for instant feedback)
+        async function saveOrder() {
+            const orderData = {};
+            document.querySelectorAll('.order-input').forEach(input => {
+                orderData[input.getAttribute('data-id')] = input.value;
+            });
+            try {
+                const response = await fetch(`/admin/products/{{ $product->id }}/images/reorder`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        images: Object.entries(orderData).map(([id, order]) => ({
+                            id,
+                            order: parseInt(order)
+                        }))
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Order saved successfully!'
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Order not saved!'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Error saving order'
                 });
             }
         }
