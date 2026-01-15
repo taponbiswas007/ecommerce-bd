@@ -91,7 +91,8 @@
         .product-img-container {
             position: relative;
             overflow: hidden;
-            height: 280px;
+            width: 100%;
+            aspect-ratio: 1/1.03;
             background: #f8f9fa;
             flex-shrink: 0;
         }
@@ -884,7 +885,8 @@
             }
 
             .product-img-container {
-                height: 200px;
+                width: 100%;
+                aspect-ratio: 1/1.03;
             }
 
             .quick-view-modal .modal-dialog {
@@ -1085,12 +1087,12 @@
 
                                         <div class="product-actions">
                                             <button class="action-btn quick-view-btn"
-                                                data-product-id="{{ $product->id }}">
+                                                data-product-id="{{ $product->hashid }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button
                                                 class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->id }}">
+                                                data-product-id="{{ $product->hashid }}">
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                         </div>
@@ -1150,7 +1152,7 @@
                                             class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
                                             {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                         </span>
-                                        <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                        <button class="add-to-cart-btn" data-product-id="{{ $product->hashid }}">
                                             <i class="fas fa-cart-plus"></i> Cart
                                         </button>
                                     </div>
@@ -1219,7 +1221,7 @@
 
                             <div class="d-flex gap-3 flex-wrap">
                                 <button class="btn btn-light btn-lg add-to-cart"
-                                    data-product-id="{{ $dealProduct->id }}">
+                                    data-product-id="{{ $dealProduct->hashid }}">
                                     <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                 </button>
                                 <a href="{{ route('product.show', $dealProduct->slug) }}"
@@ -1228,7 +1230,7 @@
                                 </a>
                                 <button
                                     class="btn btn-outline-light btn-lg wishlist-btn {{ Auth::check() && $dealProduct->isInWishlist() ? 'active' : '' }}"
-                                    data-product-id="{{ $dealProduct->id }}">
+                                    data-product-id="{{ $dealProduct->hashid }}">
                                     <i class="fas fa-heart me-2"></i> Wishlist
                                 </button>
                             </div>
@@ -1298,12 +1300,12 @@
 
                                                 <div class="product-actions">
                                                     <button class="action-btn quick-view-btn"
-                                                        data-product-id="{{ $product->id }}">
+                                                        data-product-id="{{ $product->hashid }}">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                     <button
                                                         class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                        data-product-id="{{ $product->id }}">
+                                                        data-product-id="{{ $product->hashid }}">
                                                         <i class="fas fa-heart"></i>
                                                     </button>
                                                 </div>
@@ -1369,7 +1371,7 @@
                                                     class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
                                                     {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                                 </span>
-                                                <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                                <button class="add-to-cart-btn" data-product-id="{{ $product->hashid }}">
                                                     <i class="fas fa-cart-plus"></i> Cart
                                                 </button>
                                             </div>
@@ -1436,12 +1438,12 @@
 
                                         <div class="product-actions">
                                             <button class="action-btn quick-view-btn"
-                                                data-product-id="{{ $product->id }}">
+                                                data-product-id="{{ $product->hashid }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button
                                                 class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->id }}">
+                                                data-product-id="{{ $product->hashid }}">
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                         </div>
@@ -1497,7 +1499,7 @@
                                             class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
                                             {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                         </span>
-                                        <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                        <button class="add-to-cart-btn" data-product-id="{{ $product->hashid }}">
                                             <i class="fas fa-cart-plus"></i> Cart
                                         </button>
                                     </div>
@@ -1815,7 +1817,7 @@
                         e.preventDefault();
                         const button = e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn');
                         const productId = button.getAttribute('data-product-id');
-                        addToCart(productId, 1);
+                        showQuickView(productId); // Always open Quick View modal for Add to Cart
                     }
 
                     // Quick View
@@ -2079,7 +2081,7 @@
             }
 
             // Add to Cart Function
-            function addToCart(productId, quantity) {
+            function addToCart(productId, quantity, attributes = {}) {
                 @auth
                 fetch('{{ route('cart.add') }}', {
                         method: 'POST',
@@ -2089,7 +2091,8 @@
                         },
                         body: JSON.stringify({
                             product_id: productId,
-                            quantity: quantity
+                            quantity: quantity,
+                            attributes: attributes
                         })
                     })
                     .then(response => response.json())

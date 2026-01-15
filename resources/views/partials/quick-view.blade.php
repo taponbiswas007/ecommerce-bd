@@ -80,6 +80,40 @@
         @endif
     </div>
 
+
+    <!-- Product Attributes Selection (Quick View) -->
+    @php
+        $attributes = $product->attribute_pairs ?? [];
+    @endphp
+    @if (!empty($attributes))
+        <div class="product-attributes mb-4">
+            @foreach ($attributes as $key => $value)
+                <div class="attribute-group mb-3">
+                    <label class="fw-bold mb-2">{{ ucfirst(str_replace('_', ' ', $key)) }}:</label>
+                    @php
+                        $options = array_map('trim', explode(',', $value));
+                    @endphp
+                    @if (count($options) > 1)
+                        <div class="attribute-options d-flex flex-wrap gap-2">
+                            @foreach ($options as $option)
+                                <button type="button" class="btn btn-outline-primary attribute-option"
+                                    data-attribute="{{ $key }}" data-value="{{ $option }}"
+                                    onclick="selectQuickViewAttribute(this)">
+                                    {{ $option }}
+                                </button>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="attribute-value">
+                            <span class="badge bg-light text-dark fs-6">{{ $value }}</span>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+            <input type="hidden" id="quickViewSelectedAttributes" value="">
+        </div>
+    @endif
+
     <!-- Add to Cart -->
     @if ($product->stock_quantity > 0)
         <div class="add-to-cart mb-4">
@@ -92,7 +126,7 @@
                     onclick="quickViewIncreaseQuantity()">+</button>
             </div>
             <button class="btn btn-primary btn-lg w-100 add-to-cart-btn"
-                onclick="addToCartFromQuickView({{ $product->id }})">
+                onclick="addToCartFromQuickView('{{ $product->hashid }}')">
                 <i class="fas fa-cart-plus me-2"></i> Add to Cart
             </button>
         </div>
@@ -170,8 +204,33 @@
 
     // Add to cart from quick view
     function addToCartFromQuickView(productId) {
+        // Collect selected attributes
+        const attributeButtons = document.querySelectorAll('.product-attributes .attribute-options');
+        let attributes = {};
+        let allSelected = true;
+        attributeButtons.forEach(group => {
+            const selected = group.querySelector('.attribute-option.selected');
+            const attr = group.querySelector('.attribute-option')?.getAttribute('data-attribute');
+            if (attr) {
+                if (selected) {
+                    attributes[attr] = selected.getAttribute('data-value');
+                } else {
+                    allSelected = false;
+                }
+            }
+        });
+        if (!allSelected && attributeButtons.length > 0) {
+            Toast.fire({
+                icon: 'error',
+                title: 'Please select all attributes.'
+            });
+            return;
+        }
+        // Save selected attributes to hidden input (optional, for backend)
+        document.getElementById('quickViewSelectedAttributes').value = JSON.stringify(attributes);
+
         const quantity = document.getElementById('quick-view-quantity')?.value || 1;
-        addToCart(productId, quantity);
+        addToCart(productId, quantity, attributes);
 
         // Close the modal after adding to cart
         const modal = bootstrap.Modal.getInstance(document.getElementById('quickViewModal'));
@@ -179,4 +238,15 @@
             modal.hide();
         }
     }
+
+    // Attribute selection handler for Quick View
+    function selectQuickViewAttribute(btn) {
+        const group = btn.closest('.attribute-options');
+        if (!group) return;
+        group.querySelectorAll('.attribute-option').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+    // Ensure function is globally available for inline onclick after dynamic modal load
+    window.selectQuickViewAttribute = selectQuickViewAttribute;
+    window.addToCartFromQuickView = addToCartFromQuickView;
 </script>

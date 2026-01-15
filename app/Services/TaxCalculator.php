@@ -24,6 +24,7 @@ class TaxCalculator
                 'vat_amount' => 0,
                 'vat_percentage' => 0,
                 'included' => $isIncluded,
+                'addable_amount' => 0,
             ];
         }
 
@@ -61,6 +62,7 @@ class TaxCalculator
                 'ait_amount' => 0,
                 'ait_percentage' => 0,
                 'included' => $isIncluded,
+                'addable_amount' => 0,
             ];
         }
 

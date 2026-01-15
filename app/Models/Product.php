@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,9 +8,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProductAttribute;
 
+
+/**
+* Get the Hashids-encoded ID for this product.
+*/
+trait ProductHashidsTrait {
+public function getHashidAttribute()
+{
+return app('hashids')->encode($this->id);
+}
+
+public static function findByHashid($hashid)
+{
+$decoded = app('hashids')->decode($hashid);
+if (count($decoded) === 0) {
+return null;
+}
+return self::find($decoded[0]);
+}
+}
+
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, ProductHashidsTrait, SoftDeletes;
 
     protected $fillable = [
         'name',

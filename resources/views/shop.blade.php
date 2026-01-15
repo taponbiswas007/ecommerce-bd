@@ -34,7 +34,8 @@
         .product-img-container {
             position: relative;
             overflow: hidden;
-            height: 280px;
+            width: 100%;
+            aspect-ratio: 1/1.03;
             background: #f8f9fa;
             flex-shrink: 0;
         }
@@ -618,12 +619,12 @@
                                         <!-- Action Buttons -->
                                         <div class="product-actions">
                                             <button class="action-btn quick-view-btn"
-                                                data-product-id="{{ $product->id }}" title="Quick View">
+                                                data-product-id="{{ $product->hashid }}" title="Quick View">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                             <button
                                                 class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->id }}" title="Add to Wishlist">
+                                                data-product-id="{{ $product->hashid }}" title="Add to Wishlist">
                                                 <i class="fas fa-heart"></i>
                                             </button>
                                         </div>
@@ -686,7 +687,7 @@
                                                 class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
                                                 {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
                                             </span>
-                                            <button class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                            <button class="add-to-cart-btn" data-product-id="{{ $product->hashid }}">
                                                 <i class="fas fa-cart-plus"></i> Cart
                                             </button>
                                         </div>

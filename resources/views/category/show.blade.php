@@ -281,7 +281,8 @@
         .product-img-container {
             position: relative;
             overflow: hidden;
-            height: 280px;
+            width: 100%;
+            aspect-ratio: 1/1.03;
             background: #f8f9fa;
             flex-shrink: 0;
         }
@@ -572,7 +573,8 @@
             }
 
             .product-img-container {
-                height: 200px;
+                width: 100%;
+                aspect-ratio: 1/1.03;
             }
         }
     </style>

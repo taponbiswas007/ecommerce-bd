@@ -446,6 +446,30 @@
             border-radius: 2px;
         }
 
+        .product-gallery .swiper-button-next,
+        .product-gallery .swiper-button-prev {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: #000000;
+            border: 2px solid #000000;
+            transition: all 0.3s ease;
+        }
+
+        .product-gallery .swiper-button-next:hover,
+        .product-gallery .swiper-button-prev:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .product-gallery .swiper-button-next:after,
+        .product-gallery .swiper-button-prev:after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-gallery {
@@ -833,8 +857,8 @@
                     <div class="d-flex align-items-center">
                         <i class="fas fa-shipping-fast fa-lg"></i>
                         <div>
-                            <strong>Free Shipping</strong>
-                            <p class="mb-0 small">Free delivery on orders above ৳500</p>
+                            <strong>Shipping Charges Apply</strong>
+                            <p class="mb-0 small">Shipping cost will be calculated at checkout</p>
                         </div>
                     </div>
                 </div>
@@ -891,10 +915,10 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     @if ($product->stock_quantity > 0)
-                        <button class="btn-add-to-cart" onclick="addToCart({{ $product->id }})">
+                        <button class="btn-add-to-cart" onclick="addToCart('{{ $product->hashid }}')">
                             <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
-                        <button class="btn-buy-now" onclick="buyNow({{ $product->id }})">
+                        <button class="btn-buy-now" onclick="buyNow('{{ $product->hashid }}')">
                             <i class="fas fa-bolt"></i> Buy Now
                         </button>
                     @else
@@ -910,14 +934,11 @@
                 <!-- Wishlist & Compare -->
                 <div class="wishlist-compare">
                     <button class="wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                        onclick="toggleWishlist({{ $product->id }}, this)">
+                        onclick="toggleWishlist('{{ $product->hashid }}', this)">
                         <i class="fas fa-heart"></i>
                         <span id="wishlist-text">
                             {{ Auth::check() && $product->isInWishlist() ? 'In Wishlist' : 'Add to Wishlist' }}
                         </span>
-                    </button>
-                    <button class="compare-btn" onclick="addToCompare({{ $product->id }})">
-                        <i class="fas fa-exchange-alt"></i> Compare
                     </button>
                 </div>
 
@@ -1157,6 +1178,13 @@
                                         </div>
                                     </div>
                                 </a>
+                                <div class="card-footer bg-transparent border-0 text-end">
+                                    <button
+                                        class="wishlist-btn {{ Auth::check() && $relatedProduct->isInWishlist() ? 'active' : '' }}"
+                                        onclick="toggleWishlist('{{ $relatedProduct->hashid }}', this)">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -1167,6 +1195,25 @@
 
     <!-- Zoom Modal -->
     <div class="modal fade" id="zoomModal" tabindex="-1">
+        <!-- Login Modal -->
+        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLabel">Login Required</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="mb-3">You must be logged in to add products to your cart.</p>
+                        <a href="{{ route('login') }}" class="btn btn-primary w-100">Login</a>
+                        <div class="mt-2">
+                            <span>Don't have an account?</span>
+                            <a href="{{ route('register') }}">Register</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header border">
@@ -1312,6 +1359,24 @@
         function addToCart(productId) {
             const quantity = document.getElementById('quantity').value;
             const selectedAttributes = getSelectedAttributes();
+            const attributes = @json($product->attribute_pairs ?? []);
+
+            // If product has attributes, require all to be selected
+            if (Object.keys(attributes).length > 0) {
+                let missing = [];
+                for (const key in attributes) {
+                    if (!selectedAttributes[key]) {
+                        missing.push(key);
+                    }
+                }
+                if (missing.length > 0) {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Please select: ' + missing.map(k => k.replace(/_/g, ' ')).join(', ')
+                    });
+                    return;
+                }
+            }
 
             @auth
             fetch('{{ route('cart.add') }}', {
@@ -1426,13 +1491,7 @@
         @endauth
         }
 
-        // Compare
-        function addToCompare(productId) {
-            Toast.fire({
-                icon: 'info',
-                title: 'Added to compare list'
-            });
-        }
+
 
         // Zoom image
         function zoomImage() {

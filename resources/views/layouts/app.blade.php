@@ -1208,7 +1208,7 @@
         // Handle add to cart with login check
         // Handle add to cart with login check
         // Add to cart function (use this in all your blade files)
-        function addToCart(productId, quantity = 1) {
+        function addToCart(productId, quantity = 1, attributes = {}) {
             fetch('{{ route('cart.add') }}', {
                     method: 'POST',
                     headers: {
@@ -1217,7 +1217,8 @@
                     },
                     body: JSON.stringify({
                         product_id: productId,
-                        quantity: quantity
+                        quantity: quantity,
+                        attributes: attributes
                     })
                 })
                 .then(response => response.json())

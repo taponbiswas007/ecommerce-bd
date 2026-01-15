@@ -401,7 +401,7 @@
                         </div>
 
                         @foreach ($cartItems as $item)
-                            <div class="cart-item" id="cart-item-{{ $item->id }}">
+                            <div class="cart-item" id="cart-item-{{ app('hashids')->encode($item->id) }}">
                                 <div class="row align-items-center">
                                     <!-- Product Image -->
                                     <div class="col-md-3 mb-3 mb-md-0">
@@ -454,23 +454,24 @@
                                                 <!-- Quantity Selector -->
                                                 <div class="quantity-selector">
                                                     <button class="quantity-btn"
-                                                        onclick="updateQuantity({{ $item->id }}, 'decrease')"
+                                                        onclick="updateQuantity('{{ app('hashids')->encode($item->id) }}', 'decrease')"
                                                         {{ $item->quantity <= 1 ? 'disabled' : '' }}>
                                                         -
                                                     </button>
                                                     <input type="number" class="quantity-input"
                                                         value="{{ $item->quantity }}" min="1"
                                                         max="{{ $item->product->stock_quantity }}"
-                                                        onchange="updateQuantityInput({{ $item->id }}, this.value)">
+                                                        onchange="updateQuantityInput('{{ app('hashids')->encode($item->id) }}', this.value)">
                                                     <button class="quantity-btn"
-                                                        onclick="updateQuantity({{ $item->id }}, 'increase')"
+                                                        onclick="updateQuantity('{{ app('hashids')->encode($item->id) }}', 'increase')"
                                                         {{ $item->quantity >= $item->product->stock_quantity ? 'disabled' : '' }}>
                                                         +
                                                     </button>
                                                 </div>
 
                                                 <!-- Remove Button -->
-                                                <button class="remove-btn mt-2" onclick="removeItem({{ $item->id }})">
+                                                <button class="remove-btn mt-2"
+                                                    onclick="removeItem('{{ app('hashids')->encode($item->id) }}')">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </div>
@@ -538,13 +539,7 @@
 
                             <div class="summary-row">
                                 <span class="summary-label">Shipping</span>
-                                <span class="summary-value">
-                                    @if ($shipping == 0)
-                                        <span class="text-success">Free</span>
-                                    @else
-                                        ৳{{ number_format($shipping, 2) }}
-                                    @endif
-                                </span>
+                                <span class="summary-value">৳{{ number_format($shipping, 2) }}</span>
                             </div>
 
                             <div class="summary-row">

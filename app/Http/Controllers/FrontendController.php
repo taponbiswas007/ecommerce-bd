@@ -208,10 +208,10 @@ class FrontendController extends Controller
     /**
      * Quick view product
      */
-    public function quickView($id)
+    public function quickView($hashid)
     {
         $product = Product::with(['images', 'category', 'unit', 'prices'])
-            ->where('id', $id)
+            ->where('id', Product::findByHashid($hashid)?->id)
             ->where('is_active', true)
             ->firstOrFail();
 

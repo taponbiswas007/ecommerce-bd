@@ -50,12 +50,48 @@ class CartController extends Controller
     // Add item to cart
     public function add(Request $request)
     {
+        // Only allow logged-in users to add to cart
+        if (!Auth::check() || Auth::user()->role !== 'customer') {
+            return response()->json([
+                'success' => false,
+                'requires_login' => true,
+                'message' => 'Please login to add items to cart.'
+            ], 401);
+        }
+
+
         $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'product_id' => 'required',
             'quantity' => 'required|integer|min:1'
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findByHashid($request->product_id);
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid product.'
+            ], 404);
+        }
+
+        // Backend attribute selection enforcement
+        $attributePairs = $product->attribute_pairs ?? [];
+        if (!empty($attributePairs)) {
+            $selected = $request->attributes ?? [];
+            $missing = [];
+            foreach (array_keys($attributePairs) as $key) {
+                if (empty($selected[$key])) {
+                    $missing[] = $key;
+                }
+            }
+            if (!empty($missing)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please select: ' . implode(', ', array_map(function ($k) {
+                        return str_replace('_', ' ', $k);
+                    }, $missing))
+                ], 422);
+            }
+        }
 
         // Check stock availability
         if ($product->stock_quantity < $request->quantity) {
@@ -85,23 +121,29 @@ class CartController extends Controller
     }
 
     // Update cart item quantity
-    public function update(Request $request, $id)
+    public function update(Request $request, $hashid)
     {
         $request->validate([
             'quantity' => 'required|integer|min:0'
         ]);
 
+        $decoded = app('hashids')->decode($hashid);
+        if (count($decoded) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid cart item.'
+            ], 404);
+        }
+        $id = $decoded[0];
         if ($request->quantity == 0) {
             // Remove item if quantity is 0
             Cart::removeItem($id);
-
             return response()->json([
                 'success' => true,
                 'message' => 'Item removed from cart',
                 'cart_count' => Cart::count()
             ]);
         }
-
         // Update quantity (price recalculated automatically)
         $updated = Cart::updateQuantity($id, $request->quantity);
 
@@ -120,10 +162,17 @@ class CartController extends Controller
     }
 
     // Remove item from cart
-    public function remove($id)
+    public function remove($hashid)
     {
+        $decoded = app('hashids')->decode($hashid);
+        if (count($decoded) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid cart item.'
+            ], 404);
+        }
+        $id = $decoded[0];
         Cart::removeItem($id);
-
         return response()->json([
             'success' => true,
             'message' => 'Item removed from cart',

@@ -164,11 +164,11 @@
                                     <div class="col-md-4 text-end">
                                         <div class="d-flex flex-column gap-2 align-items-end">
                                             <button class="remove-btn"
-                                                onclick="removeFromWishlist({{ $item->product->id }}, this)">
+                                                onclick="removeFromWishlist('{{ $item->product->hashid }}', this)">
                                                 <i class="fas fa-trash me-2"></i>Remove
                                             </button>
                                             <button class="add-to-cart-btn"
-                                                onclick="addToCart({{ $item->product->id }}, 1)">
+                                                onclick="addToCart('{{ $item->product->hashid }}', 1)">
                                                 <i class="fas fa-cart-plus me-2"></i>Add to Cart
                                             </button>
                                             <a href="{{ route('product.show', $item->product->slug) }}"

@@ -18,15 +18,17 @@ class WishlistController extends Controller
         return view('wishlist.index', compact('wishlistItems'));
     }
 
-    public function add(Request $request)
+    public function add(Request $request, $hashid)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $request->validate([
-            'product_id' => 'required|exists:products,id'
-        ]);
-
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findByHashid($hashid);
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid product.'
+            ], 404);
+        }
 
         // Check if user is authenticated and customer
         if (!Auth::check() || $user->role !== 'customer') {
@@ -62,7 +64,7 @@ class WishlistController extends Controller
         ]);
     }
 
-    public function remove(Request $request, $productId)
+    public function remove(Request $request, $hashid)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -74,8 +76,15 @@ class WishlistController extends Controller
             ]);
         }
 
+        $product = Product::findByHashid($hashid);
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid product.'
+            ], 404);
+        }
         $wishlistItem = Wishlist::where('user_id', Auth::id())
-            ->where('product_id', $productId)
+            ->where('product_id', $product->id)
             ->first();
 
         if (!$wishlistItem) {
@@ -94,7 +103,7 @@ class WishlistController extends Controller
         ]);
     }
 
-    public function toggle(Request $request, $productId)
+    public function toggle(Request $request, $hashid)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -106,17 +115,23 @@ class WishlistController extends Controller
             ]);
         }
 
+        $product = Product::findByHashid($hashid);
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid product.'
+            ], 404);
+        }
         $existing = Wishlist::where('user_id', Auth::id())
-            ->where('product_id', $productId)
+            ->where('product_id', $product->id)
             ->first();
-
         if ($existing) {
             $existing->delete();
             $action = 'removed';
         } else {
             Wishlist::create([
                 'user_id' => Auth::id(),
-                'product_id' => $productId
+                'product_id' => $product->id
             ]);
             $action = 'added';
         }

@@ -41,7 +41,7 @@ Route::get('/delivery-charges/upazilas', [\App\Http\Controllers\Admin\DeliveryCh
 // Shipping estimate (used by checkout to re-calc when transport/company changes)
 Route::get('/shipping/estimate', [\App\Http\Controllers\CheckoutController::class, 'estimate'])->name('shipping.estimate');
 Route::get('/category/{category:slug}', [FrontendController::class, 'categoryShow'])->name('category.show');
-Route::get('/product/quick-view/{id}', [FrontendController::class, 'quickView'])->name('product.quick-view');
+Route::get('/product/quick-view/{hashid}', [FrontendController::class, 'quickView'])->name('product.quick-view');
 Route::get('/flash-sale', [FrontendController::class, 'flashSale'])->name('flash-sale');
 Route::get('/new-arrivals', [FrontendController::class, 'newArrivals'])->name('new-arrivals');
 // Static Page Routes
@@ -63,8 +63,8 @@ Route::get('/auth/facebook/callback', [SocialLoginController::class, 'handleFace
 // Cart Routes (Public - with authentication check inside controller)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/update/{hashid}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{hashid}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 // Product Reviews (Public viewing, authenticated posting)
@@ -80,9 +80,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     // Wishlist Routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-    Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
-    Route::post('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
-    Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/wishlist/add/{hashid}', [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::post('/wishlist/remove/{hashid}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/wishlist/toggle/{hashid}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // Checkout & Payment Routes (Buying flow)
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
