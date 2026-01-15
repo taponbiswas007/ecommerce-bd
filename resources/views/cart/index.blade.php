@@ -424,6 +424,15 @@
                                             </a>
                                         </h5>
 
+                                        @if (!empty($item->attributes))
+                                            <div class="text-muted small mb-2">
+                                                @foreach ($item->attributes as $key => $value)
+                                                    <span class="me-2"><strong>{{ ucfirst($key) }}:</strong>
+                                                        {{ $value }}</span>
+                                                @endforeach
+                                            </div>
+                                        @endif
+
                                         @if ($item->product->category)
                                             <p class="text-muted small mb-2">
                                                 Category: {{ $item->product->category->name }}

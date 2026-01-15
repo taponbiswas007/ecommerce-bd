@@ -470,6 +470,68 @@
             font-weight: bold;
         }
 
+        /* Product Attributes */
+        .product-attributes {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 25px;
+        }
+
+        .attribute-group {
+            margin-bottom: 20px;
+        }
+
+        .attribute-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .attribute-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .attribute-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .attribute-option {
+            min-width: 80px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .attribute-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .attribute-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .attribute-single-value {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-gallery {
@@ -593,47 +655,16 @@
             color: #495057;
         }
 
-        /* Product Attributes */
-        .product-attributes {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid #dee2e6;
-        }
-
-        .attribute-group {
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 15px;
-        }
-
-        .attribute-group:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .attribute-options .attribute-option {
-            min-width: 80px;
-            padding: 8px 16px;
+        /* Attribute Selection Warning */
+        .attribute-warning {
+            display: none;
+            color: var(--danger-color);
             font-size: 14px;
-            font-weight: 500;
-            border: 2px solid #dee2e6;
-            transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
-        .attribute-options .attribute-option:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .attribute-options .attribute-option.selected {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .attribute-value .badge {
-            padding: 8px 16px;
-            font-weight: 500;
+        .attribute-warning.show {
+            display: block;
         }
     </style>
 
@@ -866,19 +897,31 @@
                 <!-- Product Attributes Selection -->
                 @php
                     $attributes = $product->attribute_pairs ?? [];
+                    $hasMultipleOptions = false;
+
+                    foreach ($attributes as $key => $value) {
+                        $options = array_map('trim', explode(',', $value));
+                        if (count($options) > 1) {
+                            $hasMultipleOptions = true;
+                            break;
+                        }
+                    }
                 @endphp
+
                 @if (!empty($attributes))
-                    <div class="product-attributes mb-4">
+                    <div class="product-attributes">
                         @foreach ($attributes as $key => $value)
-                            <div class="attribute-group mb-3" data-attribute-key="{{ $key }}">
-                                <label class="fw-bold mb-2">{{ ucfirst(str_replace('_', ' ', $key)) }}:</label>
-                                @php
-                                    $options = array_map('trim', explode(',', $value));
-                                @endphp
+                            @php
+                                $options = array_map('trim', explode(',', $value));
+                            @endphp
+                            <div class="attribute-group" data-attribute-key="{{ $key }}">
+                                <label class="attribute-label">{{ ucfirst(str_replace('_', ' ', $key)) }}:</label>
+
                                 @if (count($options) > 1)
-                                    <div class="attribute-options d-flex flex-wrap gap-2">
-                                        @foreach ($options as $option)
-                                            <button type="button" class="btn btn-outline-primary attribute-option"
+                                    <div class="attribute-options">
+                                        @foreach ($options as $index => $option)
+                                            <button type="button"
+                                                class="attribute-option @if ($index === 0) selected @endif"
                                                 data-attribute="{{ $key }}" data-value="{{ $option }}"
                                                 onclick="selectAttribute(this)">
                                                 {{ $option }}
@@ -886,13 +929,16 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <div class="attribute-value">
-                                        <span class="badge bg-light text-dark fs-6"
-                                            data-attribute-badge="{{ $key }}">{{ $value }}</span>
+                                    <div class="attribute-single-value">
+                                        {{ $value }}
                                     </div>
                                 @endif
                             </div>
                         @endforeach
+                        <div class="attribute-warning" id="attributeWarning">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            Please select all required attributes before adding to cart.
+                        </div>
                         <input type="hidden" id="selectedAttributes" name="selectedAttributes" value="">
                     </div>
                 @endif
@@ -912,10 +958,10 @@
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     @if ($product->stock_quantity > 0)
-                        <button class="btn-add-to-cart" onclick="addToCart('{{ $product->hashid }}')">
+                        <button class="btn-add-to-cart" onclick="handleAddToCart('{{ $product->hashid }}')">
                             <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
-                        <button class="btn-buy-now" onclick="buyNow('{{ $product->hashid }}')">
+                        <button class="btn-buy-now" onclick="handleBuyNow('{{ $product->hashid }}')">
                             <i class="fas fa-bolt"></i> Buy Now
                         </button>
                     @else
@@ -1192,25 +1238,6 @@
 
     <!-- Zoom Modal -->
     <div class="modal fade" id="zoomModal" tabindex="-1">
-        <!-- Login Modal -->
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="loginModalLabel">Login Required</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <p class="mb-3">You must be logged in to add products to your cart.</p>
-                        <a href="{{ route('login') }}" class="btn btn-primary w-100">Login</a>
-                        <div class="mt-2">
-                            <span>Don't have an account?</span>
-                            <a href="{{ route('register') }}">Register</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header border">
@@ -1218,6 +1245,26 @@
                 </div>
                 <div class="modal-body text-center">
                     <img id="zoomImage" src="" alt="" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login Required</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-3">You must be logged in to add products to your cart.</p>
+                    <a href="{{ route('login') }}" class="btn btn-primary w-100">Login</a>
+                    <div class="mt-2">
+                        <span>Don't have an account?</span>
+                        <a href="{{ route('register') }}">Register</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1262,6 +1309,8 @@
 @section('scripts')
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize main gallery
@@ -1292,16 +1341,21 @@
                 });
             });
 
-            // Bootstrap tab activation
-            const triggerTabList = [].slice.call(document.querySelectorAll('#productTab button'));
-            triggerTabList.forEach(function(triggerEl) {
-                const tabTrigger = new bootstrap.Tab(triggerEl);
-                triggerEl.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    tabTrigger.show();
-                });
-            });
+            // Initialize all attribute options on page load
+            initializeAttributes();
         });
+
+        // Initialize attribute selection
+        function initializeAttributes() {
+            // Select the first option for each attribute by default
+            document.querySelectorAll('.attribute-options').forEach(optionsContainer => {
+                const firstOption = optionsContainer.querySelector('.attribute-option');
+                if (firstOption) {
+                    selectAttribute(firstOption);
+                }
+            });
+            updateSelectedAttributes();
+        }
 
         // Quantity functions
         function decreaseQuantity() {
@@ -1322,152 +1376,138 @@
 
         // Attribute selection
         function selectAttribute(button) {
-            // Remove selected class from siblings
-            const siblings = button.parentElement.querySelectorAll('.attribute-option');
+            const attributeGroup = button.closest('.attribute-group');
+            const siblings = attributeGroup.querySelectorAll('.attribute-option');
+
+            // Remove selected class from all siblings
             siblings.forEach(btn => btn.classList.remove('selected'));
 
             // Add selected class to clicked button
             button.classList.add('selected');
 
-            // Update hidden input with all selected attributes
+            // Update hidden input
             updateSelectedAttributes();
+
+            // Hide warning if shown
+            const warning = document.getElementById('attributeWarning');
+            if (warning) {
+                warning.classList.remove('show');
+            }
         }
 
         function updateSelectedAttributes() {
             const selectedAttrs = {};
-            document.querySelectorAll('.attribute-option.selected').forEach(btn => {
-                const attrName = btn.getAttribute('data-attribute');
-                const attrValue = btn.getAttribute('data-value');
-                selectedAttrs[attrName] = attrValue;
+            document.querySelectorAll('.attribute-group').forEach(group => {
+                const key = group.getAttribute('data-attribute-key');
+                const selectedOption = group.querySelector('.attribute-option.selected');
+                if (selectedOption) {
+                    selectedAttrs[key] = selectedOption.getAttribute('data-value');
+                } else {
+                    // If no option, check for single-value attribute
+                    const singleValueElement = group.querySelector('.attribute-single-value');
+                    if (singleValueElement) {
+                        selectedAttrs[key] = singleValueElement.textContent.trim();
+                    }
+                }
             });
             document.getElementById('selectedAttributes').value = JSON.stringify(selectedAttrs);
+            console.log('Selected attributes:', selectedAttrs); // For debugging
         }
 
-        function getSelectedAttributes() {
+        // Validate all required attributes are selected
+        function validateAttributes() {
+            const attributeGroups = document.querySelectorAll('.attribute-group');
+            let allSelected = true;
+
+            attributeGroups.forEach(group => {
+                const hasOptions = group.querySelector('.attribute-options');
+                if (hasOptions) {
+                    const hasSelected = group.querySelector('.attribute-option.selected');
+                    if (!hasSelected) {
+                        allSelected = false;
+                    }
+                }
+            });
+
+            return allSelected;
+        }
+
+        // Add to cart handler
+        function handleAddToCart(productId) {
+            // First validate attributes if product has multiple options
+            const hasMultipleOptions = @json($hasMultipleOptions);
+
+            if (hasMultipleOptions && !validateAttributes()) {
+                const warning = document.getElementById('attributeWarning');
+                if (warning) {
+                    warning.classList.add('show');
+                }
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Please select all required attributes'
+                });
+                return;
+            }
+
+            // Get selected attributes
+            updateSelectedAttributes();
+            const quantity = document.getElementById('quantity').value;
+            let attributes = {};
             const attrsInput = document.getElementById('selectedAttributes');
-            let attrs = {};
+
+            if (attrsInput && attrsInput.value && attrsInput.value.trim().startsWith('{')) {
+                try {
+                    attributes = JSON.parse(attrsInput.value);
+                } catch (e) {
+                    console.error('Error parsing attributes:', e);
+                    attributes = {};
+                }
+            } else {
+                attributes = {};
+            }
+
+            // Call global addToCart function with attributes
+            addToCart(productId, quantity, attributes);
+        }
+
+        // Buy now handler
+        function handleBuyNow(productId) {
+            // First validate attributes if product has multiple options
+            const hasMultipleOptions = @json($hasMultipleOptions);
+
+            if (hasMultipleOptions && !validateAttributes()) {
+                const warning = document.getElementById('attributeWarning');
+                if (warning) {
+                    warning.classList.add('show');
+                }
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Please select all required attributes'
+                });
+                return;
+            }
+
+            // Get selected attributes
+            updateSelectedAttributes();
+            const quantity = document.getElementById('quantity').value;
+            let attributes = {};
+            const attrsInput = document.getElementById('selectedAttributes');
+
             if (attrsInput && attrsInput.value) {
                 try {
-                    attrs = JSON.parse(attrsInput.value);
-                } catch (e) {}
-            }
-            // Also collect single-value badge attributes if not present
-            document.querySelectorAll('.attribute-group').forEach(function(group) {
-                var key = group.getAttribute('data-attribute-key');
-                var badge = group.querySelector('.attribute-value .badge');
-                if (badge && !group.querySelector('.attribute-option') && !attrs[key]) {
-                    attrs[key] = badge.textContent.trim();
-                }
-            });
-            console.log('getSelectedAttributes:', attrs);
-            return attrs;
-        }
-
-        // Add to cart
-        function addToCart(productId) {
-
-            const quantity = document.getElementById('quantity').value;
-            const selectedAttributes = getSelectedAttributes();
-            const attributes = @json($product->attribute_pairs ?? []);
-            console.log('addToCart attributes:', attributes);
-            console.log('addToCart selectedAttributes:', selectedAttributes);
-
-            // If product has attributes, require all to be selected (including single-value attributes)
-            if (Object.keys(attributes).length > 0) {
-                let missing = [];
-                for (const key in attributes) {
-                    const options = attributes[key].split(',').map(v => v.trim());
-                    if (options.length === 1) {
-                        // If single-value attribute, auto-select and update DOM
-                        selectedAttributes[key] = options[0];
-                        // Also update the DOM to reflect selection visually
-                        document.querySelectorAll('.attribute-group').forEach(function(group) {
-                            const groupKey = group.getAttribute('data-attribute-key');
-                            if (groupKey === key) {
-                                const badge = group.querySelector('.attribute-value .badge');
-                                if (badge) badge.classList.add('bg-primary', 'text-white');
-                            }
-                        });
-                    }
-                    if (!selectedAttributes[key]) {
-                        missing.push(key);
-                    }
-                }
-                // Update hidden input in case single-value attributes were auto-selected
-                document.getElementById('selectedAttributes').value = JSON.stringify(selectedAttributes);
-                console.log('addToCart after auto-select, selectedAttributes:', selectedAttributes);
-                if (missing.length > 0) {
-                    console.warn('Missing attributes:', missing);
-                    Toast.fire({
-                        icon: 'warning',
-                        title: 'Please select: ' + missing.map(k => k.replace(/_/g, ' ')).join(', ')
-                    });
-                    return;
+                    attributes = JSON.parse(attrsInput.value);
+                } catch (e) {
+                    console.error('Error parsing attributes:', e);
                 }
             }
 
-            @auth
-            const payload = {
-                product_id: productId,
-                quantity: quantity,
-                attributes: selectedAttributes
-            };
-            console.log('cart.add payload', payload);
-            fetch('{{ route('cart.add') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(payload)
-                })
-                .then(async response => {
-                    let data;
-                    try {
-                        data = await response.clone().json();
-                    } catch (e) {
-                        data = {
-                            error: 'Invalid JSON',
-                            status: response.status,
-                            text: await response.text()
-                        };
-                    }
-                    console.log('cart.add response', data);
-                    return data;
-                })
-                .then(data => {
-                    if (data.success) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Product added to cart!'
-                        });
-                        updateCartCount(data.cart_count);
-                    } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.message || 'Failed to add to cart'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('cart.add fetch error:', error);
-                });
-        @else
-            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-            loginModal.show();
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please login to add items to cart'
-            });
-        @endauth
-        }
-
-        // Buy now
-        function buyNow(productId) {
-            const quantity = document.getElementById('quantity').value;
-
-            @auth
             // Add to cart and redirect to checkout
+            addToCartAndCheckout(productId, quantity, attributes);
+        }
+
+        // Function to add to cart and redirect to checkout
+        function addToCartAndCheckout(productId, quantity, attributes) {
+            @auth
             fetch('{{ route('cart.add') }}', {
                     method: 'POST',
                     headers: {
@@ -1476,19 +1516,28 @@
                     },
                     body: JSON.stringify({
                         product_id: productId,
-                        quantity: quantity
+                        quantity: quantity,
+                        attributes: attributes
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Redirect to checkout after successful addition
                         window.location.href = '{{ route('checkout.index') }}';
                     } else {
                         Toast.fire({
                             icon: 'error',
-                            title: data.message || 'Failed to proceed'
+                            title: data.message || 'Failed to add to cart'
                         });
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'An error occurred. Please try again.'
+                    });
                 });
         @else
             const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
@@ -1500,7 +1549,55 @@
         @endauth
         }
 
-        // Wishlist
+        // Global addToCart function (make sure this exists in your global scripts)
+        function addToCart(productId, quantity = 1, attributes = {}) {
+            @auth
+            fetch('{{ route('cart.add') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity,
+                        attributes: attributes
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Product added to cart!'
+                        });
+                        // Update cart count if needed
+                        updateCartCount(data.cart_count);
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to add to cart'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'An error occurred. Please try again.'
+                    });
+                });
+        @else
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            Toast.fire({
+                icon: 'warning',
+                title: 'Please login to add products to cart'
+            });
+        @endauth
+        }
+
+        // Wishlist function
         function toggleWishlist(productId, button) {
             @auth
             fetch('{{ route('wishlist.toggle', $product->id) }}', {
@@ -1536,8 +1633,6 @@
             });
         @endauth
         }
-
-
 
         // Zoom image
         function zoomImage() {
@@ -1620,7 +1715,7 @@
             }
         });
 
-        // Update cart count
+        // Update cart count (global function)
         function updateCartCount(count) {
             const cartCountElement = document.querySelector('.cart-count');
             if (cartCountElement) {
@@ -1628,44 +1723,12 @@
                 cartCountElement.style.display = count > 0 ? 'flex' : 'none';
             }
         }
-    </script>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-    <script>
-        (function() {
-            // Ensure single-value attributes are always selected and input updated
-            function autoSelectSingleValueAttributes() {
-                let selectedAttrs = {};
-                document.querySelectorAll('.attribute-group').forEach(function(group) {
-                    var key = group.getAttribute('data-attribute-key');
-                    var options = group.querySelectorAll('.attribute-option');
-                    if (options.length === 1 && !options[0].classList.contains('selected')) {
-                        options[0].classList.add('selected');
-                    }
-                    var badge = group.querySelector('.attribute-value .badge');
-                    if (badge && !group.querySelector('.attribute-option')) {
-                        selectedAttrs[key] = badge.textContent.trim();
-                    }
-                });
-                if (Object.keys(selectedAttrs).length > 0) {
-                    let current = {};
-                    try {
-                        current = JSON.parse(document.getElementById('selectedAttributes').value || '{}');
-                    } catch (e) {}
-                    Object.assign(current, selectedAttrs);
-                    document.getElementById('selectedAttributes').value = JSON.stringify(current);
-                }
-                if (typeof updateSelectedAttributes === 'function') updateSelectedAttributes();
+        // Event listener for attribute options
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('attribute-option')) {
+                selectAttribute(e.target);
             }
-            // Run on DOMContentLoaded and after 200ms (for late-rendered DOM)
-            document.addEventListener('DOMContentLoaded', function() {
-                autoSelectSingleValueAttributes();
-                setTimeout(autoSelectSingleValueAttributes, 200);
-            });
-        })();
+        });
     </script>
-
 @endsection

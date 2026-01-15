@@ -50,6 +50,16 @@ class CartController extends Controller
     // Add item to cart
     public function add(Request $request)
     {
+        // Log attributes received from frontend
+        $attributes = $request->input('attributes', []);
+        if ($attributes instanceof \Symfony\Component\HttpFoundation\ParameterBag) {
+            $attributes = $attributes->all();
+        }
+        if (!is_array($attributes)) {
+            $attributes = [];
+        }
+        $product = Product::findByHashid($request->product_id);
+        $attributePairs = $product->attribute_pairs ?? [];
         // Only allow logged-in users to add to cart
         if (!Auth::check() || Auth::user()->role !== 'customer') {
             return response()->json([
@@ -76,10 +86,7 @@ class CartController extends Controller
         // Backend attribute selection enforcement
         $attributePairs = $product->attribute_pairs ?? [];
         if (!empty($attributePairs)) {
-            $selected = $request->attributes;
-            if ($selected instanceof \Symfony\Component\HttpFoundation\ParameterBag) {
-                $selected = $selected->all();
-            }
+            $selected = $request->input('attributes', []);
             if (!is_array($selected)) {
                 $selected = [];
             }
@@ -113,7 +120,7 @@ class CartController extends Controller
             $product->id,
             $request->quantity,
             null, // Price will be calculated
-            $request->attributes ?? []
+            $attributes
         );
 
         $cartCount = Cart::count();

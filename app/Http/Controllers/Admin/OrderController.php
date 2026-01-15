@@ -12,7 +12,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $orders = \App\Models\Order::with(['user', 'items'])->orderByDesc('created_at')->paginate(20);
+        return view('admin.orders.index', compact('orders'));
     }
 
     /**
@@ -20,7 +21,8 @@ class OrderController extends Controller
      */
     public function create()
     {
-        //
+        // For manual order entry, you may want to pass products, users, etc.
+        return view('admin.orders.create');
     }
 
     /**
@@ -28,38 +30,60 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'order_status' => 'required|string',
+            'shipping_name' => 'required|string',
+            'shipping_phone' => 'required|string',
+            'shipping_address' => 'required|string',
+            // Add more validation as needed
+        ]);
+
+        $order = \App\Models\Order::create($validated);
+        // Optionally handle items, etc.
+        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $order = \App\Models\Order::with(['user', 'items'])->findOrFail($id);
+        return view('admin.orders.show', compact('order'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $order = \App\Models\Order::with(['user', 'items'])->findOrFail($id);
+        return view('admin.orders.edit', compact('order'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $order = \App\Models\Order::findOrFail($id);
+        $validated = $request->validate([
+            'order_status' => 'required|string',
+            'shipping_address' => 'required|string',
+            'notes' => 'nullable|string',
+        ]);
+        $order->update($validated);
+        return redirect()->route('admin.orders.show', $order->id)->with('success', 'Order updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $order = \App\Models\Order::findOrFail($id);
+        $order->delete();
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }
 }

@@ -194,10 +194,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/categories/bulk-restore', [CategoryController::class, 'bulkRestore'])->name('categories.bulk-restore');
     Route::post('/categories/bulk-force-delete', [CategoryController::class, 'bulkForceDelete'])->name('categories.bulk-force-delete');
 
-    // Order Management
-    Route::resource('orders', OrderController::class);
-    Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-    Route::post('/orders/{order}/upload-document', [OrderController::class, 'uploadDocument'])->name('orders.upload-document');
+    // Admin Order Management
+    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
+    Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::post('orders/{order}/upload-document', [\App\Http\Controllers\Admin\OrderController::class, 'uploadDocument'])->name('orders.upload-document');
 
     // Coupon Management
     Route::resource('coupons', CouponController::class);

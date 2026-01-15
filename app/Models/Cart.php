@@ -226,6 +226,7 @@ class Cart extends Model
 
     public static function addItem($productId, $quantity = 1, $price = null, $attributes = [])
     {
+        // Log attributes before saving
         $product = Product::findOrFail($productId);
 
         if (!$price) {
@@ -252,9 +253,10 @@ class Cart extends Model
             ->first();
 
         if ($cartItem) {
-            // Update quantity and recalculate price
+            // Update quantity, recalculate price, and update attributes
             $cartItem->quantity += $quantity;
             $cartItem->price = self::calculatePrice($product, $cartItem->quantity);
+            $cartItem->attributes = $attributes;
             $cartItem->save();
         } else {
             // Create new cart item

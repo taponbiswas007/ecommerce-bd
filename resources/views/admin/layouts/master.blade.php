@@ -300,14 +300,8 @@
                         </ul>
                     </li>
 
-                    <li class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                        <a href="{{ route('admin.orders.index') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="menu-text">Orders</span>
-                            <span
-                                class="badge bg-danger ms-auto">{{ \App\Models\Order::where('order_status', 'pending')->count() }}</span>
-                        </a>
-                    </li>
+                    <x-admin.sidebar-item route="admin.orders.index" :activeRoutes="['admin.orders.*']" icon="fas fa-shopping-cart"
+                        text="Orders" :badge="\App\Models\Order::where('order_status', 'pending')->count()" badgeClass="bg-danger" />
 
                     <li class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.customers.index') }}">
