@@ -1865,6 +1865,124 @@
                             // Load the HTML from the response
                             document.getElementById('product-details').innerHTML = data.html;
 
+                            // Attach event listeners for attribute selection and Add to Cart (event delegation)
+                            // Attach robust event delegation for attribute selection and Add to Cart
+                            const productDetails = document.getElementById('product-details');
+                            if (productDetails) {
+                                // Replace node to remove old listeners
+                                const newDetails = productDetails.cloneNode(true);
+                                productDetails.parentNode.replaceChild(newDetails, productDetails);
+                                // Event delegation for all modal actions
+                                newDetails.addEventListener('click', function(e) {
+                                    // Quantity decrease
+                                    if (e.target.matches('[data-action="decrease-qty"]')) {
+                                        const input = newDetails.querySelector('#quick-view-quantity');
+                                        if (!input) return;
+                                        const min = parseInt(input.min);
+                                        if (parseInt(input.value) > min) {
+                                            input.value = parseInt(input.value) - 1;
+                                        }
+                                    }
+                                    // Quantity increase
+                                    if (e.target.matches('[data-action="increase-qty"]')) {
+                                        const input = newDetails.querySelector('#quick-view-quantity');
+                                        if (!input) return;
+                                        input.value = parseInt(input.value) + 1;
+                                    }
+                                    // Attribute selection
+                                    if (e.target.classList.contains('attribute-option')) {
+                                        const group = e.target.closest('.attribute-options');
+                                        if (!group) return;
+                                        group.querySelectorAll('.attribute-option').forEach(b => b.classList
+                                            .remove('selected'));
+                                        e.target.classList.add('selected');
+                                    }
+                                    // Add to Cart
+                                    if (e.target.classList.contains('add-to-cart-btn')) {
+                                        // Prevent double submit
+                                        e.target.disabled = true;
+                                        setTimeout(() => {
+                                            e.target.disabled = false;
+                                        }, 1500);
+                                        // Collect selected attributes
+                                        const attributeButtons = newDetails.querySelectorAll(
+                                            '.product-attributes .attribute-options');
+                                        let attributes = {};
+                                        let allSelected = true;
+                                        attributeButtons.forEach(group => {
+                                            const selected = group.querySelector(
+                                                '.attribute-option.selected');
+                                            const attr = group.querySelector('.attribute-option')
+                                                ?.getAttribute('data-attribute');
+                                            if (attr) {
+                                                if (selected) {
+                                                    attributes[attr] = selected.getAttribute(
+                                                        'data-value');
+                                                } else {
+                                                    allSelected = false;
+                                                }
+                                            }
+                                        });
+                                        if (!allSelected && attributeButtons.length > 0) {
+                                            Toast.fire({
+                                                icon: 'error',
+                                                title: 'Please select all attributes.'
+                                            });
+                                            return;
+                                        }
+                                        // Save selected attributes to hidden input (optional, for backend)
+                                        const attrInput = newDetails.querySelector(
+                                            '#quickViewSelectedAttributes');
+                                        if (attrInput) attrInput.value = JSON.stringify(attributes);
+
+                                        const quantity = newDetails.querySelector('#quick-view-quantity')
+                                            ?.value || 1;
+                                        const productHashid = e.target.getAttribute('data-product-hashid');
+                                        // Add to cart and only close modal on success
+                                        fetch('{{ route('cart.add') }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: JSON.stringify({
+                                                    product_id: productHashid,
+                                                    quantity: quantity,
+                                                    attributes: attributes
+                                                })
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    Toast.fire({
+                                                        icon: 'success',
+                                                        title: 'Product added to cart!'
+                                                    });
+                                                    updateCartCount(data.cart_count);
+                                                    // Close the modal only on success
+                                                    const modalInstance = bootstrap.Modal.getInstance(
+                                                        document.getElementById('quickViewModal'));
+                                                    if (modalInstance) {
+                                                        modalInstance.hide();
+                                                    }
+                                                } else {
+                                                    Toast.fire({
+                                                        icon: 'error',
+                                                        title: data.message ||
+                                                            'Failed to add to cart'
+                                                    });
+                                                }
+                                            })
+                                            .catch(error => {
+                                                Toast.fire({
+                                                    icon: 'error',
+                                                    title: 'Network error. Please try again.'
+                                                });
+                                            });
+                                    }
+                                });
+                            }
+
                             // Load product images from the data
                             if (data.product && data.product.images) {
                                 loadProductImages(data.product.images, data.product.video_url);
