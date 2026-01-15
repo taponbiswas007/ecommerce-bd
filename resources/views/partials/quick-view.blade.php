@@ -81,56 +81,7 @@
     </div>
 
 
-    <!-- Product Attributes Selection (Quick View) -->
-    @php
-        $attributes = $product->attribute_pairs ?? [];
-    @endphp
-    @if (!empty($attributes))
-        <div class="product-attributes mb-4">
-            @foreach ($attributes as $key => $value)
-                <div class="attribute-group mb-3">
-                    <label class="fw-bold mb-2">{{ ucfirst(str_replace('_', ' ', $key)) }}:</label>
-                    @php
-                        $options = array_map('trim', explode(',', $value));
-                    @endphp
-                    @if (count($options) > 1)
-                        <div class="attribute-options d-flex flex-wrap gap-2">
-                            @foreach ($options as $option)
-                                <button type="button" class="btn btn-outline-primary attribute-option"
-                                    data-attribute="{{ $key }}" data-value="{{ $option }}">
-                                    {{ $option }}
-                                </button>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="attribute-value">
-                            <span class="badge bg-light text-dark fs-6">{{ $value }}</span>
-                        </div>
-                    @endif
-                </div>
-            @endforeach
-            <input type="hidden" id="quickViewSelectedAttributes" value="">
-        </div>
-    @endif
 
-    <!-- Add to Cart -->
-    @if ($product->stock_quantity > 0)
-        <div class="add-to-cart mb-4">
-            <div class="input-group mb-3" style="max-width: 200px;">
-                <button class="btn btn-outline-secondary" type="button" data-action="decrease-qty">-</button>
-                <input type="number" id="quick-view-quantity" class="form-control text-center"
-                    value="{{ $product->min_order_quantity }}" min="{{ $product->min_order_quantity }}">
-                <button class="btn btn-outline-secondary" type="button" data-action="increase-qty">+</button>
-            </div>
-            <button class="btn btn-primary btn-lg w-100 add-to-cart-btn" data-product-hashid="{{ $product->hashid }}">
-                <i class="fas fa-cart-plus me-2"></i> Add to Cart
-            </button>
-        </div>
-    @else
-        <div class="alert alert-warning">
-            This product is currently out of stock.
-        </div>
-    @endif
 
     <!-- View Details Button -->
     <div class="mt-4">
@@ -180,5 +131,3 @@
         border-radius: 4px;
     }
 </style>
-
-

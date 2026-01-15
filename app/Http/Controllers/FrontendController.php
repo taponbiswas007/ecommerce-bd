@@ -269,4 +269,19 @@ class FrontendController extends Controller
 
         abort(404);
     }
+    /**
+     * AJAX: Check if product has attributes by hashid
+     */
+    public function checkProductAttribute(Request $request)
+    {
+        $product = \App\Models\Product::findByHashid($request->product_id);
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+        $hasAttribute = $product->attributesRows()->count() > 0;
+        return response()->json([
+            'has_attribute' => $hasAttribute,
+            'slug' => $product->slug,
+        ]);
+    }
 }

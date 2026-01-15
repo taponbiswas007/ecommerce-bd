@@ -77,7 +77,7 @@ Route::post('/reviews', action: [ReviewController::class, 'store'])->name('revie
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:customer'])->group(function () {
-
+    Route::post('/check-product-attribute', [App\Http\Controllers\FrontendController::class, 'checkProductAttribute']);
     // Wishlist Routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/add/{hashid}', [WishlistController::class, 'add'])->name('wishlist.add');

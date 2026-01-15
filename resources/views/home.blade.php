@@ -1812,12 +1812,47 @@
 
                 // Event Delegation for Click Events
                 document.addEventListener('click', function(e) {
-                    // Add to Cart
-                    if (e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn')) {
+                    // Add to Cart (NO Quick View)
+                    if (e.target.closest('.add-to-cart-btn')) {
                         e.preventDefault();
-                        const button = e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn');
+                        const button = e.target.closest('.add-to-cart-btn');
                         const productId = button.getAttribute('data-product-id');
-                        showQuickView(productId); // Always open Quick View modal for Add to Cart
+                        // Check if product has attributes
+                        fetch('/check-product-attribute', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    product_id: productId
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.has_attribute) {
+                                    // Redirect to product details page
+                                    window.location.href = '/products/' + data.slug;
+                                } else {
+                                    // Directly add to cart
+                                    addToCart(productId, 1);
+                                }
+                            })
+                            .catch(() => {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Error checking product attributes.'
+                                });
+                            });
+                        return;
+                    }
+
+                    // Add to Cart (Deal of the Day, etc.)
+                    if (e.target.closest('.add-to-cart')) {
+                        e.preventDefault();
+                        const button = e.target.closest('.add-to-cart');
+                        const productId = button.getAttribute('data-product-id');
+                        showQuickView(productId); // Only for .add-to-cart (not .add-to-cart-btn)
                     }
 
                     // Quick View
@@ -1939,18 +1974,19 @@
                                             ?.value || 1;
                                         const productHashid = e.target.getAttribute('data-product-hashid');
                                         // Add to cart and only close modal on success
-                                        fetch('{{ route('cart.add') }}', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                                },
-                                                body: JSON.stringify({
-                                                    product_id: productHashid,
-                                                    quantity: quantity,
-                                                    attributes: attributes
+                                        fetch(window.Laravel?.routes?.cart_add ||
+                                                '{{ route('cart.add') }}', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                    },
+                                                    body: JSON.stringify({
+                                                        product_id: productHashid,
+                                                        quantity: quantity,
+                                                        attributes: attributes
+                                                    })
                                                 })
-                                            })
                                             .then(response => response.json())
                                             .then(data => {
                                                 if (data.success) {

@@ -870,15 +870,12 @@
                 @if (!empty($attributes))
                     <div class="product-attributes mb-4">
                         @foreach ($attributes as $key => $value)
-                            <div class="attribute-group mb-3">
+                            <div class="attribute-group mb-3" data-attribute-key="{{ $key }}">
                                 <label class="fw-bold mb-2">{{ ucfirst(str_replace('_', ' ', $key)) }}:</label>
                                 @php
-                                    // Check if value contains multiple options (comma-separated)
                                     $options = array_map('trim', explode(',', $value));
                                 @endphp
-
                                 @if (count($options) > 1)
-                                    <!-- Multiple options - show as buttons -->
                                     <div class="attribute-options d-flex flex-wrap gap-2">
                                         @foreach ($options as $option)
                                             <button type="button" class="btn btn-outline-primary attribute-option"
@@ -889,14 +886,14 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <!-- Single value - show as text -->
                                     <div class="attribute-value">
-                                        <span class="badge bg-light text-dark fs-6">{{ $value }}</span>
+                                        <span class="badge bg-light text-dark fs-6"
+                                            data-attribute-badge="{{ $key }}">{{ $value }}</span>
                                     </div>
                                 @endif
                             </div>
                         @endforeach
-                        <input type="hidden" id="selectedAttributes" value="">
+                        <input type="hidden" id="selectedAttributes" name="selectedAttributes" value="">
                     </div>
                 @endif
 
@@ -1263,9 +1260,6 @@
 @endsection
 
 @section('scripts')
-    <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize main gallery
@@ -1349,27 +1343,59 @@
 
         function getSelectedAttributes() {
             const attrsInput = document.getElementById('selectedAttributes');
+            let attrs = {};
             if (attrsInput && attrsInput.value) {
-                return JSON.parse(attrsInput.value);
+                try {
+                    attrs = JSON.parse(attrsInput.value);
+                } catch (e) {}
             }
-            return {};
+            // Also collect single-value badge attributes if not present
+            document.querySelectorAll('.attribute-group').forEach(function(group) {
+                var key = group.getAttribute('data-attribute-key');
+                var badge = group.querySelector('.attribute-value .badge');
+                if (badge && !group.querySelector('.attribute-option') && !attrs[key]) {
+                    attrs[key] = badge.textContent.trim();
+                }
+            });
+            console.log('getSelectedAttributes:', attrs);
+            return attrs;
         }
 
         // Add to cart
         function addToCart(productId) {
+
             const quantity = document.getElementById('quantity').value;
             const selectedAttributes = getSelectedAttributes();
             const attributes = @json($product->attribute_pairs ?? []);
+            console.log('addToCart attributes:', attributes);
+            console.log('addToCart selectedAttributes:', selectedAttributes);
 
-            // If product has attributes, require all to be selected
+            // If product has attributes, require all to be selected (including single-value attributes)
             if (Object.keys(attributes).length > 0) {
                 let missing = [];
                 for (const key in attributes) {
+                    const options = attributes[key].split(',').map(v => v.trim());
+                    if (options.length === 1) {
+                        // If single-value attribute, auto-select and update DOM
+                        selectedAttributes[key] = options[0];
+                        // Also update the DOM to reflect selection visually
+                        document.querySelectorAll('.attribute-group').forEach(function(group) {
+                            const groupKey = group.getAttribute('data-attribute-key');
+                            if (groupKey === key) {
+                                const badge = group.querySelector('.attribute-value .badge');
+                                if (badge) badge.classList.add('bg-primary', 'text-white');
+                            }
+                        });
+                    }
                     if (!selectedAttributes[key]) {
                         missing.push(key);
                     }
                 }
+                // Update hidden input in case single-value attributes were auto-selected
+                document.getElementById('selectedAttributes').value = JSON.stringify(selectedAttributes);
+                console.log('addToCart after auto-select, selectedAttributes:', selectedAttributes);
                 if (missing.length > 0) {
+                    console.warn('Missing attributes:', missing);
                     Toast.fire({
                         icon: 'warning',
                         title: 'Please select: ' + missing.map(k => k.replace(/_/g, ' ')).join(', ')
@@ -1379,19 +1405,34 @@
             }
 
             @auth
+            const payload = {
+                product_id: productId,
+                quantity: quantity,
+                attributes: selectedAttributes
+            };
+            console.log('cart.add payload', payload);
             fetch('{{ route('cart.add') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        quantity: quantity,
-                        attributes: selectedAttributes
-                    })
+                    body: JSON.stringify(payload)
                 })
-                .then(response => response.json())
+                .then(async response => {
+                    let data;
+                    try {
+                        data = await response.clone().json();
+                    } catch (e) {
+                        data = {
+                            error: 'Invalid JSON',
+                            status: response.status,
+                            text: await response.text()
+                        };
+                    }
+                    console.log('cart.add response', data);
+                    return data;
+                })
                 .then(data => {
                     if (data.success) {
                         Toast.fire({
@@ -1405,6 +1446,9 @@
                             title: data.message || 'Failed to add to cart'
                         });
                     }
+                })
+                .catch(error => {
+                    console.error('cart.add fetch error:', error);
                 });
         @else
             const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
@@ -1584,6 +1628,39 @@
         }
     </script>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        (function() {
+            // Ensure single-value attributes are always selected and input updated
+            function autoSelectSingleValueAttributes() {
+                let selectedAttrs = {};
+                document.querySelectorAll('.attribute-group').forEach(function(group) {
+                    var key = group.getAttribute('data-attribute-key');
+                    var options = group.querySelectorAll('.attribute-option');
+                    if (options.length === 1 && !options[0].classList.contains('selected')) {
+                        options[0].classList.add('selected');
+                    }
+                    var badge = group.querySelector('.attribute-value .badge');
+                    if (badge && !group.querySelector('.attribute-option')) {
+                        selectedAttrs[key] = badge.textContent.trim();
+                    }
+                });
+                if (Object.keys(selectedAttrs).length > 0) {
+                    let current = {};
+                    try {
+                        current = JSON.parse(document.getElementById('selectedAttributes').value || '{}');
+                    } catch (e) {}
+                    Object.assign(current, selectedAttrs);
+                    document.getElementById('selectedAttributes').value = JSON.stringify(current);
+                }
+                if (typeof updateSelectedAttributes === 'function') updateSelectedAttributes();
+            }
+            // Run on DOMContentLoaded and after 200ms (for late-rendered DOM)
+            document.addEventListener('DOMContentLoaded', function() {
+                autoSelectSingleValueAttributes();
+                setTimeout(autoSelectSingleValueAttributes, 200);
+            });
+        })();
+    </script>
+
 @endsection

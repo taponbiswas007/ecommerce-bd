@@ -76,7 +76,13 @@ class CartController extends Controller
         // Backend attribute selection enforcement
         $attributePairs = $product->attribute_pairs ?? [];
         if (!empty($attributePairs)) {
-            $selected = $request->attributes ?? [];
+            $selected = $request->attributes;
+            if ($selected instanceof \Symfony\Component\HttpFoundation\ParameterBag) {
+                $selected = $selected->all();
+            }
+            if (!is_array($selected)) {
+                $selected = [];
+            }
             $missing = [];
             foreach (array_keys($attributePairs) as $key) {
                 if (empty($selected[$key])) {
