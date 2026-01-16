@@ -18,6 +18,7 @@ class FrontendController extends Controller
         $heroProducts = Category::where('is_active', true)
             ->with(['products' => function ($query) {
                 $query->with(['primaryImage', 'images', 'unit', 'category'])
+                    ->addSelect(['average_rating', 'total_reviews'])
                     ->where('is_active', true)
                     ->where('stock_quantity', '>', 0)
                     ->orderByDesc('sold_count')
@@ -30,6 +31,7 @@ class FrontendController extends Controller
 
         // Get featured products
         $featuredProducts = Product::with(['primaryImage', 'images', 'category', 'unit'])
+            ->addSelect(['average_rating', 'total_reviews'])
             ->where('is_featured', true)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
@@ -56,6 +58,7 @@ class FrontendController extends Controller
 
         // Get flash sale products - products with discount_price
         $flashSaleProducts = Product::with(['primaryImage', 'images', 'unit'])
+            ->addSelect(['average_rating', 'total_reviews'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->whereNotNull('discount_price')
@@ -66,12 +69,14 @@ class FrontendController extends Controller
 
         // Get new arrivals
         $newArrivals = Product::with(['primaryImage', 'images', 'unit'])
+            ->addSelect(['average_rating', 'total_reviews'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get();
         $dealProduct = Product::with(['primaryImage', 'unit'])
+            ->addSelect(['average_rating', 'total_reviews'])
             ->where('is_deal', 1)
             ->where('is_active', 1)
             ->where('stock_quantity', '>', 0)
@@ -97,6 +102,7 @@ class FrontendController extends Controller
     public function shop(Request $request)
     {
         $query = Product::with(['primaryImage', 'category'])
+            ->addSelect(['average_rating', 'total_reviews'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0);
 
@@ -196,6 +202,7 @@ class FrontendController extends Controller
         $categoryIds = $category->children->pluck('id')->push($category->id);
 
         $products = Product::with(['primaryImage', 'images', 'unit', 'prices'])
+            ->addSelect(['average_rating', 'total_reviews'])
             ->whereIn('category_id', $categoryIds)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)

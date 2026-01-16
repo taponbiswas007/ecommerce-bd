@@ -12,7 +12,10 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        //
+        $reviews = \App\Models\Review::with(['product', 'user'])
+            ->orderByDesc('created_at')
+            ->paginate(25);
+        return view('admin.reviews.index', compact('reviews'));
     }
 
     /**
@@ -56,10 +59,34 @@ class ReviewController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Approve a review.
      */
-    public function destroy(string $id)
+    public function approve($id)
     {
-        //
+        $review = \App\Models\Review::findOrFail($id);
+        $review->status = 'approved';
+        $review->save();
+        return redirect()->back()->with('success', 'Review approved.');
+    }
+
+    /**
+     * Reject a review.
+     */
+    public function reject($id)
+    {
+        $review = \App\Models\Review::findOrFail($id);
+        $review->status = 'rejected';
+        $review->save();
+        return redirect()->back()->with('success', 'Review rejected.');
+    }
+
+    /**
+     * Delete a review.
+     */
+    public function destroy($id)
+    {
+        $review = \App\Models\Review::findOrFail($id);
+        $review->delete();
+        return redirect()->back()->with('success', 'Review deleted.');
     }
 }

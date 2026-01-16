@@ -69,7 +69,7 @@ Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear')
 
 // Product Reviews (Public viewing, authenticated posting)
 Route::get('/products/{product}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-Route::post('/reviews', action: [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth:customer');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -233,9 +233,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     });
 
     // Review Management
-    Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-    Route::post('/reviews/{review}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
-    Route::post('/reviews/{review}/reject', [ReviewController::class, 'reject'])->name('reviews.reject');
+    Route::get('/reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{review}/approve', [\App\Http\Controllers\Admin\ReviewController::class, 'approve'])->name('reviews.approve');
+    Route::post('/reviews/{review}/reject', [\App\Http\Controllers\Admin\ReviewController::class, 'reject'])->name('reviews.reject');
+    Route::delete('/reviews/{review}', [\App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // Settings Management
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

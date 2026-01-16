@@ -1109,7 +1109,10 @@
 
                 <!-- Reviews Tab -->
                 <div class="tab-pane fade" id="reviews" role="tabpanel">
-                    @if ($product->total_reviews > 0)
+                    @php
+                        $reviews = $product->reviews;
+                    @endphp
+                    @if ($reviews->count() > 0)
                         <div class="rating-summary mb-4">
                             <div class="row align-items-center">
                                 <div class="col-md-4 text-center">
@@ -1125,7 +1128,7 @@
                                             @endif
                                         @endfor
                                     </div>
-                                    <p class="text-muted">{{ $product->total_reviews }} reviews</p>
+                                    <p class="text-muted">{{ $reviews->count() }} reviews</p>
                                 </div>
                                 <div class="col-md-8">
                                     <!-- Rating bars would go here -->
@@ -1135,23 +1138,26 @@
 
                         <!-- Reviews List -->
                         <div class="reviews-list">
-                            <!-- Sample review - replace with actual reviews from database -->
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <div>
-                                        <span class="review-author">John Doe</span>
-                                        <div class="rating-stars d-inline-block ms-2">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
+                            @foreach ($reviews as $review)
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div>
+                                            <span class="review-author">{{ $review->name }}</span>
+                                            <div class="rating-stars d-inline-block ms-2">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= $review->rating)
+                                                        <i class="fas fa-star"></i>
+                                                    @else
+                                                        <i class="far fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
                                         </div>
+                                        <span class="review-date">{{ $review->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <span class="review-date">2 days ago</span>
+                                    <p class="review-text">{!! $review->comment !!}</p>
                                 </div>
-                                <p class="review-text">Excellent product! Works perfectly as described.</p>
-                            </div>
+                            @endforeach
                         </div>
                     @else
                         <div class="text-center py-5">
@@ -1687,10 +1693,10 @@
 
         // Review form submission
         document.getElementById('reviewForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
 
+            e.preventDefault();
             const formData = new FormData(this);
-            formData.append('product_id', {{ $product->id }});
+            formData.append('product_id', '{{ $product->hashid }}');
 
             fetch('{{ route('reviews.store') }}', {
                     method: 'POST',
@@ -1699,8 +1705,19 @@
                     },
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
+                .then(async response => {
+                    let text = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (err) {
+                        console.error('Review submit error: Non-JSON response:', text);
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Server error: ' + text.substring(0, 200)
+                        });
+                        throw new Error('Non-JSON response: ' + text);
+                    }
                     if (data.success) {
                         Toast.fire({
                             icon: 'success',
@@ -1709,7 +1726,19 @@
                         const modal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
                         modal.hide();
                         location.reload();
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to submit review'
+                        });
                     }
+                })
+                .catch(error => {
+                    console.error('Review submit error:', error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'An error occurred. Please try again.'
+                    });
                 });
         });
 
