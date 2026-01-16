@@ -196,9 +196,21 @@
                 <ul class="list-group mb-3">
                     @foreach ($cartItems as $item)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ $item->product->name ?? 'Product' }}</strong>
-                                <div class="small">{{ $item->quantity }} × {{ number_format($item->price, 2) }}</div>
+                            <div class="d-flex align-items-center gap-2">
+                                @php
+                                    $img =
+                                        $item->product && $item->product->images->count()
+                                            ? $item->product->images->first()->image_url ??
+                                                asset('storage/' . $item->product->images->first()->image_path)
+                                            : 'https://via.placeholder.com/40x40';
+                                @endphp
+                                <img src="{{ $img }}" alt="{{ $item->product->name ?? 'Product' }}"
+                                    style="width:40px;height:40px;object-fit:cover;border-radius:6px;">
+                                <div>
+                                    <strong>{{ $item->product->name ?? 'Product' }}</strong>
+                                    <div class="small">{{ $item->quantity }} × {{ number_format($item->price, 2) }}
+                                    </div>
+                                </div>
                             </div>
                             <div>{{ number_format($item->price * $item->quantity, 2) }}</div>
                         </li>

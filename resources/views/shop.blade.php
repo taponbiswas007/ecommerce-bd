@@ -846,46 +846,103 @@
                 window.location.href = '{{ route('shop') }}?' + params.toString();
             });
 
-            // Wishlist button
+            // Wishlist button with SweetAlert2 toast
             $('.wishlist-btn').click(function(e) {
                 e.preventDefault();
-                let productId = $(this).data('product-id');
-                $(this).toggleClass('active');
-                // Add AJAX call here for actual wishlist functionality
+                let button = $(this);
+                let productId = button.data('product-id');
                 fetch(`/wishlist/toggle/${productId}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    })
-                    .catch(err => console.log(err));
-            });
-
-            // Add to cart
-            $('.add-to-cart-btn').click(function(e) {
-                e.preventDefault();
-                let productId = $(this).data('product-id');
-                fetch('{{ route('cart.add') }}', {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            product_id: productId,
-                            quantity: 1
+                            product_id: productId
                         })
                     })
-                    .then(r => r.json())
+                    .then(res => res.json())
                     .then(data => {
-                        if (window.Toast) {
-                            window.Toast.fire({
-                                icon: 'success',
-                                title: 'Added to cart!'
-                            });
+                        if (data.success) {
+                            button.toggleClass('active');
+                            if (window.Toast) {
+                                window.Toast.fire({
+                                    icon: 'success',
+                                    title: data.message || 'Added to wishlist!'
+                                });
+                            }
+                            // Optionally update wishlist count here
+                        } else {
+                            if (window.Toast) {
+                                window.Toast.fire({
+                                    icon: 'error',
+                                    title: data.message || 'Failed to update wishlist.'
+                                });
+                            }
                         }
                     })
-                    .catch(err => console.log(err));
+                    .catch(() => {
+                        if (window.Toast) {
+                            window.Toast.fire({
+                                icon: 'error',
+                                title: 'Error updating wishlist.'
+                            });
+                        }
+                    });
+            });
+
+            // Add to cart with attribute check (copied from home.blade.php)
+            $('.add-to-cart-btn').click(function(e) {
+                e.preventDefault();
+                let productId = $(this).data('product-id');
+                fetch('/check-product-attribute', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            product_id: productId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.has_attribute) {
+                            // Redirect to product details page
+                            window.location.href = '/products/' + data.slug;
+                        } else {
+                            // Directly add to cart
+                            fetch('{{ route('cart.add') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        product_id: productId,
+                                        quantity: 1
+                                    })
+                                })
+                                .then(r => r.json())
+                                .then(data => {
+                                    if (window.Toast) {
+                                        window.Toast.fire({
+                                            icon: 'success',
+                                            title: 'Added to cart!'
+                                        });
+                                    }
+                                })
+                                .catch(err => console.log(err));
+                        }
+                    })
+                    .catch(() => {
+                        if (window.Toast) {
+                            window.Toast.fire({
+                                icon: 'error',
+                                title: 'Error checking product attributes.'
+                            });
+                        }
+                    });
             });
 
             // Grid/List view toggle

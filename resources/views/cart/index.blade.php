@@ -588,12 +588,13 @@
                                 All prices are in Bangladeshi Taka (৳)
                             </p>
 
-                            <button class="btn-checkout" onclick="proceedToCheckout()"
+                            <button class="btn-checkout mb-4" onclick="proceedToCheckout()"
                                 {{ $requiresLogin ? 'disabled' : '' }}>
                                 <i class="fas fa-lock me-2"></i> Proceed to Checkout
                             </button>
 
-                            <a href="{{ route('shop') }}" class="btn-continue-shopping">
+                            <a href="{{ route('shop') }}"
+                                class="btn-continue-shopping w-100 d-flex justify-content-center align-items-center text-decoration-none">
                                 <i class="fas fa-arrow-left me-2"></i> Continue Shopping
                             </a>
 

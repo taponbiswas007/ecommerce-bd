@@ -1600,7 +1600,7 @@
         // Wishlist function
         function toggleWishlist(productId, button) {
             @auth
-            fetch('{{ route('wishlist.toggle', $product->id) }}', {
+            fetch('/wishlist/toggle/' + productId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1622,7 +1622,18 @@
                             icon: 'success',
                             title: data.message
                         });
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to update wishlist.'
+                        });
                     }
+                })
+                .catch(() => {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Error updating wishlist.'
+                    });
                 });
         @else
             const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));

@@ -102,9 +102,11 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Customer Orders
+    // Customer Orders (with 'customer.' prefix for blade usage)
+    Route::get('/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders.index');
+    // Also register as 'orders.index' for compatibility
     Route::get('/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [App\Http\Controllers\Customer\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}', [App\Http\Controllers\Customer\OrderController::class, 'show'])->name('customer.orders.show');
 
     // Customer Addresses
     Route::resource('addresses', App\Http\Controllers\Customer\AddressController::class);
