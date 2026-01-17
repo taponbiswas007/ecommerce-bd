@@ -125,6 +125,13 @@ class CartController extends Controller
 
         $cartCount = Cart::count();
 
+        if (isset($cartItem->already_exists) && $cartItem->already_exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Already added to cart with this attribute.'
+            ], 200);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Product added to cart successfully!',

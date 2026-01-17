@@ -808,7 +808,8 @@
                         @endfor
                     </div>
                     <span class="rating-count">({{ $product->total_reviews }} reviews)</span>
-                    <a href="#reviews" class="write-review">Write a review</a>
+                    <button onclick="openReviewModal()" class="write-review bg-transparent border-0 p-0">Write a
+                        review</button>
                 </div>
 
                 <!-- Price Section -->

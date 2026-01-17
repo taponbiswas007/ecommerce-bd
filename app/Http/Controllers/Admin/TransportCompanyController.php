@@ -22,7 +22,9 @@ class TransportCompanyController extends Controller
     public function store(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        TransportCompany::create($request->only(['name', 'slug', 'contact', 'is_active']));
+        $data = $request->only(['name', 'slug', 'contact']);
+        $data['is_active'] = $request->has('is_active') ? 1 : 0;
+        TransportCompany::create($data);
         return redirect()->route('admin.transport-companies.index')->with('success', 'Transport company created.');
     }
 
@@ -34,7 +36,9 @@ class TransportCompanyController extends Controller
     public function update(Request $request, TransportCompany $transportCompany)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        $transportCompany->update($request->only(['name', 'slug', 'contact', 'is_active']));
+        $data = $request->only(['name', 'slug', 'contact']);
+        $data['is_active'] = $request->has('is_active') ? 1 : 0;
+        $transportCompany->update($data);
         return redirect()->route('admin.transport-companies.index')->with('success', 'Updated');
     }
 

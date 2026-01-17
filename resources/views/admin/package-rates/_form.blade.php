@@ -19,14 +19,14 @@
 
 <div class="mb-3">
     <label class="form-label">Package Type</label>
-    <select name="package_type" class="form-select @error('package_type') is-invalid @enderror" required>
+    <select id="package_type" name="package_type" class="form-select @error('package_type') is-invalid @enderror"
+        required>
         <option value="">-- Select Package Type --</option>
-        <option value="Cartoon"
-            {{ old('package_type', $packageRate->package_type ?? '') == 'Cartoon' ? 'selected' : '' }}>Cartoon</option>
-        <option value="Roll" {{ old('package_type', $packageRate->package_type ?? '') == 'Roll' ? 'selected' : '' }}>
-            Roll</option>
-        <option value="Loose" {{ old('package_type', $packageRate->package_type ?? '') == 'Loose' ? 'selected' : '' }}>
-            Loose</option>
+        @foreach ($packageTypes ?? [] as $type)
+            <option value="{{ $type }}"
+                {{ old('package_type', $packageRate->package_type ?? '') == $type ? 'selected' : '' }}>
+                {{ $type }}</option>
+        @endforeach
     </select>
     @error('package_type')
         <div class="invalid-feedback">{{ $message }}</div>
@@ -109,7 +109,7 @@
         const searchValue = this.value.toLowerCase();
         document.querySelectorAll('#district_list .district-item').forEach(item => {
             item.style.display = item.textContent.toLowerCase().includes(searchValue) ? 'block' :
-            'none';
+                'none';
         });
     });
 
@@ -147,7 +147,7 @@
             });
 
             const dropdown = bootstrap.Dropdown.getInstance(document.getElementById(
-            'district_display'));
+                'district_display'));
             if (dropdown) dropdown.hide();
         });
     });
@@ -157,7 +157,7 @@
         const searchValue = this.value.toLowerCase();
         document.querySelectorAll('#upazila_list .upazila-item').forEach(item => {
             item.style.display = item.textContent.toLowerCase().includes(searchValue) ? 'block' :
-            'none';
+                'none';
         });
     });
 
@@ -178,3 +178,18 @@
         item.addEventListener('click', selectUpazila);
     });
 </script>
+
+<!-- Add select2 for searchable dropdown -->
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#package_type').select2({
+                placeholder: '-- Select Package Type --',
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
+@endpush
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

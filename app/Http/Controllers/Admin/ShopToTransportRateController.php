@@ -18,7 +18,11 @@ class ShopToTransportRateController extends Controller
     public function create()
     {
         $districts = array_keys(config('locations'));
-        return view('admin.shop-to-transport-rates.create', compact('districts'));
+        $packageTypes = \App\Models\PackagingRule::where('is_active', true)
+            ->pluck('unit_name')
+            ->unique()
+            ->values();
+        return view('admin.shop-to-transport-rates.create', compact('districts', 'packageTypes'));
     }
 
     public function store(Request $request)

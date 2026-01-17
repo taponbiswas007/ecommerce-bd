@@ -241,7 +241,23 @@ class Cart extends Model
             $sessionId = session()->getId();
         }
 
-        // Check if item already exists in cart
+        // Normalize attributes for comparison (deep sort and encode as JSON)
+        $normalize = function ($arr) {
+            if (!is_array($arr)) return json_encode($arr);
+            $deepSort = function (&$array) use (&$deepSort) {
+                if (!is_array($array)) return;
+                ksort($array);
+                foreach ($array as &$value) {
+                    if (is_array($value)) {
+                        $deepSort($value);
+                    }
+                }
+            };
+            $copy = $arr;
+            $deepSort($copy);
+            return json_encode($copy);
+        };
+        $normalizedAttributes = $normalize($attributes);
         $cartItem = self::where('product_id', $productId)
             ->when($userId, function ($query) use ($userId) {
                 return $query->where('user_id', $userId);
@@ -250,14 +266,15 @@ class Cart extends Model
                 return $query->where('session_id', $sessionId)
                     ->whereNull('user_id');
             })
-            ->first();
+            ->get()
+            ->first(function ($item) use ($normalize, $normalizedAttributes) {
+                return $normalize($item->attributes) === $normalizedAttributes;
+            });
 
         if ($cartItem) {
-            // Update quantity, recalculate price, and update attributes
-            $cartItem->quantity += $quantity;
-            $cartItem->price = self::calculatePrice($product, $cartItem->quantity);
-            $cartItem->attributes = $attributes;
-            $cartItem->save();
+            // Already exists with same attributes, do not add again
+            $cartItem->already_exists = true; // Custom property for controller
+            return $cartItem;
         } else {
             // Create new cart item
             $cartItem = self::create([
@@ -268,9 +285,9 @@ class Cart extends Model
                 'price' => $price,
                 'attributes' => $attributes,
             ]);
+            $cartItem->already_exists = false;
+            return $cartItem;
         }
-
-        return $cartItem;
     }
 
     public static function removeItem($cartId)
@@ -339,15 +356,34 @@ class Cart extends Model
         $userId = Auth::id();
         $sessionId = session()->getId();
 
+        $normalize = function ($arr) {
+            if (!is_array($arr)) return json_encode($arr);
+            $deepSort = function (&$array) use (&$deepSort) {
+                if (!is_array($array)) return;
+                ksort($array);
+                foreach ($array as &$value) {
+                    if (is_array($value)) {
+                        $deepSort($value);
+                    }
+                }
+            };
+            $copy = $arr;
+            $deepSort($copy);
+            return json_encode($copy);
+        };
+
         $guestCartItems = self::where('session_id', $sessionId)
             ->whereNull('user_id')
             ->get();
 
         foreach ($guestCartItems as $item) {
-            // Check if user already has this product in cart
+            // Check if user already has this product+attributes in cart
             $existingCartItem = self::where('user_id', $userId)
                 ->where('product_id', $item->product_id)
-                ->first();
+                ->get()
+                ->first(function ($userItem) use ($normalize, $item) {
+                    return $normalize($userItem->attributes) === $normalize($item->attributes);
+                });
 
             if ($existingCartItem) {
                 // Update quantity and price

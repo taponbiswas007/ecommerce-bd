@@ -18,7 +18,11 @@ class PackageRateController extends Controller
     public function create()
     {
         $companies = TransportCompany::where('is_active', true)->pluck('name', 'id');
-        return view('admin.package-rates.create', compact('companies'));
+        $packageTypes = \App\Models\PackagingRule::where('is_active', true)
+            ->pluck('unit_name')
+            ->unique()
+            ->values();
+        return view('admin.package-rates.create', compact('companies', 'packageTypes'));
     }
 
     public function store(Request $request)
