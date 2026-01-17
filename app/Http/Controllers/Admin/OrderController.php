@@ -68,11 +68,28 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         $order = \App\Models\Order::findOrFail($id);
-        $validated = $request->validate([
+        $rules = [
             'order_status' => 'required|string',
             'shipping_address' => 'required|string',
             'notes' => 'nullable|string',
-        ]);
+        ];
+        // If status is shipped, require a document
+        if ($request->order_status === 'shipped') {
+            $rules['delivery_document'] = 'required|file|mimes:png,jpg,jpeg,pdf|max:5120';
+        } else {
+            $rules['delivery_document'] = 'nullable|file|mimes:png,jpg,jpeg,pdf|max:5120';
+        }
+        $validated = $request->validate($rules);
+
+        // Handle file upload
+        if ($request->hasFile('delivery_document')) {
+            $file = $request->file('delivery_document');
+            $path = $file->store('order_documents', 'public');
+            $validated['delivery_document'] = $path;
+        } else {
+            unset($validated['delivery_document']);
+        }
+
         $order->update($validated);
         return redirect()->route('admin.orders.show', $order->id)->with('success', 'Order updated successfully.');
     }

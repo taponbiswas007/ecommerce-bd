@@ -814,10 +814,15 @@
 
                 <!-- Price Section -->
                 <div class="price-section">
-                    <div class="d-flex align-items-center flex-wrap">
+                    <div class="d-flex align-items-center flex-wrap gap-3">
                         <span class="current-price">
                             ৳{{ number_format($product->discount_price ?? $product->base_price, 2) }}
                         </span>
+                        @if ($product->unit)
+                            <span class="badge bg-light text-dark border border-secondary ms-2">
+                                Unit: {{ $product->unit->name }}
+                            </span>
+                        @endif
 
                         @if ($product->has_discount)
                             <span class="old-price">
@@ -947,12 +952,17 @@
                 <!-- Quantity Selector -->
                 <div class="quantity-selector">
                     <label class="fw-bold">Quantity:</label>
-                    <div class="quantity-input-group">
-                        <button class="quantity-btn" type="button" onclick="decreaseQuantity()">-</button>
-                        <input type="number" id="quantity" class="quantity-input"
-                            value="{{ $product->min_order_quantity }}" min="{{ $product->min_order_quantity }}"
-                            max="{{ $product->stock_quantity }}">
-                        <button class="quantity-btn" type="button" onclick="increaseQuantity()">+</button>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="quantity-input-group">
+                            <button class="quantity-btn" type="button" onclick="decreaseQuantity()">-</button>
+                            <input type="number" id="quantity" class="quantity-input"
+                                value="{{ $product->min_order_quantity }}" min="{{ $product->min_order_quantity }}"
+                                max="{{ $product->stock_quantity }}">
+                            <button class="quantity-btn" type="button" onclick="increaseQuantity()">+</button>
+                        </div>
+                        @if ($product->unit)
+                            <span class="text-muted small">{{ $product->unit->name }}</span>
+                        @endif
                     </div>
                 </div>
 

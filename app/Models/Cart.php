@@ -30,7 +30,7 @@ class Cart extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class)->with(['primaryImage', 'images']);
+        return $this->belongsTo(Product::class)->with(['primaryImage', 'images', 'unit']);
     }
 
     // Accessor for display price

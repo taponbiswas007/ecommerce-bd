@@ -36,7 +36,7 @@
             @foreach ($order->items as $item)
                 <tr>
                     <td>{{ $item->product_name }}</td>
-                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->quantity }} {{ $item->product->unit ? $item->product->unit->symbol : '' }}</td>
                     <td>৳{{ number_format($item->unit_price, 2) }}</td>
                     <td>৳{{ number_format($item->total_price, 2) }}</td>
                 </tr>

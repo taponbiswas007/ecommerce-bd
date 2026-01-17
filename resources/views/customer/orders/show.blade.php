@@ -409,6 +409,12 @@
                                     <i class="fas fa-truck"></i> Track Package
                                 </a>
                             @endif
+                            @if ($order->order_status == 'shipped' && $order->delivery_document)
+                                <a href="{{ asset('storage/' . $order->delivery_document) }}"
+                                    class="btn btn-outline-success mt-2" download>
+                                    <i class="fas fa-file-download"></i> Download Delivery Document
+                                </a>
+                            @endif
                         </div>
 
                         <!-- Order Timeline -->
@@ -512,6 +518,10 @@
                                             <td class="text-center">
                                                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
                                                     {{ $item->quantity }}
+                                                    @if ($item->product && $item->product->unit)
+                                                        <span
+                                                            class="text-muted small">{{ $item->product->unit->name }}</span>
+                                                    @endif
                                                 </span>
                                             </td>
                                             <td class="text-end price-cell">

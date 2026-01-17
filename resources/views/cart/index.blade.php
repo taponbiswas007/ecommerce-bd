@@ -461,21 +461,26 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="cart-item-actions">
                                                 <!-- Quantity Selector -->
-                                                <div class="quantity-selector">
-                                                    <button class="quantity-btn"
-                                                        onclick="updateQuantity('{{ app('hashids')->encode($item->id) }}', 'decrease')"
-                                                        {{ $item->quantity <= 1 ? 'disabled' : '' }}>
-                                                        -
-                                                    </button>
-                                                    <input type="number" class="quantity-input"
-                                                        value="{{ $item->quantity }}" min="1"
-                                                        max="{{ $item->product->stock_quantity }}"
-                                                        onchange="updateQuantityInput('{{ app('hashids')->encode($item->id) }}', this.value)">
-                                                    <button class="quantity-btn"
-                                                        onclick="updateQuantity('{{ app('hashids')->encode($item->id) }}', 'increase')"
-                                                        {{ $item->quantity >= $item->product->stock_quantity ? 'disabled' : '' }}>
-                                                        +
-                                                    </button>
+
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="quantity-selector">
+                                                        <button class="quantity-btn"
+                                                            onclick="updateQuantity('{{ app('hashids')->encode($item->id) }}', 'decrease')"
+                                                            {{ $item->quantity <= 1 ? 'disabled' : '' }}>
+                                                            -
+                                                        </button>
+                                                        <input type="number" class="quantity-input"
+                                                            value="{{ $item->quantity }}" min="1"
+                                                            max="{{ $item->product->stock_quantity }}"
+                                                            onchange="updateQuantityInput('{{ app('hashids')->encode($item->id) }}', this.value)">
+                                                        <button class="quantity-btn"
+                                                            onclick="updateQuantity('{{ app('hashids')->encode($item->id) }}', 'increase')"
+                                                            {{ $item->quantity >= $item->product->stock_quantity ? 'disabled' : '' }}>
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                    <span
+                                                        class="text-muted small">{{ $item->product->unit ? $item->product->unit->name : '' }}</span>
                                                 </div>
 
                                                 <!-- Remove Button -->
