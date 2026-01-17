@@ -8,36 +8,24 @@ use Illuminate\Support\Facades\DB;
 class UpdateCartAttributesHash extends Command
 {
     protected $signature = 'cart:update-attributes-hash';
-    protected $description = 'Update attributes_hash for all cart items using robust normalization';
+    protected $description = 'Update attributes_hash for all cart rows based on attributes';
 
     public function handle()
     {
-        $this->info('Updating attributes_hash for all cart items...');
+        $this->info('Updating attributes_hash for all cart rows...');
         $carts = DB::table('carts')->get();
-        $normalize = function ($arr) {
-            if (!is_array($arr)) return json_encode($arr);
-            $deepSortAndStringify = function (&$array) use (&$deepSortAndStringify) {
-                if (!is_array($array)) return;
-                ksort($array);
-                foreach ($array as $k => &$value) {
-                    if (is_array($value)) {
-                        $deepSortAndStringify($value);
-                    } else {
-                        $value = trim((string)$value);
-                    }
-                }
-            };
-            $copy = $arr;
-            $deepSortAndStringify($copy);
-            return json_encode($copy);
-        };
         $updated = 0;
         foreach ($carts as $cart) {
             $attributes = json_decode($cart->attributes, true);
-            $hash = md5($normalize($attributes));
+            if (is_array($attributes)) {
+                ksort($attributes);
+                $hash = md5(json_encode($attributes));
+            } else {
+                $hash = md5($cart->attributes);
+            }
             DB::table('carts')->where('id', $cart->id)->update(['attributes_hash' => $hash]);
             $updated++;
         }
-        $this->info("Updated $updated cart items.");
+        $this->info("Updated $updated cart rows.");
     }
 }

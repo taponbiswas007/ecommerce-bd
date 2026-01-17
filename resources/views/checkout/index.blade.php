@@ -208,6 +208,14 @@
                                     style="width:40px;height:40px;object-fit:cover;border-radius:6px;">
                                 <div>
                                     <strong>{{ $item->product->name ?? 'Product' }}</strong>
+                                    @if (!empty($item->attributes))
+                                        <div class="text-muted small mb-1">
+                                            @foreach ($item->attributes as $key => $value)
+                                                <span class="me-2"><strong>{{ ucfirst($key) }}:</strong>
+                                                    {{ $value }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                     <div class="small">{{ $item->quantity }} × {{ number_format($item->price, 2) }}
                                     </div>
                                 </div>

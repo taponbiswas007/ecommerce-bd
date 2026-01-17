@@ -21,17 +21,12 @@ class Cart extends Model
         'quantity',
         'price',
         'attributes',
+        'attributes_hash',
     ];
 
     protected $casts = [
         'attributes' => 'array',
     ];
-
-    // Relationships
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function product()
     {
@@ -258,6 +253,7 @@ class Cart extends Model
             return json_encode($copy);
         };
         $normalizedAttributes = $normalize($attributes);
+        $attributesHash = md5($normalizedAttributes);
         $cartItem = self::where('product_id', $productId)
             ->when($userId, function ($query) use ($userId) {
                 return $query->where('user_id', $userId);
@@ -266,13 +262,14 @@ class Cart extends Model
                 return $query->where('session_id', $sessionId)
                     ->whereNull('user_id');
             })
-            ->get()
-            ->first(function ($item) use ($normalize, $normalizedAttributes) {
-                return $normalize($item->attributes) === $normalizedAttributes;
-            });
+            ->where('attributes_hash', $attributesHash)
+            ->first();
 
         if ($cartItem) {
-            // Already exists with same attributes, do not add again
+            // Already exists with same attributes, increase quantity
+            $cartItem->quantity += $quantity;
+            $cartItem->price = self::calculatePrice($product, $cartItem->quantity);
+            $cartItem->save();
             $cartItem->already_exists = true; // Custom property for controller
             return $cartItem;
         } else {
@@ -284,6 +281,7 @@ class Cart extends Model
                 'quantity' => $quantity,
                 'price' => $price,
                 'attributes' => $attributes,
+                'attributes_hash' => $attributesHash,
             ]);
             $cartItem->already_exists = false;
             return $cartItem;

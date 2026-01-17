@@ -127,9 +127,11 @@ class CartController extends Controller
 
         if (isset($cartItem->already_exists) && $cartItem->already_exists) {
             return response()->json([
-                'success' => false,
-                'message' => 'Already added to cart with this attribute.'
-            ], 200);
+                'success' => true,
+                'message' => 'Product quantity updated in cart!',
+                'cart_count' => $cartCount,
+                'cart_item' => $cartItem
+            ]);
         }
 
         return response()->json([
