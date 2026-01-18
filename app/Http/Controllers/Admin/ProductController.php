@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
+/**
+ * Display a listing of trashed (soft deleted) products.
+ */
+
 {
     public function index()
     {
@@ -38,69 +42,78 @@ class ProductController extends Controller
         Log::info('Store Request attributes:', ['attributes' => $request->input('attributes')]);
         Log::info('Store Request has attributes:', ['has' => $request->has('attributes')]);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'unit_id' => 'required|exists:units,id',
-            'base_price' => 'required|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0|lt:base_price',
-            'stock_quantity' => 'required|integer|min:0',
-            'min_order_quantity' => 'required|integer|min:1',
-            'short_description' => 'nullable|string|max:500',
-            'full_description' => 'nullable|string',
-            'weight' => 'nullable|numeric|min:0',
-            'dimensions' => 'nullable|string|max:100',
-            'video_url' => 'nullable|url',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:500',
-            'is_deal' => 'nullable|boolean',
-            'deal_end_at' => 'nullable|date',
-            'attributes' => 'nullable|array',
-            'attributes.*.key' => 'nullable|string|max:255',
-            'attributes.*.value' => 'nullable|string|max:1000',
-        ]);
-
-        // Generate slug
-        $validated['slug'] = Str::slug($request->name);
-
-        // Ensure slug is unique
-        $count = Product::where('slug', $validated['slug'])->count();
-        if ($count > 0) {
-            $validated['slug'] = $validated['slug'] . '-' . ($count + 1);
-        }
-
-        // Extract attributes rows
-        $attributeRows = $this->buildAttributeRows($request->input('attributes') ?? []);
-        // Prevent array field from being inserted into products table
-        unset($validated['attributes']);
-
-        // 🔥 If deal selected, remove previous deal
-        if ($request->boolean('is_deal')) {
-            Product::where('is_deal', 1)->update([
-                'is_deal' => 0,
-                'deal_end_at' => null,
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:categories,id',
+                'unit_id' => 'required|exists:units,id',
+                'base_price' => 'required|numeric|min:0',
+                'discount_price' => 'nullable|numeric|min:0|lt:base_price',
+                'stock_quantity' => 'required|integer|min:0',
+                'min_order_quantity' => 'required|integer|min:1',
+                'short_description' => 'nullable|string|max:500',
+                'full_description' => 'nullable|string',
+                'weight' => 'nullable|numeric|min:0',
+                'dimensions' => 'nullable|string|max:100',
+                'video_url' => 'nullable|url',
+                'is_featured' => 'boolean',
+                'is_active' => 'boolean',
+                'meta_title' => 'nullable|string|max:255',
+                'meta_description' => 'nullable|string|max:500',
+                'meta_keywords' => 'nullable|string|max:500',
+                'is_deal' => 'nullable|boolean',
+                'deal_end_at' => 'nullable|date',
+                'attributes' => 'nullable|array',
+                'attributes.*.key' => 'nullable|string|max:255',
+                'attributes.*.value' => 'nullable|string|max:1000',
             ]);
-        }
 
-        // Set default values
-        $validated['is_featured'] = $request->boolean('is_featured');
-        $validated['is_active'] = $request->boolean('is_active', true);
-        $validated['is_deal'] = $request->boolean('is_deal');
+            // Generate slug
+            $validated['slug'] = Str::slug($request->name);
 
-        $product = DB::transaction(function () use ($validated, $attributeRows) {
-            $product = Product::create($validated);
-            if (!empty($attributeRows)) {
-                $product->attributesRows()->createMany($attributeRows);
+            // Ensure slug is unique
+            $count = Product::where('slug', $validated['slug'])->count();
+            if ($count > 0) {
+                $validated['slug'] = $validated['slug'] . '-' . ($count + 1);
             }
-            return $product;
-        });
-        Log::info('Product created with attribute rows:', ['id' => $product->id, 'attributes_rows' => $attributeRows]);
 
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product created successfully.');
+            // Extract attributes rows
+            $attributeRows = $this->buildAttributeRows($request->input('attributes') ?? []);
+            // Prevent array field from being inserted into products table
+            unset($validated['attributes']);
+
+            // 🔥 If deal selected, remove previous deal
+            if ($request->boolean('is_deal')) {
+                Product::where('is_deal', 1)->update([
+                    'is_deal' => 0,
+                    'deal_end_at' => null,
+                ]);
+            }
+
+            // Set default values
+            $validated['is_featured'] = $request->boolean('is_featured');
+            $validated['is_active'] = $request->boolean('is_active', true);
+            $validated['is_deal'] = $request->boolean('is_deal');
+
+            $product = DB::transaction(function () use ($validated, $attributeRows) {
+                $product = Product::create($validated);
+                if (!empty($attributeRows)) {
+                    $product->attributesRows()->createMany($attributeRows);
+                }
+                return $product;
+            });
+            Log::info('Product created with attribute rows:', ['id' => $product->id, 'attributes_rows' => $attributeRows]);
+
+            return redirect()->route('admin.products.index')
+                ->with('success', 'Product created successfully.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000 && str_contains($e->getMessage(), 'products_slug_unique')) {
+                return back()
+                    ->withErrors(['slug' => 'A product with this slug already exists. Please use a different name.'])
+                    ->withInput();
+            }
+            throw $e;
+        }
     }
 
     public function show(Product $product)
@@ -304,5 +317,46 @@ class ProductController extends Controller
         }
 
         return $rows;
+    }
+
+    public function trash()
+    {
+        $trashedProducts = Product::onlyTrashed()->orderByDesc('deleted_at')->get();
+        return view('admin.products.trash', compact('trashedProducts'));
+    }
+
+    /**
+     * Permanently delete a trashed product.
+     */
+    public function forceDelete($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        // Delete related data if needed (images, attributes, etc.)
+        DB::transaction(function () use ($product) {
+            $product->attributesRows()->delete();
+            foreach ($product->images as $image) {
+                $paths = [];
+                if ($image->image_path) {
+                    $paths[] = $image->image_path;
+                    $filename = basename($image->image_path);
+                    $dir = dirname($image->image_path);
+                    $paths[] = $dir . '/large_' . $filename;
+                    $paths[] = $dir . '/medium_' . $filename;
+                    $paths[] = $dir . '/thumb_' . $filename;
+                }
+                foreach ($paths as $path) {
+                    if (Storage::disk($image->disk ?? 'public')->exists($path)) {
+                        Storage::disk($image->disk ?? 'public')->delete($path);
+                    }
+                }
+                $image->forceDelete();
+            }
+            $product->prices()->delete();
+            $product->packagingRules()->delete();
+            $product->taxOverride()->delete();
+            $product->wishlists()->detach();
+            $product->forceDelete();
+        });
+        return redirect()->route('admin.products.trash')->with('success', 'Product permanently deleted.');
     }
 }

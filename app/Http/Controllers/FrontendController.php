@@ -101,13 +101,17 @@ class FrontendController extends Controller
      */
     public function shop(Request $request)
     {
-        $query = Product::with(['primaryImage', 'category'])
-            ->addSelect(['average_rating', 'total_reviews'])
+        $query = Product::select('products.*') // 🔴 VERY IMPORTANT
+            ->with(['primaryImage', 'category'])
+            ->addSelect([
+                'average_rating',
+                'total_reviews'
+            ])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0);
 
         // Search filter
-        if ($request->has('search') && $request->search) {
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                     ->orWhere('short_description', 'like', '%' . $request->search . '%')
@@ -116,45 +120,51 @@ class FrontendController extends Controller
         }
 
         // Category filter
-        if ($request->has('category') && $request->category) {
+        if ($request->filled('category')) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
 
         // Price filter
-        if ($request->has('min_price') && $request->min_price) {
+        if ($request->filled('min_price')) {
             $query->where('base_price', '>=', $request->min_price);
         }
-        if ($request->has('max_price') && $request->max_price) {
+
+        if ($request->filled('max_price')) {
             $query->where('base_price', '<=', $request->max_price);
         }
 
-        // Sort by
-        $sortBy = $request->get('sort_by', 'newest');
-        switch ($sortBy) {
+        // Sort
+        switch ($request->get('sort_by', 'newest')) {
             case 'price_low':
-                $query->orderBy('base_price');
+                $query->orderBy('base_price', 'asc');
                 break;
+
             case 'price_high':
-                $query->orderByDesc('base_price');
+                $query->orderBy('base_price', 'desc');
                 break;
+
             case 'name':
-                $query->orderBy('name');
+                $query->orderBy('name', 'asc');
                 break;
+
             case 'popular':
-                $query->orderByDesc('view_count');
+                $query->orderBy('view_count', 'desc');
                 break;
+
             case 'discount':
                 $query->whereNotNull('discount_price')
                     ->whereColumn('discount_price', '<', 'base_price')
-                    ->orderByRaw('(base_price - discount_price) desc');
+                    ->orderByRaw('(base_price - discount_price) DESC');
                 break;
+
             default:
-                $query->orderByDesc('created_at');
+                $query->orderBy('created_at', 'desc');
         }
 
-        $products = $query->paginate(12);
+        $products = $query->paginate(12)->withQueryString();
+
         $categories = Category::whereNull('parent_id')
             ->where('is_active', true)
             ->with('children')
@@ -162,6 +172,7 @@ class FrontendController extends Controller
 
         return view('shop', compact('products', 'categories'));
     }
+
 
     /**
      * Display product details
@@ -198,19 +209,25 @@ class FrontendController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        // Get all child category IDs including parent
+        // Parent + child category IDs
         $categoryIds = $category->children->pluck('id')->push($category->id);
 
-        $products = Product::with(['primaryImage', 'images', 'unit', 'prices'])
-            ->addSelect(['average_rating', 'total_reviews'])
+        $products = Product::select('products.*') // 🔴 MUST
+            ->with(['primaryImage', 'images', 'unit', 'prices'])
+            ->addSelect([
+                'average_rating',
+                'total_reviews'
+            ])
             ->whereIn('category_id', $categoryIds)
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         return view('category.show', compact('category', 'products'));
     }
+
 
     /**
      * Quick view product

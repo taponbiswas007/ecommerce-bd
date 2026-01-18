@@ -886,7 +886,7 @@
     <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header border pb-0">
+                <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-0">

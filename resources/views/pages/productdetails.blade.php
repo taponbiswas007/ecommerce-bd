@@ -1257,7 +1257,7 @@
     <div class="modal fade" id="zoomModal" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header border">
+                <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
@@ -1289,7 +1289,7 @@
 
     <!-- Review Modal -->
     <div class="modal fade" id="reviewModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Write a Review</h5>
@@ -1330,16 +1330,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize main gallery
-            const mainGallery = new Swiper('.main-gallery', {
-                spaceBetween: 10,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-            });
-
-            // Initialize thumbnail gallery
+            // Initialize thumbnail gallery first
             const thumbnailGallery = new Swiper('.thumbnail-gallery', {
                 spaceBetween: 10,
                 slidesPerView: 4,
@@ -1347,16 +1338,19 @@
                 watchSlidesProgress: true,
             });
 
-            // Connect galleries
-            mainGallery.controller.control = thumbnailGallery;
-            thumbnailGallery.controller.control = mainGallery;
-
-            // Click on thumbnail to switch slide
-            document.querySelectorAll('.thumbnail-gallery .swiper-slide').forEach((thumb, index) => {
-                thumb.addEventListener('click', function() {
-                    mainGallery.slideTo(index);
-                });
+            // Initialize main gallery and link thumbs
+            const mainGallery = new Swiper('.main-gallery', {
+                spaceBetween: 10,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                thumbs: {
+                    swiper: thumbnailGallery
+                }
             });
+
+            // No need for manual controller.control or click event, Swiper thumbs module will handle active state
 
             // Initialize all attribute options on page load
             initializeAttributes();

@@ -124,6 +124,9 @@
         .main-header {
             background: white;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
 
         .logo {
@@ -314,11 +317,13 @@
         /* Mobile Menu */
         .mobile-menu {
             background: white;
-            position: absolute;
-            top: 100%;
+            position: fixed;
+            top: 0;
             left: 0;
-            right: 0;
-            z-index: 1000;
+            width: 300px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 999999999999999999;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             display: none;
         }
@@ -531,14 +536,22 @@
             font-weight: bold;
             background: rgba(0, 150, 255, 0.1);
         }
+
+        .skiptranslate {
+            display: none !important;
+        }
+
+        body {
+            top: 0 !important;
+        }
     </style>
     @yield('styles')
 </head>
 
-<body>
+<body style="top: 0 !important">
     <!-- Header Top Section -->
     <div class="header-top py-2">
-        <div class="container">
+        <div class="container-fluid px-3">
             <div class="d-flex justify-content-between align-items-center">
                 <!-- Marquee Ads -->
                 <div class="marquee-container flex-grow-1 me-3">
@@ -665,7 +678,7 @@
 
     <!-- Main Header -->
     <header class="main-header py-3">
-        <div class="container">
+        <div class="container-fluid px-3">
             <div class="row align-items-center">
                 <!-- Logo -->
                 <div class="col-lg-2 col-md-3 col-6">
@@ -792,7 +805,7 @@
 
     <!-- Navigation -->
     <nav class="main-nav d-none d-lg-block">
-        <div class="container">
+        <div class="container-fluid px-3">
             <ul class="nav">
                 <li class="nav-item">
                     <a class="nav-link nav-link-custom {{ request()->routeIs('home') ? 'active' : '' }}"

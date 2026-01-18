@@ -13,6 +13,9 @@
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
         <i class="fas fa-plus me-2"></i> Add New Product
     </a>
+    <a href="{{ route('admin.products.trash') }}" class="btn btn-warning ms-2">
+        <i class="fas fa-trash-alt me-2"></i> Trashed Products
+    </a>
 @endsection
 
 @push('styles')

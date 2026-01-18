@@ -135,6 +135,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Product Management
     Route::prefix('products')->name('products.')->group(function () {
+        // Trashed products (soft deleted)
+        Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
+        Route::delete('/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('forceDelete');
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/', [ProductController::class, 'store'])->name('store');

@@ -434,6 +434,30 @@
             margin: 15px 0;
         }
 
+        .product-gallery-slider .swiper-button-next,
+        .product-gallery-slider .swiper-button-prev {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: #000000;
+            border: 2px solid #000000;
+            transition: all 0.3s ease;
+        }
+
+        .product-gallery-slider .swiper-button-next:hover,
+        .product-gallery-slider .swiper-button-prev:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .product-gallery-slider .swiper-button-next:after,
+        .product-gallery-slider .swiper-button-prev:after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             .quick-view-modal .modal-dialog {
                 margin: 0.5rem;
@@ -516,8 +540,8 @@
                                     <input type="range" class="form-range" id="priceRange" min="0" max="100000"
                                         value="{{ request('max_price', '100000') }}" step="1000">
                                     <div class="d-flex justify-content-between mt-2">
-                                        <small>₹ <span id="minPriceDisplay">0</span></small>
-                                        <small>₹ <span
+                                        <small>৳ <span id="minPriceDisplay">0</span></small>
+                                        <small>৳ <span
                                                 id="maxPriceDisplay">{{ request('max_price', '100000') }}</span></small>
                                     </div>
                                 </div>
@@ -713,9 +737,9 @@
     </div>
     <!-- Quick View Modal -->
     <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border pb-0">
+                <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-0">
