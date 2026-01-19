@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'ElectroHub') }}</title>
+    <title>{{ config('app.name', 'Ecommerce BD') }}</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -681,15 +681,16 @@
         <div class="container-fluid px-3">
             <div class="row align-items-center">
                 <!-- Logo -->
-                <div class="col-lg-2 col-md-3 col-6">
+                <div class="col-lg-2 col-md-3 col-3">
                     <a href="{{ route('home') }}" class="logo d-flex align-items-center">
-                        <i class="fas fa-bolt logo-icon"></i>
-                        <span>ElectroHub</span>
+                        {{-- <i class="fas fa-bolt logo-icon"></i>
+                        <span>Ecommerce BD</span> --}}
+                        <img src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
                     </a>
                 </div>
 
                 <!-- Search Bar -->
-                <div class="col-lg-5 col-md-6 order-md-2 order-lg-1 order-3 mt-3 mt-md-0">
+                <div class="col-lg-5 order-lg-1 order-3 mt-3 mt-md-0">
                     <div class="search-container">
                         <i class="fas fa-search search-icon"></i>
                         <form action="{{ route('shop') }}" method="GET">
@@ -701,7 +702,7 @@
                 </div>
 
                 <!-- Header Icons -->
-                <div class="col-lg-5 col-md-3 col-6 order-md-1 order-lg-2 order-2">
+                <div class="col-lg-5 col-md-9 col-9 order-md-1 order-lg-2 order-2">
                     <div class="d-flex justify-content-end align-items-center gap-3">
                         <!-- Wishlist -->
                         <a href="{{ route('wishlist.index') }}" class="header-icon position-relative">
@@ -988,7 +989,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Login to ElectroHub</h5>
+                    <h5 class="modal-title" id="loginModalLabel">Login to Ecommerce BD</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
