@@ -218,7 +218,7 @@
 
         .nav-link-custom {
             color: white !important;
-            font-weight: 500;
+            font-weight: 400;
             padding: 12px 20px !important;
             position: relative;
             transition: all 0.3s ease;
@@ -421,6 +421,36 @@
 
             .marquee-container {
                 width: 100%;
+            }
+
+            .shopping-cart-header {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: white;
+                padding: 10px 0;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .wishlistIcon {
+                order: 2;
+            }
+
+            .cartIcon {
+                order: 1;
+            }
+
+            .authArea {
+                order: 4;
+            }
+
+            .menuBtn {
+                order: 3;
+            }
+
+            .profileArea {
+                order: 4;
             }
         }
     </style>
@@ -702,10 +732,11 @@
                 </div>
 
                 <!-- Header Icons -->
-                <div class="col-lg-5 col-md-9 col-9 order-md-1 order-lg-2 order-2">
-                    <div class="d-flex justify-content-end align-items-center gap-3">
+                <div class="col-lg-5 col-md-9 col-9 order-md-1 order-lg-2 order-2 shopping-cart-header">
+                    <div
+                        class="d-flex justify-content-md-end justify-content-between align-items-center gap-3 px-md-0 px-4">
                         <!-- Wishlist -->
-                        <a href="{{ route('wishlist.index') }}" class="header-icon position-relative">
+                        <a href="{{ route('wishlist.index') }}" class="header-icon wishlistIcon position-relative">
                             <i class="far fa-heart"></i>
                             @auth
                                 @php
@@ -718,7 +749,7 @@
                         </a>
 
                         <!-- Cart -->
-                        <a href="{{ route('cart.index') }}" class="header-icon position-relative">
+                        <a href="{{ route('cart.index') }}" class="header-icon cartIcon position-relative">
                             <i class="fas fa-shopping-cart"></i>
                             @php
                                 $cartCount = \App\Models\Cart::count();
@@ -730,7 +761,7 @@
 
                         <!-- User Account -->
                         @auth
-                            <div class="dropdown">
+                            <div class="dropdown profileArea">
                                 <a href="#" class="d-flex align-items-center text-decoration-none"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <div class="header-icon">
@@ -780,7 +811,7 @@
                             </div>
                         @else
                             <!-- Login and Register Buttons with Modals -->
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 authArea">
                                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#loginModal">
                                     <i class="fas fa-sign-in-alt me-1"></i> Login
@@ -793,7 +824,7 @@
                         @endauth
 
                         <!-- Mobile Menu Toggle -->
-                        <button class="mobile-menu-btn d-lg-none ms-2" id="mobileMenuToggle">
+                        <button class="mobile-menu-btn d-lg-none ms-2 menuBtn" id="mobileMenuToggle">
                             <span></span>
                             <span></span>
                             <span></span>

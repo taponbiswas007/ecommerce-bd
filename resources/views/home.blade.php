@@ -697,7 +697,7 @@
         }
 
         .section-header h2 {
-            font-weight: 700;
+            font-weight: 500;
             margin: 0;
             font-size: 28px;
             position: relative;
@@ -774,7 +774,6 @@
             background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
             color: white;
             padding: 60px 0;
-            border-radius: 20px;
             margin: 40px 0;
             position: relative;
             overflow: hidden;
