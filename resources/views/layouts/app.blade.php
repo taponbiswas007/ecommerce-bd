@@ -136,6 +136,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
+            min-width: 92px;
         }
 
         .logo:hover {
@@ -413,6 +414,13 @@
             }
         }
 
+        .shopping-cart-header .active {
+            background: linear-gradient(90deg, var(--electric-blue), var(--electric-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         @media (max-width: 767.98px) {
             .header-top .d-flex {
                 flex-direction: column;
@@ -427,11 +435,14 @@
                 outline: none;
                 border: none;
                 padding: 0;
+                color: #9aa0a6;
+                font-size: 1.5rem;
             }
 
             .authLoginBtn:hover {
                 background: none;
                 box-shadow: none;
+
             }
 
             /* .wishlistIcon,
@@ -466,13 +477,24 @@
             .cartIcon,
             .authArea,
             .profileArea,
-            .homeLink,
-            .menuBtn {
-                font-size: 22px;
+            .homeLink {
+                font-size: 1.5rem;
                 color: #9aa0a6;
                 position: relative;
                 transition: all 0.25s ease;
                 cursor: pointer;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .header-icon {
+                font-size: 1.5rem;
+                color: #9aa0a6;
+                position: relative;
+                transition: all 0.25s ease;
+                cursor: pointer;
+                padding: 0 !important;
+                margin: 0 !important;
             }
 
             /* Click effect */
@@ -486,16 +508,17 @@
             }
 
             /* Active state */
-            .shopping-cart-header .active {
+            /* .shopping-cart-header .active {
                 color: #0d6efd;
-                transform: translateY(-6px);
-            }
+            } */
+
 
 
 
             /* Middle menu button (FAB style) */
             .menuBtn {
-                background: #0d6efd;
+                background: linear-gradient(90deg, var(--electric-blue), var(--electric-purple));
+                margin-left: 0;
                 color: #fff;
                 width: 52px;
                 height: 52px;
@@ -503,9 +526,23 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                box-shadow: 0 8px 20px rgba(13, 110, 253, 0.35);
-                margin-top: -30px;
                 font-size: 24px;
+                margin-top: -30px;
+
+                /* HOLE EFFECT */
+                box-shadow:
+                    inset 0 6px 10px rgba(255, 255, 255, 0.25),
+                    /* top inner light */
+                    inset 0 -6px 10px rgba(0, 0, 0, 0.35),
+                    /* bottom inner dark */
+                    0 4px 8px rgba(0, 0, 0, 0.2);
+                /* soft outer depth */
+            }
+
+
+            .mobile-menu-btn span {
+                left: 13px;
+                background: #ffffff;
             }
 
             /* Disable dot for menu button */
@@ -544,6 +581,49 @@
 
             .homeLink {
                 order: 1;
+            }
+
+            body {
+                padding-bottom: 80px;
+            }
+        }
+
+        @media (max-width: 540px) {
+            .search-container {
+                position: relative;
+                margin-top: 0;
+            }
+
+            .search-container .search-input {
+                display: none;
+                position: absolute;
+                top: -18px;
+                right: 13px;
+                left: 40px;
+                width: calc(100% - 40px);
+                z-index: 99999;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 6px 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                transition: opacity 0.2s;
+            }
+
+            .search-container.show-input .search-input {
+                display: block;
+            }
+
+            .search-container .search-icon {
+                font-size: 1.3rem;
+                z-index: 10000;
+                right: 15px;
+                left: unset
+            }
+
+            /* Hide input by default, only show icon */
+            .search-container .search-input {
+                opacity: 1;
             }
         }
     </style>
@@ -804,19 +884,20 @@
         <div class="container-fluid px-3">
             <div class="row align-items-center">
                 <!-- Logo -->
-                <div class="col-lg-2 col-md-3 col-3">
+                <div class="col-lg-2 col-md-3 col-2">
                     <a href="{{ route('home') }}" class="logo d-flex align-items-center">
                         {{-- <i class="fas fa-bolt logo-icon"></i>
                         <span>Ecommerce BD</span> --}}
-                        <img src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
+                        <img class=" img-fluid" src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
                     </a>
                 </div>
 
                 <!-- Search Bar -->
-                <div class="col-lg-5 order-lg-1 order-3 mt-3 mt-md-0">
-                    <div class="search-container">
-                        <i class="fas fa-search search-icon"></i>
-                        <form action="{{ route('shop') }}" method="GET">
+                <div class="col-lg-5 order-lg-1 col-md-12 col-10 order-3">
+                    <div class="search-container position-relative">
+                        <i class="fas fa-search search-icon d-inline-block" id="responsiveSearchIcon"
+                            style="cursor:pointer;"></i>
+                        <form action="{{ route('shop') }}" method="GET" class="m-0 p-0" id="responsiveSearchForm">
                             <input type="search" name="search" class="search-input"
                                 placeholder="Search for electronics, gadgets, appliances..."
                                 value="{{ request('search') }}">
@@ -824,18 +905,20 @@
                     </div>
                 </div>
 
+
                 <!-- Header Icons -->
                 <div class="col-lg-5 col-md-9 col-9 order-md-1 order-lg-2 order-2 shopping-cart-header">
                     <div
-                        class="d-flex justify-content-md-end justify-content-between align-items-center gap-3 px-md-0 px-4">
+                        class="d-flex justify-content-md-end justify-content-between align-items-center w-100 gap-3 px-md-0">
                         {{-- home --}}
                         <a class="homeLink d-md-none {{ request()->routeIs('home') ? 'active' : '' }}"
                             href="{{ route('home') }}">
-                            <i class="fas fa-home me-2"></i>
+                            <i class="fa-solid fa-house"></i>
                         </a>
 
                         <!-- Wishlist -->
-                        <a href="{{ route('wishlist.index') }}" class="header-icon wishlistIcon position-relative">
+                        <a href="{{ route('wishlist.index') }}"
+                            class="header-icon wishlistIcon position-relative {{ request()->routeIs('wishlist.index') ? 'active' : '' }}">
                             <i class="far fa-heart"></i>
                             @auth
                                 @php
@@ -848,7 +931,8 @@
                         </a>
 
                         <!-- Cart -->
-                        <a href="{{ route('cart.index') }}" class="header-icon cartIcon position-relative">
+                        <a href="{{ route('cart.index') }}"
+                            class="header-icon cartIcon position-relative {{ request()->routeIs('cart.index') ? 'active' : '' }}">
                             <i class="fas fa-shopping-cart"></i>
                             @php
                                 $cartCount = \App\Models\Cart::count();
@@ -861,7 +945,8 @@
                         <!-- User Account -->
                         @auth
                             <div class="dropdown profileArea">
-                                <a href="#" class="d-flex align-items-center text-decoration-none"
+                                <a href="#"
+                                    class="d-flex align-items-center text-decoration-none {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <div class="header-icon">
                                         <i class="fas fa-user-circle"></i>
@@ -1302,6 +1387,61 @@
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
+    <script>
+        // Responsive search bar toggle for mobile (<=540px)
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchIcon = document.getElementById('responsiveSearchIcon');
+            const searchContainer = searchIcon ? searchIcon.closest('.search-container') : null;
+            const searchInput = searchContainer ? searchContainer.querySelector('.search-input') : null;
+            const searchForm = document.getElementById('responsiveSearchForm');
+
+            function isMobile() {
+                return window.innerWidth <= 540;
+            }
+
+            if (searchIcon && searchContainer && searchInput) {
+                // Show input on icon click (mobile only)
+                searchIcon.addEventListener('click', function(e) {
+                    if (!isMobile()) return;
+                    searchContainer.classList.toggle('show-input');
+                    if (searchContainer.classList.contains('show-input')) {
+                        searchInput.style.display = 'block';
+                        searchInput.focus();
+                    } else {
+                        searchInput.style.display = 'none';
+                    }
+                    e.stopPropagation();
+                });
+
+                // Hide input when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!isMobile()) return;
+                    if (searchContainer.classList.contains('show-input')) {
+                        if (!searchContainer.contains(e.target)) {
+                            searchContainer.classList.remove('show-input');
+                            searchInput.style.display = 'none';
+                        }
+                    }
+                });
+
+                // Prevent form click from closing
+                searchForm.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+
+                // Hide input on resize if not mobile
+                window.addEventListener('resize', function() {
+                    if (!isMobile()) {
+                        searchContainer.classList.remove('show-input');
+                        searchInput.style.display = '';
+                    } else {
+                        searchInput.style.display = searchContainer.classList.contains('show-input') ?
+                            'block' : 'none';
+                    }
+                });
+            }
+        });
+    </script>
     <script>
         // Global auth enforcement across all pages
         (function() {
