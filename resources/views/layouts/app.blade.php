@@ -421,6 +421,12 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .menuBtn:active {
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+            -webkit-text-fill-color: unset !important;
+        }
+
         @media (max-width: 767.98px) {
             .header-top .d-flex {
                 flex-direction: column;
@@ -502,8 +508,7 @@
             .cartIcon:active,
             .authArea:active,
             .profileArea:active,
-            .homeLink:active,
-            .menuBtn:active {
+            .homeLink:active {
                 transform: scale(0.9);
             }
 
@@ -517,7 +522,7 @@
 
             /* Middle menu button (FAB style) */
             .menuBtn {
-                background: linear-gradient(90deg, var(--electric-blue), var(--electric-purple));
+                background: linear-gradient(90deg, var(--electric-blue), var(--electric-purple)) !important;
                 margin-left: 0;
                 color: #fff;
                 width: 52px;
