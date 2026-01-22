@@ -423,22 +423,111 @@
                 width: 100%;
             }
 
+            .authLoginBtn {
+                outline: none;
+                border: none;
+                padding: 0;
+            }
+
+            .authLoginBtn:hover {
+                background: none;
+                box-shadow: none;
+            }
+
+            /* .wishlistIcon,
+            .cartIcon,
+            .authArea,
+            .profileArea,
+            .authLoginBtn,
+            .homeLink {
+                font-size: 1.5rem;
+                color: #6c757d;
+            } */
+            /* Bottom Navigation Wrapper */
             .shopping-cart-header {
                 position: fixed;
                 bottom: 0;
                 left: 0;
+                right: 0;
                 width: 100%;
-                background: white;
-                padding: 10px 0;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                height: 64px;
+                background: #ffffff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: env(safe-area-inset-bottom);
+                box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+                border-top: 1px solid #eee;
+                z-index: 999;
             }
 
+            /* Common icon style */
+            .wishlistIcon,
+            .cartIcon,
+            .authArea,
+            .profileArea,
+            .homeLink,
+            .menuBtn {
+                font-size: 22px;
+                color: #9aa0a6;
+                position: relative;
+                transition: all 0.25s ease;
+                cursor: pointer;
+            }
+
+            /* Click effect */
+            .wishlistIcon:active,
+            .cartIcon:active,
+            .authArea:active,
+            .profileArea:active,
+            .homeLink:active,
+            .menuBtn:active {
+                transform: scale(0.9);
+            }
+
+            /* Active state */
+            .shopping-cart-header .active {
+                color: #0d6efd;
+                transform: translateY(-6px);
+            }
+
+
+
+            /* Middle menu button (FAB style) */
+            .menuBtn {
+                background: #0d6efd;
+                color: #fff;
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 8px 20px rgba(13, 110, 253, 0.35);
+                margin-top: -30px;
+                font-size: 24px;
+            }
+
+            /* Disable dot for menu button */
+            .menuBtn::after {
+                display: none;
+            }
+
+            /* Auth button reset */
+            .authLoginBtn {
+                background: transparent;
+                border: none;
+                outline: none;
+                padding: 0;
+            }
+
+
             .wishlistIcon {
-                order: 2;
+                order: 4;
             }
 
             .cartIcon {
-                order: 1;
+                order: 2;
             }
 
             .authArea {
@@ -450,7 +539,11 @@
             }
 
             .profileArea {
-                order: 4;
+                order: 5;
+            }
+
+            .homeLink {
+                order: 1;
             }
         }
     </style>
@@ -735,6 +828,12 @@
                 <div class="col-lg-5 col-md-9 col-9 order-md-1 order-lg-2 order-2 shopping-cart-header">
                     <div
                         class="d-flex justify-content-md-end justify-content-between align-items-center gap-3 px-md-0 px-4">
+                        {{-- home --}}
+                        <a class="homeLink d-md-none {{ request()->routeIs('home') ? 'active' : '' }}"
+                            href="{{ route('home') }}">
+                            <i class="fas fa-home me-2"></i>
+                        </a>
+
                         <!-- Wishlist -->
                         <a href="{{ route('wishlist.index') }}" class="header-icon wishlistIcon position-relative">
                             <i class="far fa-heart"></i>
@@ -812,12 +911,13 @@
                         @else
                             <!-- Login and Register Buttons with Modals -->
                             <div class="d-flex gap-2 authArea">
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#loginModal">
-                                    <i class="fas fa-sign-in-alt me-1"></i> Login
+                                <button type="button" class="btn btn-sm btn-outline-primary authLoginBtn"
+                                    data-bs-toggle="modal" data-bs-target="#loginModal">
+                                    <i class="fas fa-sign-in-alt me-1"></i> <span
+                                        class="d-md-inline-block d-none">Login</span>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#registerModal">
+                                <button type="button" class="btn btn-sm btn-primary d-md-block d-none"
+                                    data-bs-toggle="modal" data-bs-target="#registerModal">
                                     <i class="fas fa-user-plus me-1"></i> Register
                                 </button>
                             </div>
