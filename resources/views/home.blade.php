@@ -951,7 +951,7 @@
 @section('content')
     <!-- Hero Slider Section -->
     <section class="py-4">
-        <div class="container">
+        <div class="container-fluid">
             <div class="swiper hero-slider">
                 <div class="swiper-wrapper">
                     @forelse ($heroProducts as $product)
@@ -1016,7 +1016,7 @@
 
     <!-- Category Slider Section -->
     <section class="py-5">
-        <div class="container">
+        <div class="container-fluid">
             <div class="section-header">
                 <h2>Shop by Categories</h2>
                 <a href="#" class="btn view-all-btn">
@@ -1053,7 +1053,7 @@
 
     <!-- Featured Products Section -->
     <section class="py-5 bg-light">
-        <div class="container">
+        <div class="container-fluid">
             <div class="section-header">
                 <h2>Featured Products</h2>
                 <a href="{{ route('shop') }}?featured=1" class="btn view-all-btn">
@@ -1169,7 +1169,7 @@
     <!-- Deal of the Day -->
     @if ($dealProduct)
         <section class="py-5">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="deal-of-the-day">
                     <div class="row align-items-center">
                         <div class="col-lg-6 p-5 text-white position-relative">
@@ -1254,7 +1254,7 @@
     <!-- Category Wise Products Sections -->
     @foreach ($categories->take(3) as $category)
         <section class="category-wise-section">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="section-header">
                     <h2>{{ $category->name }}</h2>
                     <a href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}"
@@ -1393,7 +1393,7 @@
 
     <!-- Best Deals Section -->
     <section class="best-deals-section">
-        <div class="container position-relative">
+        <div class="container-fluid position-relative">
             <div class="section-header">
                 <h2 class="text-white">Best Deals</h2>
                 <a href="{{ route('shop') }}?deal=1" class="btn btn-outline-light view-all-btn">
@@ -1515,7 +1515,7 @@
 
     <!-- Brand Slider Section -->
     <section class="py-5">
-        <div class="container">
+        <div class="container-fluid">
             <div class="section-header">
                 <h2>Top Brands</h2>
             </div>
@@ -1546,7 +1546,7 @@
 
     <!-- Newsletter Section -->
     <section class="newsletter-section">
-        <div class="container position-relative">
+        <div class="container-fluid position-relative">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <h2 class="fw-bold mb-3">Stay Updated</h2>

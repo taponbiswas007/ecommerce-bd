@@ -152,7 +152,6 @@
         /* Search Bar */
         .search-container {
             position: relative;
-            max-width: 500px;
         }
 
         .search-input {
@@ -322,9 +321,9 @@
             top: 0;
             left: 0;
             width: 300px;
-            height: 100vh;
+            height: 100%;
             overflow-y: auto;
-            z-index: 999999999999999999;
+            z-index: 1050;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             display: none;
         }
@@ -431,6 +430,10 @@
             .header-top .d-flex {
                 flex-direction: column;
                 gap: 10px;
+            }
+
+            .language-btn {
+                flex-direction: row !important;
             }
 
             .marquee-container {
@@ -591,6 +594,19 @@
             body {
                 padding-bottom: 80px;
             }
+
+            .mobile-menu {
+                background: white;
+                position: fixed;
+                bottom: 64px;
+                left: 0;
+                right: 0;
+                width: 100%;
+                overflow-y: auto;
+                z-index: 1050;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
         }
 
         @media (max-width: 540px) {
@@ -710,6 +726,10 @@
         }
 
         /* Language Selector Enhancements */
+        .language-selector {
+            z-index: 1050;
+        }
+
         .language-selector .dropdown-menu {
             max-height: 300px;
             overflow-y: auto;
@@ -898,7 +918,7 @@
                 </div>
 
                 <!-- Search Bar -->
-                <div class="col-lg-5 order-lg-1 col-md-12 col-10 order-3">
+                <div class="col-lg-8  col-md-5 col-10 ">
                     <div class="search-container position-relative">
                         <i class="fas fa-search search-icon d-inline-block" id="responsiveSearchIcon"
                             style="cursor:pointer;"></i>
@@ -912,9 +932,8 @@
 
 
                 <!-- Header Icons -->
-                <div class="col-lg-5 col-md-9 col-9 order-md-1 order-lg-2 order-2 shopping-cart-header">
-                    <div
-                        class="d-flex justify-content-md-end justify-content-between align-items-center w-100 gap-3 px-md-0">
+                <div class="col-lg-2 col-md-4 col-9 order-md-1 shopping-cart-header">
+                    <div class="d-flex justify-content-between justify-content-md-end align-items-center w-100 gap-3">
                         {{-- home --}}
                         <a class="homeLink d-md-none {{ request()->routeIs('home') ? 'active' : '' }}"
                             href="{{ route('home') }}">
@@ -1001,15 +1020,15 @@
                         @else
                             <!-- Login and Register Buttons with Modals -->
                             <div class="d-flex gap-2 authArea">
-                                <button type="button" class="btn btn-sm btn-outline-primary authLoginBtn"
+                                <button type="button" class="btn btn-sm btn-outline-primary d-none "
                                     data-bs-toggle="modal" data-bs-target="#loginModal">
                                     <i class="fas fa-sign-in-alt me-1"></i> <span
                                         class="d-md-inline-block d-none">Login</span>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-primary d-md-block d-none"
-                                    data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    <i class="fas fa-user-plus me-1"></i> Register
-                                </button>
+                                <a type="button" class=" authLoginBtn header-icon " data-bs-toggle="modal"
+                                    data-bs-target="#registerModal">
+                                    <i class="fas fa-user-plus"></i>
+                                </a>
                             </div>
                         @endauth
 
@@ -1136,11 +1155,51 @@
                     </a>
                 </li>
 
-                <!-- Mobile Categories -->
-                <li class="nav-item">
-                    <a class="nav-link py-2 {{ request()->routeIs('category.*') ? 'active' : '' }}" href="#">
-                        <i class="fas fa-th-large me-3"></i> Categories
+                <!--Mobile Categories Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('category.*') ? 'active' : '' }}"
+                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-th-large me-2"></i> Categories
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-custom">
+                        @php
+                            $categories = \App\Models\Category::whereNull('parent_id')
+                                ->where('is_active', true)
+                                ->with('children')
+                                ->limit(8)
+                                ->get();
+                        @endphp
+
+                        @foreach ($categories as $category)
+                            <li>
+                                <a class="dropdown-item dropdown-item-custom"
+                                    href="{{ route('category.show', $category->slug) }}">
+                                    <i class="fas fa-folder me-2"></i> {{ $category->name }}
+                                </a>
+                            </li>
+                            @if ($category->children->isNotEmpty())
+                                @foreach ($category->children as $child)
+                                    <li>
+                                        <a class="dropdown-item dropdown-item-custom ps-4"
+                                            href="{{ route('category.show', $child->slug) }}">
+                                            <i class="fas fa-angle-right me-2"></i> {{ $child->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            @endif
+                            @if (!$loop->last)
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                            @endif
+                        @endforeach
+
+                        <li>
+                            <a class="dropdown-item dropdown-item-custom text-primary" href="#">
+                                <i class="fas fa-eye me-2"></i> View All Categories
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item">
@@ -1270,8 +1329,9 @@
                 </div>
                 <div class="modal-footer justify-content-center">
                     <p class="mb-0">Don't have an account?
-                        <a href="#" class="text-primary" data-bs-toggle="modal"
-                            data-bs-target="#registerModal" data-bs-dismiss="modal">Register here</a>
+                        <button class="text-primary bg-transparent border-0" data-bs-target="#registerModal"
+                            data-bs-toggle="modal">Register
+                            here</button>
                     </p>
                 </div>
             </div>
@@ -1369,8 +1429,9 @@
                 </div>
                 <div class="modal-footer justify-content-center">
                     <p class="mb-0">Already have an account?
-                        <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            data-bs-dismiss="modal">Login here</a>
+                        <button class="text-primary bg-transparent border-0" data-bs-target="#loginModal"
+                            data-bs-toggle="modal">Login
+                            here</button>
                     </p>
                 </div>
             </div>
@@ -1928,52 +1989,8 @@
     </script>
 
     <script>
-        // Handle modal switching between login and register
+        // Form Validation
         document.addEventListener('DOMContentLoaded', function() {
-            // Switch from login to register
-            document.querySelectorAll('[data-bs-target="#registerModal"]').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const loginModal = bootstrap.Modal.getInstance(document.getElementById(
-                        'loginModal'));
-                    const registerModal = new bootstrap.Modal(document.getElementById(
-                        'registerModal'));
-
-                    if (loginModal) {
-                        loginModal.hide();
-                        loginModal._element.addEventListener('hidden.bs.modal', function() {
-                            registerModal.show();
-                        }, {
-                            once: true
-                        });
-                    } else {
-                        registerModal.show();
-                    }
-                });
-            });
-
-            // Switch from register to login
-            document.querySelectorAll('[data-bs-target="#loginModal"]').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const registerModal = bootstrap.Modal.getInstance(document.getElementById(
-                        'registerModal'));
-                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-
-                    if (registerModal) {
-                        registerModal.hide();
-                        registerModal._element.addEventListener('hidden.bs.modal', function() {
-                            loginModal.show();
-                        }, {
-                            once: true
-                        });
-                    } else {
-                        loginModal.show();
-                    }
-                });
-            });
-
-            // Form Validation
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
 
