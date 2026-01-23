@@ -30,10 +30,10 @@
 
         .slider-content {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            transform: translateY(-50%);
             padding: 40px;
             color: white;
             z-index: 2;
@@ -469,8 +469,6 @@
 
         /* Category Cards */
         .category-slider .swiper-slide {
-            /* width: 200px; */
-            height: 200px;
             padding: 15px 0;
         }
 
@@ -786,7 +784,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 L100,0 L0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
             background-size: cover;
         }
 
@@ -872,9 +870,7 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .hero-slider {
-                height: 400px;
-            }
+
 
 
             .section-header {
@@ -899,9 +895,7 @@
         }
 
         @media (max-width: 576px) {
-            .hero-slider {
-                height: 300px;
-            }
+
 
 
 
@@ -962,46 +956,72 @@
                                 : 'https://via.placeholder.com/1200x600';
                             $finalPrice = $product->discount_price ?? $product->base_price;
                         @endphp
-                        <div class="swiper-slide position-relative">
-                            <img src="{{ $imageUrl }}" alt="{{ $product->name }}">
-                            <div class="slider-content">
-                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                    <span class="badge bg-light text-dark">
-                                        {{ $product->category->name ?? 'All Products' }}
-                                    </span>
-                                    @if ($product->discount_price)
-                                        <span class="badge bg-danger">Save {{ $product->discount_percentage }}%</span>
-                                    @endif
+                        <div class="swiper-slide position-relative hero-slide-bg d-flex align-items-center"
+                            style="min-height: 400px; background: url({{ asset('assets/images/hero_bg.webp') }}); border-radius: 30px; overflow: hidden;">
+                            <div class="row w-100 align-items-center">
+                                <div class="col-lg-6 col-md-7 col-12 px-5 py-4">
+                                    <div class="slider-content">
+                                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                            <span class="badge bg-light text-dark">
+                                                {{ $product->category->name ?? 'All Products' }}
+                                            </span>
+                                            @if ($product->discount_price)
+                                                <span class="badge bg-danger">Save
+                                                    {{ $product->discount_percentage }}%</span>
+                                            @endif
+                                        </div>
+                                        <h1 class="display-5 fw-bold">{{ $product->name }}</h1>
+                                        <p class="lead">
+                                            {{ Str::limit(strip_tags($product->short_description ?? ''), 140) }}</p>
+                                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                                            <span class="fs-3 fw-bold">৳{{ number_format($finalPrice, 0) }}</span>
+                                            @if ($product->discount_price)
+                                                <span
+                                                    class="text-decoration-line-through opacity-75">৳{{ number_format($product->base_price, 0) }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="mt-4 d-flex gap-3 flex-wrap">
+                                            <a href="{{ route('shop') }}" class="btn btn-primary btn-lg">
+                                                Shop Now
+                                            </a>
+                                            <a href="{{ route('product.show', $product->slug) }}"
+                                                class="btn btn-outline-light btn-lg">
+                                                View Product
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h1 class="display-5 fw-bold">{{ $product->name }}</h1>
-                                <p class="lead">{{ Str::limit(strip_tags($product->short_description ?? ''), 140) }}</p>
-                                <div class="d-flex align-items-center gap-3 flex-wrap">
-                                    <span class="fs-3 fw-bold">৳{{ number_format($finalPrice, 0) }}</span>
-                                    @if ($product->discount_price)
-                                        <span
-                                            class="text-decoration-line-through opacity-75">৳{{ number_format($product->base_price, 0) }}</span>
-                                    @endif
-                                </div>
-                                <div class="mt-4 d-flex gap-3 flex-wrap">
-                                    <a href="{{ route('shop') }}" class="btn btn-primary btn-lg">
-                                        Shop Now
-                                    </a>
-                                    <a href="{{ route('product.show', $product->slug) }}"
-                                        class="btn btn-outline-light btn-lg">
-                                        View Product
-                                    </a>
+                                <div
+                                    class="col-lg-6 col-md-5 col-12 d-flex justify-content-center align-items-center position-relative">
+                                    <div class="hero-image-shape bg-white rounded-circle shadow-lg d-flex justify-content-center align-items-center"
+                                        style="width: 340px; height: 340px;">
+                                        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="img-fluid"
+                                            style="max-width: 80%; max-height: 80%; object-fit: contain;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     @empty
                         @for ($i = 1; $i <= 3; $i++)
-                            <div class="swiper-slide position-relative">
-                                <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                                    alt="Hero Slide {{ $i }}">
-                                <div class="slider-content">
-                                    <h1 class="display-4 fw-bold">Electronic Deals</h1>
-                                    <p class="lead">Explore our latest offers across all categories</p>
-                                    <a href="{{ route('shop') }}" class="btn btn-primary btn-lg mt-3">Shop Now</a>
+                            <div class="swiper-slide position-relative hero-slide-bg d-flex align-items-center"
+                                style="min-height: 400px; background: url({{ asset('assets/images/hero_bg.webp') }}); border-radius: 30px; overflow: hidden;">
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-lg-6 col-md-7 col-12 px-5 py-4">
+                                        <div class="slider-content">
+                                            <h1 class="display-4 fw-bold">Electronic Deals</h1>
+                                            <p class="lead">Explore our latest offers across all categories</p>
+                                            <a href="{{ route('shop') }}" class="btn btn-primary btn-lg mt-3">Shop Now</a>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col-lg-6 col-md-5 col-12 d-flex justify-content-center align-items-center position-relative">
+                                        <div class="hero-image-shape bg-white rounded-circle shadow-lg d-flex justify-content-center align-items-center"
+                                            style="width: 340px; height: 340px; overflow: hidden;">
+                                            <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                                                alt="Hero Slide {{ $i }}" class="img-fluid"
+                                                style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endfor
@@ -1030,16 +1050,25 @@
                         <div class="swiper-slide">
                             <a class="text-decoration-none"
                                 href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}">
-
-                                <div class="category-card"
-                                    style="background-image: url('{{ $category->image ? asset('storage/' . $category->image) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22250%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22200%22 height=%22250%22/%3E%3C/svg%3E' }}');">
-                                    @if (!$category->image)
-                                        <div class="category-icon">
-                                            <i class="fas fa-box"></i>
-                                        </div>
-                                    @endif
-                                    <h5 class="fw-bold">{{ $category->name }}</h5>
-                                    <p class="text-white small mb-0">{{ $category->products_count ?? 0 }} products</p>
+                                <div class="category-card pro-category-card position-relative d-flex flex-column align-items-center justify-content-center p-4"
+                                    style="background: linear-gradient(120deg, #7b2ff2 0%, #f357a8 50%, #43e97b 100%); border-radius: 24px; box-shadow: 0 8px 32px rgba(60,60,120,0.08); min-height: 260px; overflow: hidden;">
+                                    <div class="category-img-circle mb-3 d-flex align-items-center justify-content-center bg-white shadow-lg"
+                                        style="width: 80px; height: 80px; border-radius: 50%;">
+                                        @if ($category->image)
+                                            <img src="{{ asset('storage/' . $category->image) }}"
+                                                alt="{{ $category->name }}" class="img-fluid"
+                                                style="width: 60px; height: 60px; object-fit: contain; border-radius: 50%;">
+                                        @else
+                                            <div class="category-icon d-flex align-items-center justify-content-center"
+                                                style="width: 60px; height: 60px;">
+                                                <i class="fas fa-box fa-2x text-primary"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <h5 class="fw-bold text-white text-center mb-2"
+                                        style="text-shadow: 0 2px 8px rgba(0,0,0,0.08);">{{ $category->name }}</h5>
+                                    <p class="text-white small mb-0 text-center" style="opacity: 0.85;">
+                                        {{ $category->products_count ?? 0 }} products</p>
                                 </div>
                             </a>
                         </div>
@@ -1640,19 +1669,19 @@
                         },
                         breakpoints: {
                             370: {
-                                slidesPerView: 2
+                                slidesPerView: 1.5
                             },
                             576: {
-                                slidesPerView: 3
+                                slidesPerView: 2
                             },
                             768: {
-                                slidesPerView: 4
+                                slidesPerView: 2.5
                             },
                             992: {
-                                slidesPerView: 5
+                                slidesPerView: 3
                             },
                             1200: {
-                                slidesPerView: 6
+                                slidesPerView: 4
                             }
                         }
                     }),

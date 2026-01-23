@@ -137,6 +137,8 @@
             -webkit-text-fill-color: transparent;
             text-decoration: none;
             min-width: 92px;
+            max-width: 110px;
+            width: 100%;
         }
 
         .logo:hover {
@@ -267,6 +269,12 @@
             padding-left: 25px;
         }
 
+        .nav-link:hover {
+            background: linear-gradient(90deg, rgba(0, 150, 255, 0.1), rgba(123, 44, 191, 0.1));
+            color: var(--electric-blue);
+            transition: all 0.3s ease;
+        }
+
         /* Mobile Menu */
         .mobile-menu-btn {
             background: none;
@@ -290,14 +298,17 @@
 
         .mobile-menu-btn span:nth-child(1) {
             top: 10px;
+            margin-top: 0;
         }
 
         .mobile-menu-btn span:nth-child(2) {
             top: 19px;
+            margin-top: 0;
         }
 
         .mobile-menu-btn span:nth-child(3) {
             top: 28px;
+            margin-top: 0;
         }
 
         .mobile-menu-btn.active span:nth-child(1) {
@@ -488,7 +499,7 @@
             .profileArea,
             .homeLink {
                 font-size: 1.5rem;
-                color: #9aa0a6;
+                color: #333;
                 position: relative;
                 transition: all 0.25s ease;
                 cursor: pointer;
@@ -498,7 +509,7 @@
 
             .header-icon {
                 font-size: 1.5rem;
-                color: #9aa0a6;
+                color: #333;
                 position: relative;
                 transition: all 0.25s ease;
                 cursor: pointer;
@@ -535,7 +546,7 @@
                 justify-content: center;
                 align-items: center;
                 font-size: 24px;
-                margin-top: -30px;
+                /* margin-top: -30px; */
 
                 /* HOLE EFFECT */
                 box-shadow:
@@ -551,6 +562,7 @@
             .mobile-menu-btn span {
                 left: 13px;
                 background: #ffffff;
+                margin-top: 4px !important;
             }
 
             /* Disable dot for menu button */
@@ -601,10 +613,11 @@
                 bottom: 64px;
                 left: 0;
                 right: 0;
+                height: calc(100% - 64px);
                 width: 100%;
                 overflow-y: auto;
                 z-index: 1050;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                box-shadow: none;
                 display: none;
             }
         }
@@ -645,6 +658,10 @@
             /* Hide input by default, only show icon */
             .search-container .search-input {
                 opacity: 1;
+            }
+
+            .section-header h2 {
+                font-size: 1.25rem !important;
             }
         }
     </style>
@@ -924,8 +941,7 @@
                             style="cursor:pointer;"></i>
                         <form action="{{ route('shop') }}" method="GET" class="m-0 p-0" id="responsiveSearchForm">
                             <input type="search" name="search" class="search-input"
-                                placeholder="Search for electronics, gadgets, appliances..."
-                                value="{{ request('search') }}">
+                                placeholder="Search for products, brands and more..." value="{{ request('search') }}">
                         </form>
                     </div>
                 </div>
@@ -1141,6 +1157,12 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu d-lg-none" id="mobileMenu">
         <div class="container py-3">
+            <a href="{{ route('home') }}" class="logo d-flex align-items-center">
+                {{-- <i class="fas fa-bolt logo-icon"></i>
+                        <span>Ecommerce BD</span> --}}
+                <img class=" img-fluid" src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
+            </a>
+            <hr>
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link py-2 {{ request()->routeIs('home') ? 'active' : '' }}"
@@ -1219,46 +1241,6 @@
                         href="{{ route('contact') }}">
                         <i class="fas fa-phone-alt me-3"></i> Contact
                     </a>
-                </li>
-
-                <!-- Mobile User Menu -->
-                <li class="nav-item border-top mt-2 pt-2">
-                    @auth
-                        <div class="nav-link py-2">
-                            <i class="fas fa-user me-3"></i> {{ auth()->user()->name }}
-                        </div>
-                        <ul class="nav flex-column ps-4">
-                            <li class="nav-item">
-                                <a class="nav-link py-1" href="{{ route('dashboard') }}">
-                                    <i class="fas fa-user me-2"></i> My Account
-                                </a>
-                            </li>
-                            @if (auth()->user()->role === 'admin')
-                                <li class="nav-item">
-                                    <a class="nav-link py-1" href="{{ route('admin.dashboard') }}">
-                                        <i class="fas fa-tachometer-alt me-2"></i> Admin
-                                    </a>
-                                </li>
-                            @endif
-                            <li class="nav-item">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="nav-link py-1 border bg-transparent text-start w-100">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    @else
-                        <div class="d-flex gap-2 px-3">
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm flex-grow-1">
-                                <i class="fas fa-sign-in-alt me-1"></i> Login
-                            </a>
-                            <a href="{{ route('register') }}" class="btn btn-primary btn-sm flex-grow-1">
-                                <i class="fas fa-user-plus me-1"></i> Register
-                            </a>
-                        </div>
-                    @endauth
                 </li>
             </ul>
         </div>
