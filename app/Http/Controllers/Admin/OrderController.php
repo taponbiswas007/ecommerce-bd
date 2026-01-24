@@ -103,4 +103,46 @@ class OrderController extends Controller
         $order->delete();
         return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }
+    /**
+     * Update order status via AJAX.
+     */
+    public function updateStatus(Request $request, $orderId)
+    {
+        $order = \App\Models\Order::findOrFail($orderId);
+        $request->validate([
+            'order_status' => 'required|string',
+        ]);
+        $order->order_status = $request->order_status;
+        $order->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Order status updated successfully.',
+            'order_status' => $order->order_status,
+        ]);
+    }
+    /**
+     * Handle delivery document upload via AJAX.
+     */
+    public function uploadDocument(Request $request, $orderId)
+    {
+        $order = \App\Models\Order::findOrFail($orderId);
+        $request->validate([
+            'delivery_document' => 'required|file|mimes:png,jpg,jpeg,pdf|max:5120',
+        ]);
+        if ($request->hasFile('delivery_document')) {
+            $file = $request->file('delivery_document');
+            $path = $file->store('order_documents', 'public');
+            $order->delivery_document = $path;
+            $order->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Document uploaded successfully.',
+                'document_url' => asset('storage/' . $order->delivery_document),
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'No document uploaded.'
+        ], 422);
+    }
 }

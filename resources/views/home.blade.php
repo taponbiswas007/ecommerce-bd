@@ -825,48 +825,7 @@
             opacity: 1;
         }
 
-        /* Newsletter */
-        .newsletter-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 20px;
-            padding: 50px;
-            color: white;
-            margin: 40px 0;
-            position: relative;
-            overflow: hidden;
-        }
 
-        .newsletter-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
-            background-size: cover;
-        }
-
-        .newsletter-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 50px;
-            padding: 15px 25px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .newsletter-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .newsletter-input:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-            color: white;
-        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -1573,26 +1532,7 @@
         </div>
     </section>
 
-    <!-- Newsletter Section -->
-    <section class="newsletter-section">
-        <div class="container-fluid position-relative">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <h2 class="fw-bold mb-3">Stay Updated</h2>
-                    <p class="mb-0">Subscribe to our newsletter and get 10% off your first order</p>
-                </div>
-                <div class="col-lg-6">
-                    <form id="newsletterForm" class="d-flex">
-                        <input type="email" class="form-control newsletter-input me-2" placeholder="Enter your email"
-                            required>
-                        <button class="btn btn-light px-4" type="submit">
-                            Subscribe <i class="fas fa-paper-plane ms-2"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+
 
     <!-- Quick View Modal -->
     <div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
