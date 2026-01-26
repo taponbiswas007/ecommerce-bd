@@ -625,12 +625,15 @@
                             <i class="fas fa-chevron-down ms-2"></i>
                         </div>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <a href="{{ route('dashboard') }}" class="dropdown-item">
-                                <i class="fas fa-user me-2"></i> My Profile
-                            </a>
-                            <a href="{{ route('profile.edit') }}" class="dropdown-item">
-                                <i class="fas fa-cog me-2"></i> Settings
-                            </a>
+                            @if (auth()->user()->role === 'admin')
+                                <a href="{{ route('admin.profile.edit') }}" class="dropdown-item">
+                                    <i class="fas fa-cog me-2"></i> Settings
+                                </a>
+                            @else
+                                <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                                    <i class="fas fa-cog me-2"></i> Settings
+                                </a>
+                            @endif
                             <div class="dropdown-divider"></div>
                             <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
                                 @csrf
