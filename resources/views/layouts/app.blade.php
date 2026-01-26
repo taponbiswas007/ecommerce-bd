@@ -604,7 +604,7 @@
             }
 
             body {
-                padding-bottom: 80px;
+                padding-bottom: 64px;
             }
 
             .mobile-menu {
@@ -837,6 +837,16 @@
 </head>
 
 <body style="top: 0 !important">
+    <!-- Loading Overlay -->
+    <div id="global-loader"
+        style="position:fixed;z-index:20000;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;transition:opacity 0.4s;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div style="margin-top:1rem;font-weight:500;color:#0d6efd;">Loading, please wait...</div>
+        </div>
+    </div>
     <!-- Header Top Section -->
     <div class="header-top py-2">
         <div class="container-fluid px-3">
@@ -844,26 +854,9 @@
                 <!-- Marquee Ads -->
                 <div class="marquee-container flex-grow-1 me-3">
                     <div class="marquee-content">
+
                         @php
-                            $ads = [
-                                [
-                                    'text' => '⚡ Flash Sale: Get 30% OFF on all electronic gadgets!',
-                                    'badge' => 'Hot Deal',
-                                ],
-                                ['text' => '🔋 Free Shipping on orders above $99', 'badge' => 'Free Shipping'],
-                                [
-                                    'text' => '📱 New Arrival: Latest Smartphones with 2 Years Warranty',
-                                    'badge' => 'New',
-                                ],
-                                [
-                                    'text' => '💡 Energy Efficient Appliances - Save up to 40% on electricity',
-                                    'badge' => 'Eco-Friendly',
-                                ],
-                                [
-                                    'text' => '🎧 Wireless Earbuds with Noise Cancellation - Limited Stock',
-                                    'badge' => 'Trending',
-                                ],
-                            ];
+                            $ads = \App\Models\Ad::all();
                         @endphp
 
                         @foreach ($ads as $ad)
@@ -2145,6 +2138,22 @@
         });
     </script>
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Loader Hide Script -->
+    <script>
+        // Hide loader when everything is ready
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var loader = document.getElementById('global-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                    }, 400);
+                }
+            }, 300); // You can adjust the delay if needed
+        });
+    </script>
 
 </body>
 

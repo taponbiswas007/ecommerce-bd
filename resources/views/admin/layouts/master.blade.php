@@ -282,6 +282,13 @@
                         </a>
                     </li>
 
+                    <li class="{{ request()->routeIs('admin.ads.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.ads.index') }}">
+                            <i class="fas fa-bullhorn"></i>
+                            <span class="menu-text">Ads</span>
+                        </a>
+                    </li>
+
                     <li class="has-submenu {{ request()->routeIs('admin.products.*') ? 'open' : '' }}">
                         <a href="#">
                             <i class="fas fa-box"></i>

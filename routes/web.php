@@ -120,6 +120,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Ads Management
+    Route::resource('ads', \App\Http\Controllers\Admin\AdController::class);
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/overview', [DashboardController::class, 'getOverviewData'])->name('dashboard.overview');
     Route::get('/dashboard/sales-chart', [DashboardController::class, 'getSalesChart'])->name('dashboard.sales-chart');
