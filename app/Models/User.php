@@ -25,6 +25,8 @@ class User extends Authenticatable
         'address',
         'is_active',
         'last_login_at',
+        'company_logo',
+        'user_image',
     ];
 
     protected $hidden = [

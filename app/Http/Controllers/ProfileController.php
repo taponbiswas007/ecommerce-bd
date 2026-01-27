@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -32,13 +33,34 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        Log::debug('ProfileController@update called', [
+            'user_id' => $request->user()->id,
+            'request_data' => $request->all(),
+            'files' => $request->files->all(),
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        $user->fill($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // Handle company_logo upload
+        if ($request->hasFile('company_logo')) {
+            $logo = $request->file('company_logo');
+            $logoPath = $logo->store('company_logos', 'public');
+            $user->company_logo = $logoPath;
+        }
+
+        // Handle user_image upload
+        if ($request->hasFile('user_image')) {
+            $image = $request->file('user_image');
+            $imagePath = $image->store('user_images', 'public');
+            $user->user_image = $imagePath;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
