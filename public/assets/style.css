@@ -106,7 +106,7 @@ body {
     transform: translateX(-100%);
 }
 .sidebar-brand {
-    padding: 20px 15px;
+    padding: 10px 15px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -120,9 +120,9 @@ body {
     transition: padding var(--transition-speed);
 }
 .sidebar-brand .logo {
-    width: 40px;
+    width: 100px;
     height: 40px;
-    background: -o-linear-gradient(315deg, var(--bs-primary), var(--bs-indigo));
+    /* background: -o-linear-gradient(315deg, var(--bs-primary), var(--bs-indigo));
     background: linear-gradient(135deg, var(--bs-primary), var(--bs-indigo));
     border-radius: 10px;
     display: -webkit-box;
@@ -139,7 +139,10 @@ body {
     flex-shrink: 0;
     -webkit-transition: all var(--transition-speed);
     -o-transition: all var(--transition-speed);
-    transition: all var(--transition-speed);
+    transition: all var(--transition-speed); */
+}
+.sidebar-brand .logo img {
+    width: 100%;
 }
 .sidebar-brand .logo i {
     color: white;
@@ -227,7 +230,8 @@ body {
     transition: -webkit-transform var(--transition-speed);
     -o-transition: transform var(--transition-speed);
     transition: transform var(--transition-speed);
-    transition: transform var(--transition-speed),
+    transition:
+        transform var(--transition-speed),
         -webkit-transform var(--transition-speed);
     opacity: 1;
 }
@@ -345,7 +349,8 @@ body {
     transition: -webkit-transform var(--transition-speed);
     -o-transition: transform var(--transition-speed);
     transition: transform var(--transition-speed);
-    transition: transform var(--transition-speed),
+    transition:
+        transform var(--transition-speed),
         -webkit-transform var(--transition-speed);
 }
 .admin-sidebar.collapsed .sidebar-toggle i {
@@ -359,11 +364,14 @@ body {
     -ms-flex: 1;
     flex: 1;
     margin-left: var(--sidebar-width-expanded);
-    -webkit-transition: margin-left var(--transition-speed),
+    -webkit-transition:
+        margin-left var(--transition-speed),
         width var(--transition-speed);
-    -o-transition: margin-left var(--transition-speed),
+    -o-transition:
+        margin-left var(--transition-speed),
         width var(--transition-speed);
-    transition: margin-left var(--transition-speed),
+    transition:
+        margin-left var(--transition-speed),
         width var(--transition-speed);
     width: calc(100% - var(--sidebar-width-expanded));
     min-height: 100vh;
@@ -670,15 +678,20 @@ body {
     margin-bottom: 25px;
     -webkit-box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    -webkit-transition: -webkit-transform var(--transition-speed),
+    -webkit-transition:
+        -webkit-transform var(--transition-speed),
         -webkit-box-shadow var(--transition-speed);
-    transition: -webkit-transform var(--transition-speed),
+    transition:
+        -webkit-transform var(--transition-speed),
         -webkit-box-shadow var(--transition-speed);
-    -o-transition: transform var(--transition-speed),
+    -o-transition:
+        transform var(--transition-speed),
         box-shadow var(--transition-speed);
-    transition: transform var(--transition-speed),
+    transition:
+        transform var(--transition-speed),
         box-shadow var(--transition-speed);
-    transition: transform var(--transition-speed),
+    transition:
+        transform var(--transition-speed),
         box-shadow var(--transition-speed),
         -webkit-transform var(--transition-speed),
         -webkit-box-shadow var(--transition-speed);
@@ -714,7 +727,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 .sidebar-brand {
-    padding: 20px 15px;
+    padding: 10px 15px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -795,7 +808,9 @@ body {
     transition: -webkit-transform 0.3s;
     -o-transition: transform 0.3s;
     transition: transform 0.3s;
-    transition: transform 0.3s, -webkit-transform 0.3s;
+    transition:
+        transform 0.3s,
+        -webkit-transform 0.3s;
 }
 .sidebar-menu > ul > li.has-submenu.open > a .menu-arrow {
     -webkit-transform: rotate(90deg);
@@ -1000,11 +1015,22 @@ body {
     margin-bottom: 25px;
     -webkit-box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    -webkit-transition: -webkit-transform 0.3s, -webkit-box-shadow 0.3s;
-    transition: -webkit-transform 0.3s, -webkit-box-shadow 0.3s;
-    -o-transition: transform 0.3s, box-shadow 0.3s;
-    transition: transform 0.3s, box-shadow 0.3s;
-    transition: transform 0.3s, box-shadow 0.3s, -webkit-transform 0.3s,
+    -webkit-transition:
+        -webkit-transform 0.3s,
+        -webkit-box-shadow 0.3s;
+    transition:
+        -webkit-transform 0.3s,
+        -webkit-box-shadow 0.3s;
+    -o-transition:
+        transform 0.3s,
+        box-shadow 0.3s;
+    transition:
+        transform 0.3s,
+        box-shadow 0.3s;
+    transition:
+        transform 0.3s,
+        box-shadow 0.3s,
+        -webkit-transform 0.3s,
         -webkit-box-shadow 0.3s;
     border: none;
 }
@@ -1310,7 +1336,8 @@ body {
     transition: -webkit-transform var(--transition-speed);
     -o-transition: transform var(--transition-speed);
     transition: transform var(--transition-speed);
-    transition: transform var(--transition-speed),
+    transition:
+        transform var(--transition-speed),
         -webkit-transform var(--transition-speed);
     opacity: 1;
 }

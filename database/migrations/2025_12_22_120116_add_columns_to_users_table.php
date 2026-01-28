@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('district')->nullable()->after('role');
             $table->string('upazila')->nullable()->after('district');
             $table->text('address')->nullable()->after('upazila');
-            $table->string('company_logo')->nullable()->after('address');
-            $table->string('user_image')->nullable()->after('company_logo');
             $table->boolean('is_active')->default(true)->after('address');
             $table->timestamp('last_login_at')->nullable()->after('is_active');
         });
@@ -36,8 +34,6 @@ return new class extends Migration
                 'district',
                 'upazila',
                 'address',
-                'company_logo',
-                'user_image',
                 'is_active',
                 'last_login_at'
             ]);

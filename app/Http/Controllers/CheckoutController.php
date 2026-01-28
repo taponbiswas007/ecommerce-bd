@@ -83,6 +83,40 @@ class CheckoutController extends Controller
             'terms_accepted' => 'accepted',
         ]);
 
+
+        // Update user info if changed
+        $user = Auth::user();
+        $userChanged = false;
+        if ($user) {
+            if ($user->name !== $request->shipping_name) {
+                $user->name = $request->shipping_name;
+                $userChanged = true;
+            }
+            if ($user->phone !== $request->shipping_phone) {
+                $user->phone = $request->shipping_phone;
+                $userChanged = true;
+            }
+            if ($request->shipping_email && $user->email !== $request->shipping_email) {
+                $user->email = $request->shipping_email;
+                $userChanged = true;
+            }
+            if ($user->district !== $request->shipping_district) {
+                $user->district = $request->shipping_district;
+                $userChanged = true;
+            }
+            if ($user->upazila !== $request->shipping_upazila) {
+                $user->upazila = $request->shipping_upazila;
+                $userChanged = true;
+            }
+            if ($user->address !== $request->shipping_address) {
+                $user->address = $request->shipping_address;
+                $userChanged = true;
+            }
+            if ($userChanged) {
+                $user->save();
+            }
+        }
+
         $cartItems = Cart::items();
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');

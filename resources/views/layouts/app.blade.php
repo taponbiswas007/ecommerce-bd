@@ -964,9 +964,15 @@
                 <!-- Logo -->
                 <div class="col-lg-2 col-md-3 col-2">
                     <a href="{{ route('home') }}" class="logo d-flex align-items-center">
-                        {{-- <i class="fas fa-bolt logo-icon"></i>
-                        <span>Ecommerce BD</span> --}}
-                        <img class=" img-fluid" src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
+                        @php
+                            $companyLogo = \App\Models\User::whereNotNull('company_logo')->value('company_logo');
+                        @endphp
+                        @if ($companyLogo)
+                            <img class="img-fluid" src="{{ asset('storage/' . $companyLogo) }}" alt="Company Logo"
+                                height="50">
+                        @else
+                            <img class="img-fluid" src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
+                        @endif
                     </a>
                 </div>
 

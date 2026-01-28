@@ -10,7 +10,7 @@
 @endsection
 
 @section('content')
-    <div class="container-fluid">
+    <div>
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('status') }}
@@ -102,7 +102,7 @@
                         </h5>
                     </div>
                     <div class="card-body p-4">
-                        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data"
+                        <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data"
                             id="profileForm">
                             @csrf
                             @method('PATCH')
@@ -120,6 +120,17 @@
                                             value="{{ old('name', $user->name) }}" required>
                                         <label for="name" class="form-label">Full Name</label>
                                         @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input id="company_name" name="company_name" type="text"
+                                            class="form-control @error('company_name') is-invalid @enderror"
+                                            value="{{ old('company_name', $user->company_name) }}" required>
+                                        <label for="company_name" class="form-label">Company Name</label>
+                                        @error('company_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>

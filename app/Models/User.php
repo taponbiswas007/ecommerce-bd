@@ -27,6 +27,7 @@ class User extends Authenticatable
         'last_login_at',
         'company_logo',
         'user_image',
+        'company_name',
     ];
 
     protected $hidden = [

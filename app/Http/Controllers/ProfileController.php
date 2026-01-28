@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -33,13 +34,12 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        Log::debug('ProfileController@update called', [
-            'user_id' => $request->user()->id,
-            'request_data' => $request->all(),
-            'files' => $request->files->all(),
-        ]);
 
         $user = $request->user();
+        // Store old image paths before fill()
+        $oldCompanyLogo = $user->company_logo;
+        $oldUserImage = $user->user_image;
+
         $user->fill($request->validated());
 
         if ($user->isDirty('email')) {
@@ -48,6 +48,13 @@ class ProfileController extends Controller
 
         // Handle company_logo upload
         if ($request->hasFile('company_logo')) {
+            // Delete old logo if exists
+            if ($oldCompanyLogo) {
+                $exists = Storage::disk('public')->exists($oldCompanyLogo);
+                if ($exists) {
+                    Storage::disk('public')->delete($oldCompanyLogo);
+                }
+            }
             $logo = $request->file('company_logo');
             $logoPath = $logo->store('company_logos', 'public');
             $user->company_logo = $logoPath;
@@ -55,6 +62,13 @@ class ProfileController extends Controller
 
         // Handle user_image upload
         if ($request->hasFile('user_image')) {
+            // Delete old image if exists
+            if ($oldUserImage) {
+                $exists = Storage::disk('public')->exists($oldUserImage);
+                if ($exists) {
+                    Storage::disk('public')->delete($oldUserImage);
+                }
+            }
             $image = $request->file('user_image');
             $imagePath = $image->store('user_images', 'public');
             $user->user_image = $imagePath;

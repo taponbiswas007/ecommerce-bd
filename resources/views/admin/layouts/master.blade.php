@@ -241,7 +241,15 @@
     <div class="preloader" id="preloader">
         <div class="preloader-content">
             <div class="preloader-logo">
-                <img src="{{ asset('assets/images/LOGO.webp') }}" alt="EcommerceBD Logo">
+                @php
+                    $companyLogo = auth()->user()->company_logo ?? null;
+                    $companyName = auth()->user()->company_name ?? 'EcommerceBD';
+                @endphp
+                @if ($companyLogo)
+                    <img src="{{ asset('storage/' . $companyLogo) }}" alt="Company Logo">
+                @else
+                    <img src="{{ asset('assets/images/LOGO.webp') }}" alt="EcommerceBD Logo">
+                @endif
             </div>
 
             <div class="preloader-spinner">
@@ -264,10 +272,14 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="sidebar-brand">
-                <div class="logo">
-                    <i class="fas fa-store"></i>
+                <div class="logo flex-shrink-0">
+                    @if ($companyLogo)
+                        <img src="{{ asset('storage/' . $companyLogo) }}" alt="Company Logo">
+                    @else
+                        <img src="{{ asset('assets/images/LOGO.webp') }}" alt="EcommerceBD Logo">
+                    @endif
                 </div>
-                <h3>EcommerceBD</h3>
+                <h3 class="text-wrap">{{ $companyName }}</h3>
                 <div class="sidebar-toggle d-lg-none d-flex align-items-center justify-content-center">
                     <i class="fas fa-chevron-left"></i>
                 </div>
@@ -616,11 +628,19 @@
                     <div class="dropdown">
                         <div class="user-profile" data-bs-toggle="dropdown">
                             <div class="user-avatar">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                @php
+                                    $userImage = auth()->user()->user_image ?? null;
+                                @endphp
+                                @if ($userImage)
+                                    <img src="{{ asset('storage/' . $userImage) }}" alt="User Avatar"
+                                        style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
+                                @else
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                @endif
                             </div>
                             <div class="user-info d-none d-md-block">
                                 <h6 class="mb-0">{{ auth()->user()->name }}</h6>
-                                <small>Administrator</small>
+                                <small class=" text-capitalize">{{ auth()->user()->role }}</small>
                             </div>
                             <i class="fas fa-chevron-down ms-2"></i>
                         </div>

@@ -31,6 +31,7 @@ class ProfileUpdateRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:255'],
             'company_logo' => ['nullable', 'image', 'max:2048'],
             'user_image' => ['nullable', 'image', 'max:2048'],
+            'company_name' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
