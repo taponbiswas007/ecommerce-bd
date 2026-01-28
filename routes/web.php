@@ -62,6 +62,7 @@ Route::get('/auth/facebook/callback', [SocialLoginController::class, 'handleFace
 
 // Cart Routes (Public - with authentication check inside controller)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cart/data', [CartController::class, 'getCartData'])->name('cart.data');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{hashid}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{hashid}', [CartController::class, 'remove'])->name('cart.remove');

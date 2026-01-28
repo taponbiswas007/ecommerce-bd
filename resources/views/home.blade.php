@@ -1969,6 +1969,10 @@
                                                     if (modalInstance) {
                                                         modalInstance.hide();
                                                     }
+                                                    // Show cart offcanvas
+                                                    if (typeof showCartOffcanvas === 'function') {
+                                                        showCartOffcanvas();
+                                                    }
                                                 } else {
                                                     Toast.fire({
                                                         icon: 'error',
@@ -2225,6 +2229,10 @@
                                 title: 'Product added to cart!'
                             });
                             updateCartCount(data.cart_count);
+                            // Show cart offcanvas
+                            if (typeof showCartOffcanvas === 'function') {
+                                showCartOffcanvas();
+                            }
                         } else {
                             Toast.fire({
                                 icon: 'error',

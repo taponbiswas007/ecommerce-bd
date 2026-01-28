@@ -260,4 +260,74 @@ class CartController extends Controller
             'message' => 'Coupon removed successfully!'
         ]);
     }
+
+    // Get cart data as JSON for offcanvas
+    public function getCartData()
+    {
+        $cartItems = Cart::items();
+        $subtotal = Cart::subtotal();
+        $totalItems = Cart::count();
+
+        // Get coupon from session (if applied)
+        $couponCode = session('coupon_code');
+        $discount = Cart::discount($couponCode);
+
+        // Get shipping based on user location
+        $district = Auth::check() ? Auth::user()->district : null;
+        $upazila = Auth::check() ? Auth::user()->upazila : null;
+        $shipping = Cart::shipping($district, $upazila);
+
+        // Calculate tax
+        $taxSummary = Cart::taxSummary($discount);
+        $tax = $taxSummary['total_tax'];
+
+        // Grand total
+        $total = Cart::grandTotal($couponCode, $district, $upazila);
+
+        // Format cart items for JSON response
+        $items = $cartItems->map(function ($item) {
+            // Get product image from images relationship
+            $productImage = null;
+            if ($item->product) {
+                $primaryImage = $item->product->primaryImage;
+                if ($primaryImage && $primaryImage->image_path) {
+                    $productImage = asset('storage/' . $primaryImage->image_path);
+                } else {
+                    $firstImage = $item->product->images()->first();
+                    if ($firstImage && $firstImage->image_path) {
+                        $productImage = asset('storage/' . $firstImage->image_path);
+                    }
+                }
+            }
+
+            // Fallback to default image
+            if (!$productImage) {
+                $productImage = asset('assets/images/no-image.png');
+            }
+
+            return [
+                'id' => $item->id,
+                'hashid' => app('hashids')->encode($item->id),
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name ?? 'Product',
+                'product_slug' => $item->product->slug ?? '',
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'total' => $item->price * $item->quantity,
+                'image' => $productImage,
+                'attributes' => $item->attributes ?? []
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'items' => $items,
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'tax' => $tax,
+            'shipping' => $shipping,
+            'total' => $total,
+            'cart_count' => $totalItems
+        ]);
+    }
 }

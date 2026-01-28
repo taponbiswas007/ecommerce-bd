@@ -949,11 +949,20 @@
                                 })
                                 .then(r => r.json())
                                 .then(data => {
-                                    if (window.Toast) {
-                                        window.Toast.fire({
-                                            icon: 'success',
-                                            title: 'Added to cart!'
-                                        });
+                                    if (data.success) {
+                                        if (window.Toast) {
+                                            window.Toast.fire({
+                                                icon: 'success',
+                                                title: 'Added to cart!'
+                                            });
+                                        }
+                                        // Update cart count and show offcanvas
+                                        if (typeof updateCartCount === 'function') {
+                                            updateCartCount(data.cart_count);
+                                        }
+                                        if (typeof showCartOffcanvas === 'function') {
+                                            showCartOffcanvas();
+                                        }
                                     }
                                 })
                                 .catch(err => console.log(err));

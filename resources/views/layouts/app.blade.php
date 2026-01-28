@@ -1461,6 +1461,40 @@
             </div>
         </div>
     </div>
+
+    <!-- Cart Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title" id="cartOffcanvasLabel">
+                <i class="fas fa-shopping-cart me-2"></i>Shopping Cart
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div id="cartOffcanvasContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas-footer border-top p-3" id="cartOffcanvasFooter" style="display: none;">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="fw-bold">Subtotal:</span>
+                <span class="fw-bold" id="cartOffcanvasSubtotal">৳0.00</span>
+            </div>
+            <div class="d-grid gap-2">
+                <a href="{{ route('checkout.index') }}" class="btn btn-primary">
+                    <i class="fas fa-check me-2"></i>Proceed to Checkout
+                </a>
+                <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-shopping-cart me-2"></i>View Cart
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main>
         @yield('content')
@@ -1604,6 +1638,8 @@
                             title: data.message
                         });
                         updateCartCount(data.cart_count);
+                        // Show cart offcanvas
+                        showCartOffcanvas();
                     } else if (data.requires_login) {
                         const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
                         loginModal.show();
@@ -1624,6 +1660,218 @@
                         icon: 'error',
                         title: 'Network error. Please try again.'
                     });
+                });
+        }
+
+        // Show cart offcanvas and load cart items
+        function showCartOffcanvas() {
+            const offcanvas = new bootstrap.Offcanvas(document.getElementById('cartOffcanvas'));
+            offcanvas.show();
+            loadCartItems();
+        }
+
+        // Load cart items into offcanvas
+        function loadCartItems() {
+            const contentDiv = document.getElementById('cartOffcanvasContent');
+            const footerDiv = document.getElementById('cartOffcanvasFooter');
+
+            // Show loading
+            contentDiv.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
+
+            fetch('{{ route('cart.data') }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.items.length > 0) {
+                        let cartHTML = '<div class="list-group list-group-flush">';
+
+                        data.items.forEach(item => {
+                            const itemTotal = (item.price * item.quantity).toFixed(2);
+                            const attributes = item.attributes && Object.keys(item.attributes).length > 0 ?
+                                Object.entries(item.attributes).map(([key, value]) =>
+                                    `<small class="text-muted">${key}: ${value}</small>`
+                                ).join(' | ') :
+                                '';
+
+                            cartHTML += `
+                                <div class="list-group-item" data-cart-item-id="${item.hashid}">
+                                    <div class="d-flex gap-3 position-relative">
+                                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                                style="padding: 2px 6px; font-size: 12px; z-index: 10;"
+                                                onclick="removeCartItem('${item.hashid}')"
+                                                title="Remove item">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <img src="${item.image}" alt="${item.product_name}"
+                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"
+                                             onerror="this.src='{{ asset('assets/images/no-image.png') }}'">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 pe-4" style="font-size: 14px;">${item.product_name}</h6>
+                                            ${attributes ? `<div class="mb-2">${attributes}</div>` : ''}
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                            style="padding: 2px 8px;"
+                                                            onclick="updateCartQuantity('${item.hashid}', ${item.quantity - 1})"
+                                                            ${item.quantity <= 1 ? 'disabled' : ''}>
+                                                        <i class="fas fa-minus" style="font-size: 10px;"></i>
+                                                    </button>
+                                                    <span class="fw-semibold" style="min-width: 30px; text-align: center;">${item.quantity}</span>
+                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                            style="padding: 2px 8px;"
+                                                            onclick="updateCartQuantity('${item.hashid}', ${item.quantity + 1})">
+                                                        <i class="fas fa-plus" style="font-size: 10px;"></i>
+                                                    </button>
+                                                </div>
+                                                <span class="fw-bold text-primary" style="font-size: 14px;">৳${itemTotal}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        cartHTML += '</div>';
+                        contentDiv.innerHTML = cartHTML;
+
+                        // Show subtotal and footer
+                        document.getElementById('cartOffcanvasSubtotal').textContent = '৳' + data.subtotal.toFixed(2);
+                        footerDiv.style.display = 'block';
+                    } else {
+                        contentDiv.innerHTML = `
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-3">Your cart is empty</p>
+                                <a href="{{ route('shop') }}" class="btn btn-primary">
+                                    <i class="fas fa-store me-2"></i>Continue Shopping
+                                </a>
+                            </div>
+                        `;
+                        footerDiv.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading cart:', error);
+                    contentDiv.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                            <p class="text-danger mb-3">Failed to load cart</p>
+                            <button class="btn btn-primary" onclick="loadCartItems()">
+                                <i class="fas fa-redo me-2"></i>Retry
+                            </button>
+                        </div>
+                    `;
+                    footerDiv.style.display = 'none';
+                });
+        }
+
+        // Update cart item quantity
+        function updateCartQuantity(hashid, newQuantity) {
+            if (newQuantity < 1) return;
+
+            // Show loading on the specific item
+            const itemElement = document.querySelector(`[data-cart-item-id="${hashid}"]`);
+            if (itemElement) {
+                itemElement.style.opacity = '0.5';
+            }
+
+            fetch(`/cart/update/${hashid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        quantity: newQuantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Cart updated!',
+                            timer: 1500
+                        });
+                        // Reload cart items
+                        loadCartItems();
+                        // Update header cart count
+                        updateCartCount(data.cart_count);
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to update cart'
+                        });
+                        if (itemElement) {
+                            itemElement.style.opacity = '1';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating cart:', error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Network error. Please try again.'
+                    });
+                    if (itemElement) {
+                        itemElement.style.opacity = '1';
+                    }
+                });
+        }
+
+        // Remove item from cart
+        function removeCartItem(hashid) {
+            if (!confirm('Remove this item from cart?')) return;
+
+            // Show loading on the specific item
+            const itemElement = document.querySelector(`[data-cart-item-id="${hashid}"]`);
+            if (itemElement) {
+                itemElement.style.opacity = '0.5';
+            }
+
+            fetch(`/cart/remove/${hashid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Item removed from cart!',
+                            timer: 1500
+                        });
+                        // Reload cart items
+                        loadCartItems();
+                        // Update header cart count
+                        updateCartCount(data.cart_count);
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to remove item'
+                        });
+                        if (itemElement) {
+                            itemElement.style.opacity = '1';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing item:', error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Network error. Please try again.'
+                    });
+                    if (itemElement) {
+                        itemElement.style.opacity = '1';
+                    }
                 });
         }
 
