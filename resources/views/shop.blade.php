@@ -468,6 +468,47 @@
                 height: 300px;
             }
         }
+
+        /* List View Styles */
+        .list-view .product-card {
+            flex-direction: row !important;
+            min-height: auto !important;
+        }
+
+        .list-view .product-img-container {
+            width: 250px !important;
+            flex-shrink: 0 !important;
+            aspect-ratio: 1/1 !important;
+        }
+
+        .list-view .product-content {
+            flex: 1 !important;
+            padding: 20px !important;
+        }
+
+        .list-view .product-title {
+            font-size: 16px !important;
+            -webkit-line-clamp: 3 !important;
+        }
+
+        .list-view .product-description {
+            -webkit-line-clamp: 4 !important;
+            max-height: none !important;
+        }
+
+        .list-view .product-footer {
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .list-view .product-card {
+                flex-direction: column !important;
+            }
+
+            .list-view .product-img-container {
+                width: 100% !important;
+            }
+        }
     </style>
 @endsection
 @section('content')
@@ -983,14 +1024,14 @@
                 $('#gridView').removeClass('active');
                 $(this).addClass('active');
                 $('#productsContainer').removeClass('row').addClass('list-view');
-                $('.product-card').removeClass('col-md-6 col-lg-4').addClass('col-12');
+                $('#productsContainer > div').removeClass('col-md-6 col-lg-4').addClass('col-12');
             });
 
             $('#gridView').click(function() {
                 $('#listView').removeClass('active');
                 $(this).addClass('active');
                 $('#productsContainer').removeClass('list-view').addClass('row');
-                $('.product-card').removeClass('col-12').addClass('col-md-6 col-lg-4');
+                $('#productsContainer > div').removeClass('col-12').addClass('col-md-6 col-lg-4');
             });
 
             // Quick View Modal

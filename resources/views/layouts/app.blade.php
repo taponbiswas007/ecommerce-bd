@@ -665,47 +665,366 @@
             }
         }
 
-        /* Newsletter */
+        /* Newsletter Section */
         .newsletter-section {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 20px;
-            padding: 50px;
             color: white;
-            margin: 40px 0;
+            padding: 4rem 0;
             position: relative;
             overflow: hidden;
         }
 
         .newsletter-section::before {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
-            background-size: cover;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 1;
+        }
+
+        .newsletter-section .container-fluid {
+            position: relative;
+            z-index: 2;
+        }
+
+        .newsletter-section h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .newsletter-section h2::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .newsletter-section p {
+            font-size: 1.1rem;
+            max-width: 500px;
+            opacity: 0.9;
         }
 
         .newsletter-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
+            border: none;
             border-radius: 50px;
-            padding: 15px 25px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .newsletter-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            padding: 0.9rem 1.5rem;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
         }
 
         .newsletter-input:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        .newsletter-btn {
+            background-color: var(--accent-color);
             color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .newsletter-btn:hover {
+            background-color: #e11570;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer Section */
+        /* Footer with Bangladeshi Map Background */
+        .bd-footer {
+            background-color: var(--dark-color);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding-top: 4rem !important;
+        }
+
+        /* Bangladeshi Map Background */
+        .bd-footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                /* Simplified Bangladesh map outline */
+                radial-gradient(circle at 75% 40%, rgba(0, 106, 78, 0.03) 0%, rgba(0, 106, 78, 0.03) 40%, transparent 40%, transparent 100%),
+                radial-gradient(circle at 70% 45%, rgba(244, 42, 65, 0.02) 0%, rgba(244, 42, 65, 0.02) 30%, transparent 30%, transparent 100%),
+                /* River patterns */
+                linear-gradient(45deg, transparent 49%, rgba(0, 106, 78, 0.02) 49%, rgba(0, 106, 78, 0.02) 51%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, rgba(0, 106, 78, 0.02) 49%, rgba(0, 106, 78, 0.02) 51%, transparent 51%),
+                /* Map grid */
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size:
+                100% 100%,
+                100% 100%,
+                30px 30px,
+                30px 30px,
+                50px 50px,
+                50px 50px;
+            z-index: 1;
+            opacity: 0.4;
+        }
+
+        /* Red circle representing Dhaka */
+        .bd-footer::after {
+            content: "";
+            position: absolute;
+            top: 40%;
+            right: 25%;
+            width: 15px;
+            height: 15px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(244, 42, 65, 0.3);
+            z-index: 1;
+            animation: pulse 2s infinite;
+        }
+
+        /* Green circle representing Chittagong */
+        .bd-footer .chittagong-marker {
+            position: absolute;
+            bottom: 30%;
+            right: 15%;
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(0, 106, 78, 0.3);
+            z-index: 1;
+            animation: pulse 2s infinite 0.5s;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(244, 42, 65, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(244, 42, 65, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 42, 65, 0);
+            }
+        }
+
+        .bd-footer .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Top accent border with Bangladesh flag colors */
+        .bd-footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 50%, var(--secondary-color) 50%);
+            z-index: 3;
+        }
+
+        footer h5 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+            color: white;
+        }
+
+        footer h5::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        footer .text-secondary {
+            color: #b0b7c3 !important;
+            transition: var(--transition);
+        }
+
+        footer a.text-secondary:hover {
+            color: white !important;
+            padding-left: 5px;
+        }
+
+        footer ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        /* Bangladesh-themed social icons */
+        .bd-social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            transition: var(--transition);
+            color: white !important;
+        }
+
+        .bd-social-icons a:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        footer hr {
+            opacity: 0.2;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+        }
+
+        /* Bangladesh flag badge */
+        .bd-flag-badge {
+            display: inline-block;
+            width: 20px;
+            height: 12px;
+            background: linear-gradient(to right, var(--primary-color) 50%, var(--secondary-color) 50%);
+            border-radius: 2px;
+            margin-right: 8px;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        .bd-flag-badge::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        /* Bangladesh landmarks illustration */
+        .landmark-illustration {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            opacity: 0.05;
+            z-index: 1;
+            font-size: 3rem;
+        }
+
+        /* Payment methods with local options */
+        .payment-methods i {
+            transition: var(--transition);
+        }
+
+        .payment-methods i:hover {
+            transform: translateY(-3px);
+            color: var(--accent-color) !important;
+        }
+
+        /* Bangladesh-specific section */
+        .bd-info {
+            background-color: rgba(0, 106, 78, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .bd-info h6 {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .bd-footer::after {
+                display: none;
+            }
+
+            .bd-footer .chittagong-marker {
+                display: none;
+            }
+
+            footer .col-md-4,
+            footer .col-md-3 {
+                margin-bottom: 2.5rem;
+            }
+        }
+
+        /* Floating national elements */
+        .floating-symbol {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.1;
+            font-size: 1.5rem;
+        }
+
+        .floating-symbol:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .floating-symbol:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation: float 10s infinite ease-in-out 1s;
+        }
+
+        .floating-symbol:nth-child(3) {
+            bottom: 40%;
+            left: 20%;
+            animation: float 12s infinite ease-in-out 2s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Success message for form submission */
+        .success-message {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #4ade80;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
         }
     </style>
     <style>
