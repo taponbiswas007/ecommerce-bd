@@ -158,21 +158,21 @@
             <div class="col-12">
                 <h6 class="fw-bold mb-3">We Accept</h6>
                 <div class="d-flex flex-wrap align-items-center gap-3">
-                    <span class="badge bg-light text-dark px-3 py-2">
-                        <i class="fab fa-cc-visa fa-lg"></i> Visa
-                    </span>
-                    <span class="badge bg-light text-dark px-3 py-2">
-                        <i class="fab fa-cc-mastercard fa-lg"></i> Mastercard
-                    </span>
-                    <span class="badge bg-light text-dark px-3 py-2">
-                        <i class="fas fa-mobile-alt fa-lg"></i> bKash
-                    </span>
-                    <span class="badge bg-light text-dark px-3 py-2">
-                        <i class="fas fa-mobile-alt fa-lg"></i> Nagad
-                    </span>
-                    <span class="badge bg-light text-dark px-3 py-2">
-                        <i class="fas fa-money-bill-wave fa-lg"></i> Cash on Delivery
-                    </span>
+                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
+                        <img class=" w-100" src="{{ asset('assets/banklogo/visacard.webp') }}" alt="">
+                    </div>
+                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
+                        <img class=" w-100" src="{{ asset('assets/banklogo/mastercard.webp') }}" alt="">
+                    </div>
+                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
+                        <img class=" w-100" src="{{ asset('assets/banklogo/bkashlogo.webp') }}" alt="">
+                    </div>
+                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
+                        <img class=" w-100" src="{{ asset('assets/banklogo/nagad.webp') }}" alt="">
+                    </div>
+                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
+                        <img class=" w-100" src="{{ asset('assets/banklogo/rocket.webp') }}" alt="">
+                    </div>
                 </div>
             </div>
         </div>
