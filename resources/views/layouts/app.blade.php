@@ -34,8 +34,15 @@
             --light-bg: #f8f9fa;
         }
 
+        .bg-dark {
+            background: var(--dark-bg) !important;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
+            background-image: url(noise.webp);
+            background-repeat: repeat;
+            background-color: var(--light-bg);
         }
 
         h1,
@@ -747,103 +754,6 @@
         }
 
         /* Footer Section */
-        /* Footer with Bangladeshi Map Background */
-        .bd-footer {
-            background-color: var(--dark-color);
-            color: white;
-            position: relative;
-            overflow: hidden;
-            padding-top: 4rem !important;
-        }
-
-        /* Bangladeshi Map Background */
-        .bd-footer::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                /* Simplified Bangladesh map outline */
-                radial-gradient(circle at 75% 40%, rgba(0, 106, 78, 0.03) 0%, rgba(0, 106, 78, 0.03) 40%, transparent 40%, transparent 100%),
-                radial-gradient(circle at 70% 45%, rgba(244, 42, 65, 0.02) 0%, rgba(244, 42, 65, 0.02) 30%, transparent 30%, transparent 100%),
-                /* River patterns */
-                linear-gradient(45deg, transparent 49%, rgba(0, 106, 78, 0.02) 49%, rgba(0, 106, 78, 0.02) 51%, transparent 51%),
-                linear-gradient(-45deg, transparent 49%, rgba(0, 106, 78, 0.02) 49%, rgba(0, 106, 78, 0.02) 51%, transparent 51%),
-                /* Map grid */
-                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-                linear-gradient(0deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-            background-size:
-                100% 100%,
-                100% 100%,
-                30px 30px,
-                30px 30px,
-                50px 50px,
-                50px 50px;
-            z-index: 1;
-            opacity: 0.4;
-        }
-
-        /* Red circle representing Dhaka */
-        .bd-footer::after {
-            content: "";
-            position: absolute;
-            top: 40%;
-            right: 25%;
-            width: 15px;
-            height: 15px;
-            background-color: var(--secondary-color);
-            border-radius: 50%;
-            box-shadow: 0 0 0 3px rgba(244, 42, 65, 0.3);
-            z-index: 1;
-            animation: pulse 2s infinite;
-        }
-
-        /* Green circle representing Chittagong */
-        .bd-footer .chittagong-marker {
-            position: absolute;
-            bottom: 30%;
-            right: 15%;
-            width: 12px;
-            height: 12px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px rgba(0, 106, 78, 0.3);
-            z-index: 1;
-            animation: pulse 2s infinite 0.5s;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(244, 42, 65, 0.4);
-            }
-
-            70% {
-                box-shadow: 0 0 0 8px rgba(244, 42, 65, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(244, 42, 65, 0);
-            }
-        }
-
-        .bd-footer .container {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Top accent border with Bangladesh flag colors */
-        .bd-footer::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color) 50%, var(--secondary-color) 50%);
-            z-index: 3;
-        }
 
         footer h5 {
             font-weight: 700;
@@ -903,40 +813,6 @@
 
         .copyright {
             font-size: 0.9rem;
-        }
-
-        /* Bangladesh flag badge */
-        .bd-flag-badge {
-            display: inline-block;
-            width: 20px;
-            height: 12px;
-            background: linear-gradient(to right, var(--primary-color) 50%, var(--secondary-color) 50%);
-            border-radius: 2px;
-            margin-right: 8px;
-            vertical-align: middle;
-            position: relative;
-        }
-
-        .bd-flag-badge::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 30%;
-            transform: translate(-50%, -50%);
-            width: 6px;
-            height: 6px;
-            background-color: white;
-            border-radius: 50%;
-        }
-
-        /* Bangladesh landmarks illustration */
-        .landmark-illustration {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            opacity: 0.05;
-            z-index: 1;
-            font-size: 3rem;
         }
 
         /* Payment methods with local options */

@@ -760,12 +760,12 @@
         }
 
         /* Category Wise Sections */
-        .category-wise-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 60px 0;
-            margin: 40px 0;
-            border-radius: 20px;
-        }
+        /* .category-wise-section {
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                padding: 60px 0;
+                margin: 40px 0;
+                border-radius: 20px;
+            } */
 
         /* Best Deals */
         .best-deals-section {
@@ -1040,7 +1040,7 @@
     </section>
 
     <!-- Featured Products Section -->
-    <section class="py-5 bg-light">
+    <section class="py-5">
         <div class="container-fluid">
             <div class="section-header">
                 <h2>Featured Products</h2>

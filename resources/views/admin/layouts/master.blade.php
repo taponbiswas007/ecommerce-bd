@@ -100,6 +100,12 @@
             text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
+        .preloader-logo img {
+            width: 120px;
+            height: auto;
+            object-fit: contain;
+        }
+
         @keyframes pulse {
 
             0%,

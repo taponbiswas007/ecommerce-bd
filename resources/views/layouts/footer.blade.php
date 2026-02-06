@@ -1,10 +1,15 @@
 <!-- Footer -->
 <footer class="footer bg-dark text-white pt-5 pb-4">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row g-4">
             <!-- Company Info -->
             <div class="col-lg-3 col-md-6">
-                <h5 class="fw-bold mb-3">{{ config('app.name', 'Ecommerce BD') }}</h5>
+                @php
+                    $companyName = App\Models\User::whereNotNull('company_name')
+                        ->where('role', 'admin')
+                        ->value('company_name');
+                @endphp
+                <h5 class="fw-bold mb-3">{{ $companyName ?? config('app.name', 'Ecommerce BD') }}</h5>
                 <p class="text-white-50 small">
                     Your trusted online shopping destination in Bangladesh. Quality products with fast shipping across
                     all 64 districts.
@@ -156,22 +161,27 @@
         <!-- Payment Methods -->
         <div class="row mt-4 pt-4 border-top border-secondary">
             <div class="col-12">
-                <h6 class="fw-bold mb-3">We Accept</h6>
-                <div class="d-flex flex-wrap align-items-center gap-3">
-                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
-                        <img class=" w-100" src="{{ asset('assets/banklogo/visacard.webp') }}" alt="">
+                <h6 class="fw-bold mb-3 text-center">We Accept</h6>
+                <div class="d-flex flex-wrap align-items-center justify-content-center gap-3">
+                    <div class="bg-white ">
+                        <img class=" w-100" style="width: 100px; height: 25px;"
+                            src="{{ asset('assets/banklogo/visacard.webp') }}" alt="">
                     </div>
-                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
-                        <img class=" w-100" src="{{ asset('assets/banklogo/mastercard.webp') }}" alt="">
+                    <div class="bg-white ">
+                        <img class=" w-100" style=" height: 25px;"
+                            src="{{ asset('assets/banklogo/mastercard.webp') }}" alt="">
                     </div>
-                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
-                        <img class=" w-100" src="{{ asset('assets/banklogo/bkashlogo.webp') }}" alt="">
+                    <div class="bg-white ">
+                        <img class=" w-100" style=" height: 25px;"
+                            src="{{ asset('assets/banklogo/bkashlogo.webp') }}" alt="">
                     </div>
-                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
-                        <img class=" w-100" src="{{ asset('assets/banklogo/nagad.webp') }}" alt="">
+                    <div class="bg-white ">
+                        <img class=" w-100" style=" height: 25px;" src="{{ asset('assets/banklogo/nagad.webp') }}"
+                            alt="">
                     </div>
-                    <div class=" bg-light text-dark px-3 py-2" style="width: 100px">
-                        <img class=" w-100" src="{{ asset('assets/banklogo/rocket.webp') }}" alt="">
+                    <div class="bg-white ">
+                        <img class=" w-100" style=" height: 25px;" src="{{ asset('assets/banklogo/rocket.webp') }}"
+                            alt="">
                     </div>
                 </div>
             </div>
