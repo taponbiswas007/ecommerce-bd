@@ -761,15 +761,15 @@
 
         /* Category Wise Sections */
         /* .category-wise-section {
-                                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                                    padding: 60px 0;
-                                    margin: 40px 0;
-                                    border-radius: 20px;
-                                } */
+                                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                                            padding: 60px 0;
+                                            margin: 40px 0;
+                                            border-radius: 20px;
+                                        } */
 
         /* Best Deals */
         .best-deals-section {
-            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            background: linear-gradient(135deg, #ff416d34 0%, #ff4b2b80 100%);
             color: white;
             padding: 60px 0;
             margin: 40px 0;
