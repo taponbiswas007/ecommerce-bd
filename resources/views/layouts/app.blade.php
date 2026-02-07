@@ -1694,7 +1694,7 @@
     <main>
         @yield('content')
     </main>
-    @extends('layouts.footer');
+    @include('layouts.footer')
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Swiper JS -->
