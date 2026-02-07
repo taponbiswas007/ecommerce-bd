@@ -761,11 +761,11 @@
 
         /* Category Wise Sections */
         /* .category-wise-section {
-                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                padding: 60px 0;
-                margin: 40px 0;
-                border-radius: 20px;
-            } */
+                                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                                    padding: 60px 0;
+                                    margin: 40px 0;
+                                    border-radius: 20px;
+                                } */
 
         /* Best Deals */
         .best-deals-section {
@@ -916,7 +916,7 @@
                             $finalPrice = $product->discount_price ?? $product->base_price;
                         @endphp
                         <div class="swiper-slide position-relative hero-slide-bg d-flex align-items-center"
-                            style="min-height: 400px; background: url({{ asset('assets/images/hero_bg.webp') }}); border-radius: 30px; overflow: hidden;">
+                            style="min-height: 400px; background: rgba(0, 0, 0, 0.1); border-radius: 30px; overflow: hidden;">
                             <div class="row w-100 align-items-center">
                                 <div class="col-lg-6 col-md-7 col-12 px-5 py-4">
                                     <div class="slider-content">
@@ -929,14 +929,14 @@
                                                     {{ $product->discount_percentage }}%</span>
                                             @endif
                                         </div>
-                                        <h1 class="display-5 fw-bold">{{ $product->name }}</h1>
-                                        <p class="lead">
+                                        <h1 class="display-5 fw-bold text-dark">{{ $product->name }}</h1>
+                                        <p class="lead text-dark">
                                             {{ Str::limit(strip_tags($product->short_description ?? ''), 140) }}</p>
                                         <div class="d-flex align-items-center gap-3 flex-wrap">
-                                            <span class="fs-3 fw-bold">৳{{ number_format($finalPrice, 0) }}</span>
+                                            <span class="fs-3 fw-bold text-dark">৳{{ number_format($finalPrice, 0) }}</span>
                                             @if ($product->discount_price)
                                                 <span
-                                                    class="text-decoration-line-through opacity-75">৳{{ number_format($product->base_price, 0) }}</span>
+                                                    class="text-decoration-line-through opacity-75 text-dark">৳{{ number_format($product->base_price, 0) }}</span>
                                             @endif
                                         </div>
                                         <div class="mt-4 d-flex gap-3 flex-wrap">
@@ -963,12 +963,12 @@
                     @empty
                         @for ($i = 1; $i <= 3; $i++)
                             <div class="swiper-slide position-relative hero-slide-bg d-flex align-items-center"
-                                style="min-height: 400px; background: url({{ asset('assets/images/hero_bg.webp') }}); border-radius: 30px; overflow: hidden;">
+                                style="min-height: 400px;  background: rgba(0, 0, 0, 0.1); border-radius: 30px; overflow: hidden;">
                                 <div class="row w-100 align-items-center">
                                     <div class="col-lg-6 col-md-7 col-12 px-5 py-4">
                                         <div class="slider-content">
-                                            <h1 class="display-4 fw-bold">Electronic Deals</h1>
-                                            <p class="lead">Explore our latest offers across all categories</p>
+                                            <h1 class="display-4 fw-bold text-dark">Electronic Deals</h1>
+                                            <p class="lead text-dark">Explore our latest offers across all categories</p>
                                             <a href="{{ route('shop') }}" class="btn btn-primary btn-lg mt-3">Shop Now</a>
                                         </div>
                                     </div>
