@@ -108,6 +108,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Also register as 'orders.index' for compatibility
     Route::get('/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\Customer\OrderController::class, 'show'])->name('customer.orders.show');
+    Route::get('/orders/{order}/tracking', [App\Http\Controllers\Customer\OrderController::class, 'tracking'])->name('customer.orders.tracking');
+    Route::get('/orders/{order}/document/{historyId}', [App\Http\Controllers\Customer\OrderController::class, 'downloadDocument'])->name('customer.orders.download-document');
 
     // Customer Addresses
     Route::resource('addresses', App\Http\Controllers\Customer\AddressController::class);
@@ -211,6 +213,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
     Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
     Route::post('orders/{order}/upload-document', [\App\Http\Controllers\Admin\OrderController::class, 'uploadDocument'])->name('orders.upload-document');
+    Route::get('orders/{order}/tracking-history', [\App\Http\Controllers\Admin\OrderController::class, 'trackingHistory'])->name('orders.tracking-history');
 
     // Coupon Management
     Route::resource('coupons', CouponController::class);

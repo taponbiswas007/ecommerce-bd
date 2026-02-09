@@ -648,6 +648,13 @@
                                                             <i class="fas fa-eye"></i>
                                                             <span>View</span>
                                                         </a>
+                                                        @if (in_array($order->order_status, ['confirmed', 'processing', 'ready_to_ship', 'shipped', 'delivered', 'completed']))
+                                                            <a href="{{ route('customer.orders.tracking', $order->id) }}"
+                                                                class="action-btn btn-track" title="Track Order">
+                                                                <i class="fas fa-map-marked-alt"></i>
+                                                                <span>Track</span>
+                                                            </a>
+                                                        @endif
                                                         @if ($order->order_status == 'completed')
                                                             <button class="action-btn btn-reorder" title="Reorder Items">
                                                                 <i class="fas fa-redo"></i>
@@ -658,12 +665,6 @@
                                                             <i class="fas fa-download"></i>
                                                             <span>Invoice</span>
                                                         </button>
-                                                        @if ($order->order_status == 'shipped')
-                                                            <button class="action-btn btn-track" title="Track Package">
-                                                                <i class="fas fa-map-marker-alt"></i>
-                                                                <span>Track</span>
-                                                            </button>
-                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>

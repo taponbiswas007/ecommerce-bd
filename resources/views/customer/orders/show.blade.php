@@ -386,6 +386,10 @@
                                 <i class="fas fa-arrow-left"></i> Back to Orders
                             </a>
 
+                            <a href="{{ route('customer.orders.tracking', $order->id) }}" class="btn btn-primary mb-2">
+                                <i class="fas fa-map-marked-alt"></i> Track Order
+                            </a>
+
                             @if (in_array($order->order_status, ['pending', 'processing']))
                                 <button class="btn btn-outline-danger mb-2" data-bs-toggle="modal"
                                     data-bs-target="#cancelOrderModal">
@@ -423,45 +427,75 @@
                                 <i class="fas fa-history me-2"></i> Order Timeline
                             </h6>
                             <div class="timeline">
-                                <div class="timeline-item completed">
-                                    <div class="small text-muted">Order Placed</div>
-                                    <div class="small">{{ $order->created_at->format('M d, h:i A') }}</div>
-                                </div>
-
-                                <div
-                                    class="timeline-item {{ $order->order_status != 'pending' ? 'completed' : 'active' }}">
-                                    <div class="small text-muted">Order Confirmed</div>
-                                    @if ($order->order_status != 'pending')
-                                        <div class="small">{{ $order->updated_at->format('M d, h:i A') }}</div>
+                                @if ($order->statusHistories->count() > 0)
+                                    @foreach ($order->statusHistories->take(4) as $history)
+                                        <div class="timeline-item {{ $loop->first ? 'active' : 'completed' }}">
+                                            <div class="small text-muted">{{ $history->status_display }}</div>
+                                            <div class="small">{{ $history->status_date->format('M d, h:i A') }}</div>
+                                            @if ($history->location)
+                                                <div class="small text-primary">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>{{ $history->location }}
+                                                </div>
+                                            @endif
+                                            @if ($history->document_path && $loop->first)
+                                                <div class="mt-2">
+                                                    <a href="{{ route('customer.orders.download-document', [$order->id, $history->id]) }}"
+                                                        class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-download me-1"></i>Document
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                    @if ($order->statusHistories->count() > 4)
+                                        <div class="text-center mt-3">
+                                            <a href="{{ route('customer.orders.tracking', $order->id) }}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>View Full Timeline
+                                            </a>
+                                        </div>
                                     @endif
-                                </div>
+                                @else
+                                    <div class="timeline-item completed">
+                                        <div class="small text-muted">Order Placed</div>
+                                        <div class="small">{{ $order->created_at->format('M d, h:i A') }}</div>
+                                    </div>
 
-                                @if (in_array($order->order_status, ['processing', 'shipped', 'completed']))
                                     <div
-                                        class="timeline-item {{ in_array($order->order_status, ['shipped', 'completed']) ? 'completed' : 'active' }}">
-                                        <div class="small text-muted">Processing</div>
-                                        @if (in_array($order->order_status, ['shipped', 'completed']))
-                                            <div class="small">Completed</div>
+                                        class="timeline-item {{ $order->order_status != 'pending' ? 'completed' : 'active' }}">
+                                        <div class="small text-muted">Order Confirmed</div>
+                                        @if ($order->order_status != 'pending')
+                                            <div class="small">{{ $order->updated_at->format('M d, h:i A') }}</div>
                                         @endif
                                     </div>
-                                @endif
 
-                                @if ($order->order_status == 'shipped')
-                                    <div class="timeline-item active">
-                                        <div class="small text-muted">Shipped</div>
-                                        <div class="small">
-                                            {{ $order->shipped_at ? $order->shipped_at->format('M d, h:i A') : 'In transit' }}
+                                    @if (in_array($order->order_status, ['processing', 'shipped', 'completed']))
+                                        <div
+                                            class="timeline-item {{ in_array($order->order_status, ['shipped', 'completed']) ? 'completed' : 'active' }}">
+                                            <div class="small text-muted">Processing</div>
+                                            @if (in_array($order->order_status, ['shipped', 'completed']))
+                                                <div class="small">Completed</div>
+                                            @endif
                                         </div>
-                                    </div>
-                                @endif
+                                    @endif
 
-                                @if ($order->order_status == 'completed')
-                                    <div class="timeline-item completed">
-                                        <div class="small text-muted">Delivered</div>
-                                        <div class="small">
-                                            {{ $order->delivered_at ? $order->delivered_at->format('M d, h:i A') : 'Completed' }}
+                                    @if ($order->order_status == 'shipped')
+                                        <div class="timeline-item active">
+                                            <div class="small text-muted">Shipped</div>
+                                            <div class="small">
+                                                {{ $order->shipped_at ? $order->shipped_at->format('M d, h:i A') : 'In transit' }}
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
+
+                                    @if ($order->order_status == 'completed')
+                                        <div class="timeline-item completed">
+                                            <div class="small text-muted">Delivered</div>
+                                            <div class="small">
+                                                {{ $order->delivered_at ? $order->delivered_at->format('M d, h:i A') : 'Completed' }}
+                                            </div>
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                         </div>

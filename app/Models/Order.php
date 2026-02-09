@@ -72,6 +72,16 @@ class Order extends Model
         return $this->belongsTo(\App\Models\TransportCompany::class, 'transport_company_id');
     }
 
+    public function statusHistories()
+    {
+        return $this->hasMany(OrderStatusHistory::class)->orderBy('status_date', 'desc');
+    }
+
+    public function latestStatusHistory()
+    {
+        return $this->hasOne(OrderStatusHistory::class)->latestOfMany('status_date');
+    }
+
     // Accessors
     public function getStatusColorAttribute()
     {
