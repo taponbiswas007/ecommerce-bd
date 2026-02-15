@@ -24,6 +24,7 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -258,6 +259,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Chat Routes (Authenticated Users - Both Customer & Admin)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
+    Route::get('/get-or-create', [App\Http\Controllers\ChatController::class, 'getOrCreateChat'])->name('get-or-create');
+    Route::get('/all', [App\Http\Controllers\ChatController::class, 'getAllChats'])->name('all');
+    Route::get('/{chat}/messages', [App\Http\Controllers\ChatController::class, 'getMessages'])->name('messages');
+    Route::post('/{chat}/send', [App\Http\Controllers\ChatController::class, 'sendMessage'])->name('send');
+    Route::get('/unread-count', [App\Http\Controllers\ChatController::class, 'getUnreadCount'])->name('unread-count');
+    Route::post('/{chat}/mark-read', [App\Http\Controllers\ChatController::class, 'markAsRead'])->name('mark-read');
 });
 
 /*

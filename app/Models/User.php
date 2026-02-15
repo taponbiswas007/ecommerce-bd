@@ -47,9 +47,20 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function isCustomer()
+    public function isCustomer(): bool
     {
         return $this->role === 'customer';
+    }
+
+    /**
+     * Check if user has a specific role.
+     *
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
     }
 
     // Relationships
