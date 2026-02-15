@@ -942,10 +942,16 @@
                                             <a href="{{ route('shop') }}" class="btn btn-primary btn-lg">
                                                 Shop Now
                                             </a>
-                                            <a href="{{ route('product.show', $product->slug) }}"
-                                                class="btn btn-outline-light btn-lg">
-                                                View Product
-                                            </a>
+                                            @if (!empty($product->slug))
+                                                <a href="{{ route('product.show', $product->slug) }}"
+                                                    class="btn btn-outline-light btn-lg">
+                                                    View Product
+                                                </a>
+                                            @else
+                                                <a href="#" class="btn btn-outline-light btn-lg" aria-disabled="true">
+                                                    View Product
+                                                </a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1052,42 +1058,52 @@
                         @foreach ($featuredProducts as $product)
                             <div class="swiper-slide">
                                 <div class="product-card">
-                                    <a href="{{ route('product.show', $product->slug) }}" class="product-link">
-                                        <div class="product-img-container">
-                                            @php
-                                                $image = $product->primaryImage ?? $product->images->first();
-                                            @endphp
-                                            <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                                alt="{{ $product->name }}" class="product-img">
+                                    @if (!empty($product->slug))
+                                        <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                        @else
+                                            <a href="#" class="product-link" aria-disabled="true">
+                                    @endif
+                                    <div class="product-img-container">
+                                        @php
+                                            $image = $product->primaryImage ?? $product->images->first();
+                                        @endphp
+                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                            alt="{{ $product->name }}" class="product-img">
 
-                                            <div class="product-badges">
-                                                @if ($product->is_featured)
-                                                    <span class="featured-badge">Featured</span>
-                                                @endif
-                                                @if ($product->has_discount)
-                                                    <span class="discount-badge">{{ $product->discount_percentage }}%
-                                                        OFF</span>
-                                                @endif
-                                            </div>
-
-                                            <div class="product-actions">
-                                                <button class="action-btn quick-view-btn"
-                                                    data-product-id="{{ $product->hashid }}">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button
-                                                    class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                    data-product-id="{{ $product->hashid }}">
-                                                    <i class="fas fa-heart"></i>
-                                                </button>
-                                            </div>
+                                        <div class="product-badges">
+                                            @if ($product->is_featured)
+                                                <span class="featured-badge">Featured</span>
+                                            @endif
+                                            @if ($product->has_discount)
+                                                <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                    OFF</span>
+                                            @endif
                                         </div>
+
+                                        <div class="product-actions">
+                                            <button class="action-btn quick-view-btn"
+                                                data-product-id="{{ $product->hashid }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                data-product-id="{{ $product->hashid }}">
+                                                <i class="fas fa-heart"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                     </a>
                                     <div class="product-content">
-                                        <a href="{{ route('product.show', $product->slug) }}"
-                                            class="text-decoration-none">
-                                            <h6 class="product-title">{{ $product->name }}</h6>
-                                        </a>
+                                        @if (!empty($product->slug))
+                                            <a href="{{ route('product.show', $product->slug) }}"
+                                                class="text-decoration-none">
+                                                <h6 class="product-title">{{ $product->name }}</h6>
+                                            </a>
+                                        @else
+                                            <span class="text-decoration-none">
+                                                <h6 class="product-title">{{ $product->name }}</h6>
+                                            </span>
+                                        @endif
 
                                         <div class="product-details-toggle">
                                             <div class="rating-container">
@@ -1216,10 +1232,16 @@
                                     data-product-id="{{ $dealProduct->hashid }}">
                                     <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                 </button>
-                                <a href="{{ route('product.show', $dealProduct->slug) }}"
-                                    class="btn btn-outline-light btn-lg">
-                                    View Product
-                                </a>
+                                @if (!empty($dealProduct->slug))
+                                    <a href="{{ route('product.show', $dealProduct->slug) }}"
+                                        class="btn btn-outline-light btn-lg">
+                                        View Product
+                                    </a>
+                                @else
+                                    <a href="#" class="btn btn-outline-light btn-lg" aria-disabled="true">
+                                        View Product
+                                    </a>
+                                @endif
                                 <button
                                     class="btn btn-outline-light btn-lg wishlist-btn {{ Auth::check() && $dealProduct->isInWishlist() ? 'active' : '' }}"
                                     data-product-id="{{ $dealProduct->hashid }}">
@@ -1269,42 +1291,52 @@
                             @foreach ($categoryProducts as $product)
                                 <div class="swiper-slide">
                                     <div class="product-card">
-                                        <a href="{{ route('product.show', $product->slug) }}" class="product-link">
-                                            <div class="product-img-container">
-                                                @php
-                                                    $image = $product->primaryImage ?? $product->images->first();
-                                                @endphp
-                                                <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                                    alt="{{ $product->name }}" class="product-img">
+                                        @if (!empty($product->slug))
+                                            <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                            @else
+                                                <a href="#" class="product-link" aria-disabled="true">
+                                        @endif
+                                        <div class="product-img-container">
+                                            @php
+                                                $image = $product->primaryImage ?? $product->images->first();
+                                            @endphp
+                                            <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                                alt="{{ $product->name }}" class="product-img">
 
-                                                <div class="product-badges">
-                                                    @if ($product->is_featured)
-                                                        <span class="featured-badge">Featured</span>
-                                                    @endif
-                                                    @if ($product->has_discount)
-                                                        <span class="discount-badge">{{ $product->discount_percentage }}%
-                                                            OFF</span>
-                                                    @endif
-                                                </div>
-
-                                                <div class="product-actions">
-                                                    <button class="action-btn quick-view-btn"
-                                                        data-product-id="{{ $product->hashid }}">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button
-                                                        class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                        data-product-id="{{ $product->hashid }}">
-                                                        <i class="fas fa-heart"></i>
-                                                    </button>
-                                                </div>
+                                            <div class="product-badges">
+                                                @if ($product->is_featured)
+                                                    <span class="featured-badge">Featured</span>
+                                                @endif
+                                                @if ($product->has_discount)
+                                                    <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                        OFF</span>
+                                                @endif
                                             </div>
+
+                                            <div class="product-actions">
+                                                <button class="action-btn quick-view-btn"
+                                                    data-product-id="{{ $product->hashid }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button
+                                                    class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                    data-product-id="{{ $product->hashid }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                         </a>
                                         <div class="product-content">
-                                            <a href="{{ route('product.show', $product->slug) }}"
-                                                class="text-decoration-none">
-                                                <h6 class="product-title">{{ $product->name }}</h6>
-                                            </a>
+                                            @if (!empty($product->slug))
+                                                <a href="{{ route('product.show', $product->slug) }}"
+                                                    class="text-decoration-none">
+                                                    <h6 class="product-title">{{ $product->name }}</h6>
+                                                </a>
+                                            @else
+                                                <span class="text-decoration-none">
+                                                    <h6 class="product-title">{{ $product->name }}</h6>
+                                                </span>
+                                            @endif
 
                                             <div class="product-details-toggle">
                                                 <div class="rating-container">
@@ -1414,41 +1446,52 @@
                     @foreach ($bestDeals as $product)
                         <div class="swiper-slide">
                             <div class="product-card">
-                                <a href="{{ route('product.show', $product->slug) }}" class="product-link">
-                                    <div class="product-img-container">
-                                        @php
-                                            $image = $product->primaryImage ?? $product->images->first();
-                                        @endphp
-                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                            alt="{{ $product->name }}" class="product-img">
+                                @if (!empty($product->slug))
+                                    <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                    @else
+                                        <a href="#" class="product-link" aria-disabled="true">
+                                @endif
+                                <div class="product-img-container">
+                                    @php
+                                        $image = $product->primaryImage ?? $product->images->first();
+                                    @endphp
+                                    <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                        alt="{{ $product->name }}" class="product-img">
 
-                                        <div class="product-badges">
-                                            @if ($product->is_featured)
-                                                <span class="featured-badge">Featured</span>
-                                            @endif
-                                            @if ($product->has_discount)
-                                                <span class="discount-badge">{{ $product->discount_percentage }}%
-                                                    OFF</span>
-                                            @endif
-                                        </div>
-
-                                        <div class="product-actions">
-                                            <button class="action-btn quick-view-btn"
-                                                data-product-id="{{ $product->hashid }}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button
-                                                class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->hashid }}">
-                                                <i class="fas fa-heart"></i>
-                                            </button>
-                                        </div>
+                                    <div class="product-badges">
+                                        @if ($product->is_featured)
+                                            <span class="featured-badge">Featured</span>
+                                        @endif
+                                        @if ($product->has_discount)
+                                            <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                OFF</span>
+                                        @endif
                                     </div>
+
+                                    <div class="product-actions">
+                                        <button class="action-btn quick-view-btn"
+                                            data-product-id="{{ $product->hashid }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button
+                                            class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                            data-product-id="{{ $product->hashid }}">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
                                 </a>
                                 <div class="product-content">
-                                    <a href="{{ route('product.show', $product->slug) }}" class="text-decoration-none">
-                                        <h6 class="product-title">{{ $product->name }}</h6>
-                                    </a>
+                                    @if (!empty($product->slug))
+                                        <a href="{{ route('product.show', $product->slug) }}"
+                                            class="text-decoration-none">
+                                            <h6 class="product-title">{{ $product->name }}</h6>
+                                        </a>
+                                    @else
+                                        <span class="text-decoration-none">
+                                            <h6 class="product-title">{{ $product->name }}</h6>
+                                        </span>
+                                    @endif
 
                                     <div class="product-details-toggle">
                                         <div class="rating-container">

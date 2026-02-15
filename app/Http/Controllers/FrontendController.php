@@ -17,9 +17,11 @@ class FrontendController extends Controller
         // Build hero slider products: top-selling 2 per active category (fallback via ordering)
         $heroProducts = Category::where('is_active', true)
             ->with(['products' => function ($query) {
-                $query->with(['primaryImage', 'images', 'unit', 'category'])
-                    ->addSelect(['average_rating', 'total_reviews'])
+                $query->select('products.*')
+                    ->with(['primaryImage', 'images', 'unit', 'category'])
                     ->where('is_active', true)
+                    ->whereNotNull('slug')
+                    ->where('slug', '!=', '')
                     ->where('stock_quantity', '>', 0)
                     ->orderByDesc('sold_count')
                     ->orderByDesc('created_at')
@@ -30,10 +32,12 @@ class FrontendController extends Controller
             ->values();
 
         // Get featured products
-        $featuredProducts = Product::with(['primaryImage', 'images', 'category', 'unit'])
-            ->addSelect(['average_rating', 'total_reviews'])
+        $featuredProducts = Product::select('products.*')
+            ->with(['primaryImage', 'images', 'category', 'unit'])
             ->where('is_featured', true)
             ->where('is_active', true)
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')
             ->limit(12)
@@ -57,8 +61,8 @@ class FrontendController extends Controller
             ->get();
 
         // Get flash sale products - products with discount_price
-        $flashSaleProducts = Product::with(['primaryImage', 'images', 'unit'])
-            ->addSelect(['average_rating', 'total_reviews'])
+        $flashSaleProducts = Product::select('products.*')
+            ->with(['primaryImage', 'images', 'unit'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->whereNotNull('discount_price')
@@ -68,17 +72,19 @@ class FrontendController extends Controller
             ->get();
 
         // Get new arrivals
-        $newArrivals = Product::with(['primaryImage', 'images', 'unit'])
-            ->addSelect(['average_rating', 'total_reviews'])
+        $newArrivals = Product::select('products.*')
+            ->with(['primaryImage', 'images', 'unit'])
             ->where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get();
-        $dealProduct = Product::with(['primaryImage', 'unit'])
-            ->addSelect(['average_rating', 'total_reviews'])
+        $dealProduct = Product::select('products.*')
+            ->with(['primaryImage', 'unit'])
             ->where('is_deal', 1)
             ->where('is_active', 1)
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
             ->where('stock_quantity', '>', 0)
             ->where('deal_end_at', '>=', now())
             ->latest('deal_end_at')
