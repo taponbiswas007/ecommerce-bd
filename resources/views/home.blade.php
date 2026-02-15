@@ -760,12 +760,11 @@
         }
 
         /* Category Wise Sections */
-        /* .category-wise-section {
-                                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                                            padding: 60px 0;
-                                            margin: 40px 0;
-                                            border-radius: 20px;
-                                        } */
+        .category-wise-section {
+            background: rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            padding: 30px 0;
+        }
 
         /* Best Deals */
         .best-deals-section {
@@ -1040,119 +1039,125 @@
     </section>
 
     <!-- Featured Products Section -->
-    <section class="py-5">
-        <div class="container-fluid">
-            <div class="section-header">
-                <h2>Featured Products</h2>
-                <a href="{{ route('shop') }}?featured=1" class="btn view-all-btn">
-                    View All <i class="fas fa-arrow-right ms-2"></i>
-                </a>
-            </div>
+    @if ($featuredProducts->isNotEmpty())
+        <section class="py-5">
+            <div class="container-fluid">
+                <div class="section-header">
+                    <h2>Featured Products</h2>
 
-            <div class="swiper featured-slider">
-                <div class="swiper-wrapper">
-                    @foreach ($featuredProducts as $product)
-                        <div class="swiper-slide">
-                            <div class="product-card">
-                                <a href="{{ route('product.show', $product->slug) }}" class="product-link">
-                                    <div class="product-img-container">
-                                        @php
-                                            $image = $product->primaryImage ?? $product->images->first();
-                                        @endphp
-                                        <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
-                                            alt="{{ $product->name }}" class="product-img">
+                </div>
 
-                                        <div class="product-badges">
-                                            @if ($product->is_featured)
-                                                <span class="featured-badge">Featured</span>
-                                            @endif
-                                            @if ($product->has_discount)
-                                                <span class="discount-badge">{{ $product->discount_percentage }}%
-                                                    OFF</span>
-                                            @endif
-                                        </div>
+                <div class="swiper featured-slider">
+                    <div class="swiper-wrapper">
+                        @foreach ($featuredProducts as $product)
+                            <div class="swiper-slide">
+                                <div class="product-card">
+                                    <a href="{{ route('product.show', $product->slug) }}" class="product-link">
+                                        <div class="product-img-container">
+                                            @php
+                                                $image = $product->primaryImage ?? $product->images->first();
+                                            @endphp
+                                            <img src="{{ $image ? asset('storage/' . $image->image_path) : 'https://via.placeholder.com/300x200' }}"
+                                                alt="{{ $product->name }}" class="product-img">
 
-                                        <div class="product-actions">
-                                            <button class="action-btn quick-view-btn"
-                                                data-product-id="{{ $product->hashid }}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button
-                                                class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
-                                                data-product-id="{{ $product->hashid }}">
-                                                <i class="fas fa-heart"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </a>
-                                <div class="product-content">
-                                    <a href="{{ route('product.show', $product->slug) }}" class="text-decoration-none">
-                                        <h6 class="product-title">{{ $product->name }}</h6>
-                                    </a>
-
-                                    <div class="product-details-toggle">
-                                        <div class="rating-container">
-                                            <div class="rating-stars">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= floor($product->average_rating ?? 0))
-                                                        <i class="fas fa-star"></i>
-                                                    @elseif ($i - 0.5 <= $product->average_rating ?? 0)
-                                                        <i class="fas fa-star-half-alt"></i>
-                                                    @else
-                                                        <i class="far fa-star"></i>
-                                                    @endif
-                                                @endfor
+                                            <div class="product-badges">
+                                                @if ($product->is_featured)
+                                                    <span class="featured-badge">Featured</span>
+                                                @endif
+                                                @if ($product->has_discount)
+                                                    <span class="discount-badge">{{ $product->discount_percentage }}%
+                                                        OFF</span>
+                                                @endif
                                             </div>
-                                            <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
-                                        </div>
-                                        <div class="product-description">
-                                            {{ Str::limit(strip_tags($product->short_description ?? ''), 80) }}
-                                        </div>
-                                    </div>
-                                    <!-- Price Line (single marquee) -->
-                                    @php
-                                        $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
-                                        $unit = $product->unit ? $product->unit->symbol : '';
-                                    @endphp
-                                    <div class="price-marquee" data-price-marquee>
-                                        <div class="price-marquee-inner">
-                                            @if ($product->has_discount)
-                                                <span
-                                                    class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
-                                                <span
-                                                    class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
-                                            @else
-                                                <span
-                                                    class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
-                                            @endif
 
-                                            @foreach ($tieredPrices as $price)
-                                                <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
-                                                    <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
-                                            @endforeach
+                                            <div class="product-actions">
+                                                <button class="action-btn quick-view-btn"
+                                                    data-product-id="{{ $product->hashid }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button
+                                                    class="action-btn wishlist-btn {{ Auth::check() && $product->isInWishlist() ? 'active' : '' }}"
+                                                    data-product-id="{{ $product->hashid }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
+                                    <div class="product-content">
+                                        <a href="{{ route('product.show', $product->slug) }}"
+                                            class="text-decoration-none">
+                                            <h6 class="product-title">{{ $product->name }}</h6>
+                                        </a>
 
-                                    <!-- Footer: Stock & Add to Cart -->
-                                    <div class="product-footer">
-                                        <span
-                                            class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
-                                            {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
-                                        </span>
-                                        <button class="add-to-cart-btn" data-product-id="{{ $product->hashid }}">
-                                            <i class="fas fa-cart-plus"></i> Cart
-                                        </button>
+                                        <div class="product-details-toggle">
+                                            <div class="rating-container">
+                                                <div class="rating-stars">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($product->average_rating ?? 0))
+                                                            <i class="fas fa-star"></i>
+                                                        @elseif ($i - 0.5 <= $product->average_rating ?? 0)
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span class="rating-count">({{ $product->total_reviews ?? 0 }})</span>
+                                            </div>
+                                            <div class="product-description">
+                                                {{ Str::limit(strip_tags($product->short_description ?? ''), 80) }}
+                                            </div>
+                                        </div>
+                                        <!-- Price Line (single marquee) -->
+                                        @php
+                                            $tieredPrices = $product->prices()->orderBy('min_quantity', 'asc')->get();
+                                            $unit = $product->unit ? $product->unit->symbol : '';
+                                        @endphp
+                                        <div class="price-marquee" data-price-marquee>
+                                            <div class="price-marquee-inner">
+                                                @if ($product->has_discount)
+                                                    <span
+                                                        class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
+                                                    <span
+                                                        class="price-chip old">৳{{ number_format($product->base_price, 0) }}</span>
+                                                @else
+                                                    <span
+                                                        class="price-chip main">৳{{ number_format($product->base_price, 0) }}</span>
+                                                @endif
+
+                                                @foreach ($tieredPrices as $price)
+                                                    <span class="price-chip tier">৳{{ number_format($price->price, 0) }}
+                                                        <small>({{ $price->min_quantity }}{{ $price->max_quantity ? ' - ' . $price->max_quantity : '+' }}{{ $unit ? ' ' . $unit : '' }})</small></span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                        <!-- Footer: Stock & Add to Cart -->
+                                        <div class="product-footer">
+                                            <span
+                                                class="stock-status {{ $product->stock_quantity > 10 ? 'in-stock' : ($product->stock_quantity > 0 ? 'low-stock' : 'out-of-stock') }}">
+                                                {{ $product->stock_quantity > 10 ? 'In Stock' : ($product->stock_quantity > 0 ? 'Low Stock' : 'Out') }}
+                                            </span>
+                                            <button class="add-to-cart-btn" data-product-id="{{ $product->hashid }}">
+                                                <i class="fas fa-cart-plus"></i> Cart
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
                 </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+                <div class="d-flex justify-content-center align-items-center pt-4">
+                    <a href="{{ route('shop') }}?featured=1" class="btn view-all-btn">
+                        View All <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     <!-- Deal of the Day -->
     @if ($dealProduct)
@@ -1245,10 +1250,7 @@
             <div class="container-fluid">
                 <div class="section-header">
                     <h2>{{ $category->name }}</h2>
-                    <a href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}"
-                        class="btn view-all-btn">
-                        View All <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
+
                 </div>
 
                 @php
@@ -1375,6 +1377,13 @@
                         <p class="text-muted">No products available in this category yet.</p>
                     </div>
                 @endif
+
+                <div class="d-flex justify-content-center align-items-center pt-4">
+                    <a href="{{ route('category.show', $category->slug ?? strtolower(str_replace(' ', '-', $category->name))) }}"
+                        class="btn view-all-btn">
+                        View All <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
             </div>
         </section>
     @endforeach
