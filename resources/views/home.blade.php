@@ -467,6 +467,17 @@
             color: #842029;
         }
 
+        .shopby-category-section {
+            background: rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        /* featured cards area */
+        .featuredProducts-section {
+            background: rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
         /* Category Cards */
         .category-slider .swiper-slide {
             padding: 15px 0;
@@ -999,13 +1010,10 @@
     </section>
 
     <!-- Category Slider Section -->
-    <section class="py-5">
+    <section class="py-5 shopby-category-section">
         <div class="container-fluid">
             <div class="section-header">
                 <h2>Shop by Categories</h2>
-                <a href="#" class="btn view-all-btn">
-                    View All <i class="fas fa-arrow-right ms-2"></i>
-                </a>
             </div>
 
             <div class="swiper category-slider">
@@ -1046,7 +1054,7 @@
 
     <!-- Featured Products Section -->
     @if ($featuredProducts->isNotEmpty())
-        <section class="py-5">
+        <section class="py-5 featuredProducts-section">
             <div class="container-fluid">
                 <div class="section-header">
                     <h2>Featured Products</h2>
@@ -1177,7 +1185,7 @@
 
     <!-- Deal of the Day -->
     @if ($dealProduct)
-        <section class="py-5">
+        <section class="">
             <div class="container-fluid">
                 <div class="deal-of-the-day">
                     <div class="row align-items-center">
