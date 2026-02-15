@@ -699,30 +699,40 @@
 
         /* Section Headers */
         .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 30px;
         }
 
         .section-header h2 {
-            font-weight: 500;
+            font-weight: 600;
             margin: 0;
             font-size: 28px;
             position: relative;
             padding-bottom: 10px;
+            text-align: center;
+            display: block;
+            width: 100%;
+            color: #032608;
         }
 
         .section-header h2::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
             height: 3px;
             background: var(--primary-color);
             border-radius: 2px;
         }
+
+        .section-header p {
+            margin-top: 10px;
+            color: #555;
+            font-size: 14px;
+            text-align: center;
+        }
+
 
         .view-all-btn {
             padding: 10px 25px;
@@ -773,7 +783,7 @@
         /* Category Wise Sections */
         .category-wise-section {
             background: rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+            margin: 30px 0;
             padding: 30px 0;
         }
 
@@ -781,8 +791,8 @@
         .best-deals-section {
             background: linear-gradient(135deg, #ff416d34 0%, #ff4b2b80 100%);
             color: white;
-            padding: 60px 0;
-            margin: 40px 0;
+            padding: 30px 0;
+            margin: 30px 0;
             position: relative;
             overflow: hidden;
         }
@@ -1280,7 +1290,7 @@
             <div class="container-fluid">
                 <div class="section-header">
                     <h2>{{ $category->name }}</h2>
-
+                    <p>{{ $category->description }}</p>
                 </div>
 
                 @php
@@ -1432,10 +1442,8 @@
     <section class="best-deals-section">
         <div class="container-fluid position-relative">
             <div class="section-header">
-                <h2 class="text-white">Best Deals</h2>
-                <a href="{{ route('shop') }}?deal=1" class="btn btn-outline-light view-all-btn">
-                    View All <i class="fas fa-arrow-right ms-2"></i>
-                </a>
+                <h2>Best Deals</h2>
+
             </div>
 
             @php
@@ -1557,6 +1565,11 @@
                 </div>
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
+            </div>
+            <div class="d-flex pt-4 justify-content-center align-items-center">
+                <a href="{{ route('shop') }}?deal=1" class="btn btn-outline-light view-all-btn">
+                    View All <i class="fas fa-arrow-right ms-2"></i>
+                </a>
             </div>
         </div>
     </section>
