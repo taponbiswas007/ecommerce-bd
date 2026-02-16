@@ -2760,9 +2760,15 @@
                 z-index: 9999;
             }
 
+            @media (max-width: 767px) {
+                .chat-widget {
+                    bottom: 80px;
+                }
+            }
+
             .chat-toggle-btn {
-                width: 60px;
-                height: 60px;
+                width: 45px;
+                height: 45px;
                 border-radius: 50%;
                 background: linear-gradient(135deg, var(--primary-blue, #0d6efd), var(--electric-blue, #0096ff));
                 border: none;
@@ -2772,6 +2778,8 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                 position: relative;
                 transition: all 0.3s ease;
+                justify-content: center;
+                align-items: center;
             }
 
             .chat-toggle-btn:hover {
@@ -2798,7 +2806,7 @@
 
             .chat-dialog {
                 position: absolute;
-                bottom: 80px;
+                bottom: 0px;
                 right: 0;
                 width: 380px;
                 max-width: calc(100vw - 40px);

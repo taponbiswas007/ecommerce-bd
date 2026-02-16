@@ -827,7 +827,6 @@
         }
 
         .brand-card:hover {
-            transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             border-color: var(--primary-color);
         }
@@ -835,14 +834,7 @@
         .brand-img {
             height: 50px;
             object-fit: contain;
-            filter: grayscale(100%);
-            opacity: 0.7;
             transition: all 0.3s ease;
-        }
-
-        .brand-card:hover .brand-img {
-            filter: grayscale(0%);
-            opacity: 1;
         }
 
 
@@ -1753,17 +1745,23 @@
                             prevEl: '.swiper-button-prev',
                         },
                         breakpoints: {
-                            576: {
-                                slidesPerView: 1
-                            },
-                            768: {
+                            320: {
                                 slidesPerView: 2
                             },
-                            992: {
+                            420: {
                                 slidesPerView: 3
                             },
-                            1200: {
+                            576: {
                                 slidesPerView: 4
+                            },
+                            768: {
+                                slidesPerView: 5
+                            },
+                            992: {
+                                slidesPerView: 6
+                            },
+                            1200: {
+                                slidesPerView: 8
                             }
                         }
                     })

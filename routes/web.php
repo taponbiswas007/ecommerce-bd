@@ -210,6 +210,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/categories/bulk-restore', [CategoryController::class, 'bulkRestore'])->name('categories.bulk-restore');
     Route::post('/categories/bulk-force-delete', [CategoryController::class, 'bulkForceDelete'])->name('categories.bulk-force-delete');
 
+    // Brand Management
+    Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class);
+    Route::post('/brands/{id}/status', [\App\Http\Controllers\Admin\BrandController::class, 'updateStatus'])->name('brands.update-status')->where('id', '[0-9]+');
+    Route::post('/brands/reorder', [\App\Http\Controllers\Admin\BrandController::class, 'reorder'])->name('brands.reorder');
+    Route::post('/brands/bulk-action', [\App\Http\Controllers\Admin\BrandController::class, 'bulkAction'])->name('brands.bulk-action');
+
+    // Trashed brands
+    Route::get('/brands-trashed', [\App\Http\Controllers\Admin\BrandController::class, 'trashed'])->name('brands.trashed');
+    Route::post('/brands/{id}/restore', [\App\Http\Controllers\Admin\BrandController::class, 'restore'])->name('brands.restore');
+    Route::delete('/brands/{id}/force-delete', [\App\Http\Controllers\Admin\BrandController::class, 'forceDelete'])->name('brands.force-delete');
+
     // Admin Order Management
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
     Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');

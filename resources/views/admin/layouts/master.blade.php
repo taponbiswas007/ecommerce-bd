@@ -307,20 +307,24 @@
                         </a>
                     </li>
 
-                    <li class="has-submenu {{ request()->routeIs('admin.products.*') ? 'open' : '' }}">
+                    <li
+                        class="has-submenu {{ request()->routeIs('admin.products.*') || request()->routeIs('admin.brands.*') ? 'open' : '' }}">
                         <a href="#">
                             <i class="fas fa-box"></i>
                             <span class="menu-text">Products</span>
                             <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
                         </a>
-                        <ul class="submenu {{ request()->routeIs('admin.products.*') ? 'show' : '' }}">
+                        <ul
+                            class="submenu {{ request()->routeIs('admin.products.*') || request()->routeIs('admin.brands.*') ? 'show' : '' }}">
                             <li class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
                                 <a href="{{ route('admin.products.index') }}">All Products</a>
                             </li>
                             <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
                                 <a href="{{ route('admin.products.create') }}">Add New</a>
                             </li>
-                            <li><a href="#">Brands</a></li>
+                            <li class="{{ request()->routeIs('admin.brands.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.brands.index') }}">Brands</a>
+                            </li>
 
                         </ul>
                     </li>
@@ -1203,8 +1207,8 @@
                 }
 
                 .admin-chat-toggle-btn {
-                    width: 60px;
-                    height: 60px;
+                    width: 45px;
+                    height: 45px;
                     border-radius: 50%;
                     background: linear-gradient(135deg, #667eea, #764ba2);
                     border: none;
@@ -1214,6 +1218,8 @@
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                     position: relative;
                     transition: all 0.3s ease;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 .admin-chat-toggle-btn:hover {
@@ -1240,7 +1246,7 @@
 
                 .admin-chat-dialog {
                     position: absolute;
-                    bottom: 80px;
+                    bottom: 0px;
                     right: 0;
                     width: 450px;
                     max-width: calc(100vw - 40px);
