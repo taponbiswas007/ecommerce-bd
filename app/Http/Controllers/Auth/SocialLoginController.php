@@ -29,6 +29,7 @@ class SocialLoginController extends Controller
                     'google_id' => $googleUser->id,
                     'email_verified_at' => now(),
                     'password' => bcrypt(rand(100000, 999999)),
+                    'role' => 'customer',
                 ]);
             } else {
                 $user->update(['google_id' => $googleUser->id]);
@@ -38,7 +39,7 @@ class SocialLoginController extends Controller
 
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
-            return redirect()->route('/')->with('error', 'Google login failed');
+            return redirect()->route('home')->with('error', 'Google login failed');
         }
     }
 
@@ -62,6 +63,7 @@ class SocialLoginController extends Controller
                     'facebook_id' => $facebookUser->id,
                     'email_verified_at' => now(),
                     'password' => bcrypt(rand(100000, 999999)),
+                    'role' => 'customer',
                 ]);
             } else {
                 $user->update(['facebook_id' => $facebookUser->id]);
@@ -71,7 +73,7 @@ class SocialLoginController extends Controller
 
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
-            return redirect()->route('/')->with('error', 'Facebook login failed');
+            return redirect()->route('home')->with('error', 'Facebook login failed');
         }
     }
 }
