@@ -228,6 +228,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('orders/{order}/tracking-history', [\App\Http\Controllers\Admin\OrderController::class, 'trackingHistory'])->name('orders.tracking-history');
 
     // Coupon Management
+    Route::get('coupons/generate-code', [CouponController::class, 'generateCode'])->name('coupons.generate-code');
     Route::resource('coupons', CouponController::class);
 
     // Delivery Charge Management

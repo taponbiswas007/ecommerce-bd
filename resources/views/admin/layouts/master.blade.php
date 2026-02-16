@@ -361,11 +361,20 @@
                         </a>
                     </li>
 
-                    <li class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
-                        <a href="{{ route('admin.coupons.index') }}">
+                    <li class="has-submenu {{ request()->routeIs('admin.coupons.*') ? 'open' : '' }}">
+                        <a href="#">
                             <i class="fas fa-ticket-alt"></i>
                             <span class="menu-text">Coupons</span>
+                            <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
                         </a>
+                        <ul class="submenu {{ request()->routeIs('admin.coupons.*') ? 'show' : '' }}">
+                            <li class="{{ request()->routeIs('admin.coupons.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.coupons.index') }}">All Coupons</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.coupons.create') ? 'active' : '' }}">
+                                <a href="{{ route('admin.coupons.create') }}">Add New</a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="{{ request()->routeIs('admin.delivery-charges.*') ? 'active' : '' }}">
