@@ -755,10 +755,6 @@
                                         <i class="fas fa-store me-2"></i>
                                         Start Shopping
                                     </a>
-                                    <a href="{{ route('products.index') }}" class="btn btn-outline-primary btn-lg px-4">
-                                        <i class="fas fa-boxes me-2"></i>
-                                        Browse Products
-                                    </a>
                                 </div>
                             </div>
                         @endif
