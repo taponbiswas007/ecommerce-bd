@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\DropshippingProduct;
 
 class FrontendController extends Controller
 {
@@ -79,6 +80,12 @@ class FrontendController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get();
+
+        $dropshippingProducts = DropshippingProduct::query()
+            ->where('is_active', true)
+            ->orderByDesc('created_at')
+            ->limit(12)
+            ->get();
         $dealProduct = Product::select('products.*')
             ->with(['primaryImage', 'unit'])
             ->where('is_deal', 1)
@@ -98,7 +105,8 @@ class FrontendController extends Controller
             'brands',
             'flashSaleProducts',
             'newArrivals',
-            'dealProduct'
+            'dealProduct',
+            'dropshippingProducts'
         ));
     }
 

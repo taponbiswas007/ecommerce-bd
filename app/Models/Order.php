@@ -82,6 +82,11 @@ class Order extends Model
         return $this->hasOne(OrderStatusHistory::class)->latestOfMany('status_date');
     }
 
+    public function dropshippingOrder()
+    {
+        return $this->hasOne(DropshippingOrder::class);
+    }
+
     // Accessors
     public function getStatusColorAttribute()
     {
