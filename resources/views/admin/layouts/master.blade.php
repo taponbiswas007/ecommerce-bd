@@ -332,25 +332,6 @@
                     <x-admin.sidebar-item route="admin.orders.index" :activeRoutes="['admin.orders.*']" icon="fas fa-shopping-cart"
                         text="Orders" :badge="\App\Models\Order::where('order_status', 'pending')->count()" badgeClass="bg-danger" />
 
-                    <li class="has-submenu {{ request()->routeIs('admin.dropshipping.*') ? 'open' : '' }}">
-                        <a href="#">
-                            <i class="fas fa-crate"></i>
-                            <span class="menu-text">Dropshipping</span>
-                            <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
-                        </a>
-                        <ul class="submenu {{ request()->routeIs('admin.dropshipping.*') ? 'show' : '' }}">
-                            <li class="{{ request()->routeIs('admin.dropshipping.settings.index') ? 'active' : '' }}">
-                                <a href="{{ route('admin.dropshipping.settings.index') }}">Settings</a>
-                            </li>
-                            <li class="{{ request()->routeIs('admin.dropshipping.products.index') ? 'active' : '' }}">
-                                <a href="{{ route('admin.dropshipping.products.index') }}">Products</a>
-                            </li>
-                            <li class="{{ request()->routeIs('admin.dropshipping.orders.index') ? 'active' : '' }}">
-                                <a href="{{ route('admin.dropshipping.orders.index') }}">Orders</a>
-                            </li>
-                        </ul>
-                    </li>
-
                     <li class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.customers.index') }}">
                             <i class="fas fa-users"></i>

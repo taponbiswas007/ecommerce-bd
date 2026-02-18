@@ -1185,96 +1185,6 @@
         </section>
     @endif
 
-    @if ($dropshippingProducts->isNotEmpty())
-        <section class="py-5 featuredProducts-section">
-            <div class="container-fluid">
-                <div class="section-header">
-                    <h2>Dropshipping Products</h2>
-                </div>
-
-                <div class="row">
-                    @foreach ($dropshippingProducts as $product)
-                        @php
-                            $imageUrl = $product->image_url;
-                            if (is_string($imageUrl) && str_starts_with(trim($imageUrl), '[')) {
-                                $decodedImages = json_decode($imageUrl, true);
-                                if (is_array($decodedImages) && !empty($decodedImages)) {
-                                    $imageUrl = $decodedImages[0];
-                                }
-                            }
-                            if ($imageUrl && str_starts_with($imageUrl, 'http://')) {
-                                $imageUrl = 'https://' . substr($imageUrl, 7);
-                            }
-                            $imageUrl = $imageUrl ?: 'https://via.placeholder.com/300x200';
-                            $bdtPrice = $product->selling_price * 128;
-                        @endphp
-                        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                            <div class="product-card">
-                                <a href="#" class="product-link" aria-disabled="true">
-                                    <div class="product-img-container">
-                                        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="product-img"
-                                            onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
-
-                                        <div class="product-badges">
-                                            <span class="new-badge">Dropshipping</span>
-                                        </div>
-
-                                        <div class="product-actions">
-                                            <button class="action-btn quick-view-btn"
-                                                data-dropshipping-id="{{ $product->id }}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="action-btn wishlist-btn" type="button" disabled>
-                                                <i class="fas fa-heart"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <div class="product-content">
-                                    <span class="text-decoration-none">
-                                        <h6 class="product-title">{{ $product->name }}</h6>
-                                    </span>
-
-                                    <div class="product-details-toggle">
-                                        <div class="rating-container">
-                                            <div class="rating-stars">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="far fa-star"></i>
-                                                @endfor
-                                            </div>
-                                            <span class="rating-count">(0)</span>
-                                        </div>
-                                        <div class="product-description">
-                                            {{ Str::limit(strip_tags($product->description ?? ''), 80) }}
-                                        </div>
-                                    </div>
-
-                                    <div class="price-marquee" data-price-marquee>
-                                        <div class="price-marquee-inner">
-                                            <span class="price-chip main">৳{{ number_format($bdtPrice, 0) }}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="product-footer">
-                                        <span
-                                            class="stock-status {{ $product->stock > 10 ? 'in-stock' : ($product->stock > 0 ? 'low-stock' : 'out-of-stock') }}">
-                                            {{ $product->stock > 10 ? 'In Stock' : ($product->stock > 0 ? 'Low Stock' : 'Out') }}
-                                        </span>
-                                        <button class="add-to-cart-btn" type="button"
-                                            data-dropshipping-id="{{ $product->id }}">
-                                            <i class="fas fa-cart-plus"></i> Cart
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
-
     <!-- Deal of the Day -->
     @if ($dealProduct)
         <section class="">
@@ -1945,11 +1855,6 @@
                     if (e.target.closest('.add-to-cart-btn')) {
                         e.preventDefault();
                         const button = e.target.closest('.add-to-cart-btn');
-                        const dropshippingId = button.getAttribute('data-dropshipping-id');
-                        if (dropshippingId) {
-                            addDropshippingToCart(dropshippingId, 1);
-                            return;
-                        }
                         const productId = button.getAttribute('data-product-id');
                         // Check if product has attributes
                         fetch('/check-product-attribute', {
@@ -1994,11 +1899,6 @@
                         e.preventDefault();
                         e.stopPropagation();
                         const button = e.target.closest('.quick-view-btn');
-                        const dropshippingId = button.getAttribute('data-dropshipping-id');
-                        if (dropshippingId) {
-                            showDropshippingQuickView(dropshippingId);
-                            return;
-                        }
                         const productId = button.getAttribute('data-product-id');
                         showQuickView(productId);
                     }
@@ -2426,95 +2326,6 @@
                     title: 'Please login to add items to cart'
                 });
             @endauth
-        }
-
-        function addDropshippingToCart(dropshippingId, quantity) {
-            @auth
-            fetch('{{ route('cart.add') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        dropshipping_product_id: dropshippingId,
-                        quantity: quantity
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Product added to cart!'
-                        });
-                        updateCartCount(data.cart_count);
-                        if (typeof showCartOffcanvas === 'function') {
-                            showCartOffcanvas();
-                        }
-                    } else if (data.requires_login) {
-                        const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                        loginModal.show();
-                        Toast.fire({
-                            icon: 'warning',
-                            title: data.message || 'Please login to add items to cart'
-                        });
-                    } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.message || 'Failed to add product'
-                        });
-                    }
-                })
-                .catch(() => {
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Network error. Please try again.'
-                    });
-                });
-        @else
-            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-            loginModal.show();
-
-            Toast.fire({
-                icon: 'warning',
-                title: 'Please login to add items to cart'
-            });
-        @endauth
-        }
-
-        // Dropshipping Quick View Function
-        async function showDropshippingQuickView(dropshippingId) {
-            try {
-                // First, ensure the local product exists
-                const mapResponse = await fetch('/dropshipping/map-local-product', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        dropshipping_product_id: dropshippingId
-                    })
-                });
-
-                const mapData = await mapResponse.json();
-
-                if (mapData.success && mapData.product_hashid) {
-                    // Now show quick view with the local product hashid
-                    showQuickView(mapData.product_hashid);
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: mapData.message || 'Failed to load product details'
-                    });
-                }
-            } catch (error) {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Network error. Please try again.'
-                });
-            }
         }
 
         // Update Cart Count

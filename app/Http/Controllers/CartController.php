@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DropshippingProduct;
 use App\Models\Product;
 use App\Models\Cart;
-use App\Services\DropshippingLocalProductService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -60,29 +58,8 @@ class CartController extends Controller
         if (!is_array($attributes)) {
             $attributes = [];
         }
-        $dropshippingId = $request->input('dropshipping_product_id');
-        $product = null;
 
-        if ($dropshippingId) {
-            $dropshippingProduct = DropshippingProduct::find($dropshippingId);
-            if (!$dropshippingProduct) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid dropshipping product.'
-                ], 404);
-            }
-
-            try {
-                $product = (new DropshippingLocalProductService())->ensureLocalProduct($dropshippingProduct);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ], 400);
-            }
-        } else {
-            $product = Product::findByHashid($request->product_id);
-        }
+        $product = Product::findByHashid($request->product_id);
 
         $attributePairs = $product?->attribute_pairs ?? [];
         // Only allow logged-in users to add to cart
@@ -96,17 +73,9 @@ class CartController extends Controller
 
 
         $request->validate([
-            'product_id' => 'nullable',
-            'dropshipping_product_id' => 'nullable',
+            'product_id' => 'required',
             'quantity' => 'required|integer|min:1'
         ]);
-
-        if (!$dropshippingId && !$request->product_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid product.'
-            ], 404);
-        }
 
         if (!$product) {
             return response()->json([
@@ -362,39 +331,5 @@ class CartController extends Controller
             'total' => $total,
             'cart_count' => $totalItems
         ]);
-    }
-
-    /**
-     * Map dropshipping product to local product (for quick view)
-     */
-    public function mapDropshippingToLocal(Request $request)
-    {
-        $request->validate([
-            'dropshipping_product_id' => 'required|integer'
-        ]);
-
-        $dropshippingProduct = DropshippingProduct::find($request->dropshipping_product_id);
-
-        if (!$dropshippingProduct) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dropshipping product not found.'
-            ], 404);
-        }
-
-        try {
-            $localProduct = (new DropshippingLocalProductService())->ensureLocalProduct($dropshippingProduct);
-
-            return response()->json([
-                'success' => true,
-                'product_hashid' => $localProduct->hashid,
-                'message' => 'Product mapped successfully.'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
-        }
     }
 }

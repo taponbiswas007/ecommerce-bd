@@ -69,9 +69,6 @@ Route::post('/cart/update/{hashid}', [CartController::class, 'update'])->name('c
 Route::post('/cart/remove/{hashid}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
-// Dropshipping Routes
-Route::post('/dropshipping/map-local-product', [CartController::class, 'mapDropshippingToLocal'])->name('dropshipping.map-local');
-
 // Product Reviews (Public viewing, authenticated posting)
 Route::get('/products/{product}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
@@ -274,44 +271,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-
-    // Dropshipping Management
-    Route::prefix('dropshipping')->name('dropshipping.')->group(function () {
-        // Settings
-        Route::get('/settings', [\App\Http\Controllers\Admin\DropshippingSettingController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [\App\Http\Controllers\Admin\DropshippingSettingController::class, 'update'])->name('settings.update');
-        Route::post('/settings/test-connection', [\App\Http\Controllers\Admin\DropshippingSettingController::class, 'testConnection'])->name('settings.test-connection');
-
-        // Dropshipping Products
-        Route::prefix('products')->name('products.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'index'])->name('index');
-            Route::get('/create', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'create'])->name('create');
-            Route::post('/search', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'search'])->name('search');
-            Route::post('/import', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'import'])->name('import');
-            Route::post('/bulk-update', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'bulkUpdate'])->name('bulk-update');
-            Route::get('/{product}', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'show'])->name('show');
-            Route::get('/{product}/edit', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'edit'])->name('edit');
-            Route::put('/{product}', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'update'])->name('update');
-            Route::delete('/{product}', [\App\Http\Controllers\Admin\DropshippingProductController::class, 'destroy'])->name('destroy');
-        });
-
-        // Dropshipping Orders
-        Route::prefix('orders')->name('orders.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'index'])->name('index');
-            Route::get('/create', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'create'])->name('create');
-            Route::post('/submit', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'submit'])->name('submit');
-            Route::post('/bulk-sync', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'bulkSync'])->name('bulk-sync');
-            Route::get('/{dropshippingOrder}', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'show'])->name('show');
-            Route::get('/{dropshippingOrder}/tracking', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'tracking'])->name('tracking');
-            Route::get('/{dropshippingOrder}/sync-status', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'syncStatus'])->name('sync-status');
-            Route::post('/{dropshippingOrder}/cancel', [\App\Http\Controllers\Admin\DropshippingOrderController::class, 'cancel'])->name('cancel');
-        });
-    });
-
-    // API routes for Dropshipping
-    Route::prefix('api')->name('api.')->group(function () {
-        Route::get('/dropshipping-stats', [\App\Http\Controllers\Admin\DropshippingSettingController::class, 'getStats'])->name('dropshipping-stats');
-    });
 });
 
 /*
