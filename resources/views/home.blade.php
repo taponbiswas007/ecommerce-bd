@@ -468,14 +468,18 @@
         }
 
         .shopby-category-section {
-            background: rgba(0, 0, 0, 0.1);
+            /* background: rgba(0, 0, 0, 0.1); */
             margin: 20px 0;
         }
 
         /* featured cards area */
         .featuredProducts-section {
-            background: rgba(0, 0, 0, 0.1);
+            /* background: rgba(0, 0, 0, 0.1); */
             margin: 20px 0;
+        }
+
+        .featuredProducts-section:nth-child(even) {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         /* Category Cards */
