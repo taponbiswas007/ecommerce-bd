@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->string('status')->default('active'); // active, closed
+            $table->string('status', 20)->default('active'); // active, closed
             $table->timestamp('last_message_at')->nullable();
             $table->timestamps();
 
