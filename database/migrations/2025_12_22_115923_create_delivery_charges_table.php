@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('delivery_charges', function (Blueprint $table) {
             $table->id();
-            $table->string('district', 100);
-            $table->string('upazila', 100);
+            $table->string('district', 50);
+            $table->string('upazila', 50);
             $table->decimal('charge', 10, 2);
             $table->integer('estimated_days')->default(3);
             $table->boolean('is_active')->default(true);

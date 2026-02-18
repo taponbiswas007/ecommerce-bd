@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('shop_to_transport_rates', function (Blueprint $table) {
             $table->id();
-            $table->string('package_type', 50); // e.g., "Cartoon", "Roll", "Loose"
-            $table->string('district', 100)->nullable();
-            $table->string('upazila', 100)->nullable();
+            $table->string('package_type', 30); // e.g., "Cartoon", "Roll", "Loose"
+            $table->string('district', 50)->nullable();
+            $table->string('upazila', 50)->nullable();
             $table->decimal('rate', 12, 2); // cost per package
             $table->boolean('is_active')->default(true);
             $table->timestamps();
