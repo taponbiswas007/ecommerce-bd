@@ -1,0 +1,78 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Create release artifact
+        run: |
+          tar -czf release.tgz \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=storage \
+            --exclude=.env \
+            .
+
+      - name: Upload deploy script
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "scripts/zero_downtime_deploy.sh"
+          target: "${{ secrets.APP_PATH }}"
+
+      - name: Upload release artifact
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "release.tgz"
+          target: "${{ secrets.APP_PATH }}/artifacts"
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            chmod +x ${{ secrets.APP_PATH }}/zero_downtime_deploy.sh
+            mkdir -p ${{ secrets.APP_PATH }}/artifacts
+            ${{ secrets.APP_PATH }}/zero_downtime_deploy.sh \
+              ${{ secrets.APP_PATH }} \
+              ${{ secrets.APP_PATH }}/artifacts/release.tgz \
+              ${{ secrets.KEEP_RELEASES || 5 }}
