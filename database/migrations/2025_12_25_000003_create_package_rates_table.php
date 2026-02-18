@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('package_rates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transport_company_id')->constrained('transport_companies')->onDelete('cascade');
-            $table->string('package_type'); // e.g., "Cartoon", "Roll", "Loose"
-            $table->string('district')->nullable();
-            $table->string('upazila')->nullable();
+            $table->string('package_type', 50); // e.g., "Cartoon", "Roll", "Loose"
+            $table->string('district', 100)->nullable();
+            $table->string('upazila', 100)->nullable();
             $table->decimal('rate', 12, 2)->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -14,7 +14,7 @@ return new class extends Migration {
         // For MySQL, you need to use a generated column for JSON uniqueness
         Schema::table('carts', function (Blueprint $table) {
             // Add a generated column for normalized attributes (as string)
-            $table->string('attributes_hash')->nullable()->after('attributes');
+            $table->string('attributes_hash', 32)->nullable()->after('attributes');
         });
 
         // Fill the new column for existing rows
