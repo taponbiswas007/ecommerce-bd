@@ -474,13 +474,11 @@
 
         /* featured cards area */
         .featuredProducts-section {
-            /* background: rgba(0, 0, 0, 0.1); */
+            background: rgba(0, 0, 0, 0.1);
             margin: 20px 0;
         }
 
-        .featuredProducts-section:nth-child(even) {
-            background: rgba(0, 0, 0, 0.05);
-        }
+
 
         /* Category Cards */
         .category-slider .swiper-slide {
@@ -786,9 +784,13 @@
 
         /* Category Wise Sections */
         .category-wise-section {
-            background: rgba(0, 0, 0, 0.1);
+            /* background: rgba(0, 0, 0, 0.1); */
             margin: 30px 0;
             padding: 30px 0;
+        }
+
+        .category-wise-section:nth-child(odd) {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         /* Best Deals */
