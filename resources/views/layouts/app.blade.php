@@ -1918,17 +1918,18 @@
         <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
         <script>
             // Initialize Laravel Echo for real-time broadcasting
-            if (typeof Pusher !== 'undefined' && '{{ config('
-                                    broadcasting.default ') }}' ===
+            if (typeof Pusher !== 'undefined' &&
+                '{{ config('
+                                                                                                                    broadcasting.default ') }}' ===
                 'pusher') {
                 window.Pusher = Pusher;
 
                 window.Echo = new Echo({
                     broadcaster: 'pusher',
                     key: '{{ config('
-                                                        broadcasting.connections.pusher.key ') }}',
+                                                                                                                                                            broadcasting.connections.pusher.key ') }}',
                     cluster: '{{ config('
-                                                        broadcasting.connections.pusher.options.cluster ') }}',
+                                                                                                                                                            broadcasting.connections.pusher.options.cluster ') }}',
                     forceTLS: true,
                     auth: {
                         headers: {
@@ -2079,14 +2080,10 @@
         // Global auth enforcement across all pages
         (function() {
             const IS_AUTH = {
-                {
-                    auth() - > check() ? 'true' : 'false'
-                }
+                auth: {{ auth()->check() ? 'true' : 'false' }}
             };
-            const wishlistUrl = '{{ route('
-                                    wishlist.index ') }}';
-            const cartUrl = '{{ route('
-                                    cart.index ') }}';
+            const wishlistUrl = '{{ route('wishlist.index') }}';
+            const cartUrl = '{{ route('cart.index') }}';
 
             function requireLoginPrompt() {
                 const loginModalEl = document.getElementById('loginModal');
@@ -2134,7 +2131,7 @@
         // Add to cart function (use this in all your blade files)
         function addToCart(productId, quantity = 1, attributes = {}) {
             fetch('{{ route('
-                                            cart.add ') }}', {
+                                                                                                        cart.add ') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2200,8 +2197,10 @@
                 </div>
             `;
 
-            fetch('{{ route('
-                                            cart.data ') }}')
+            fetch(
+                    '{{ route('
+                                                                                                                        cart.data ') }}'
+                    )
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.items.length > 0) {
