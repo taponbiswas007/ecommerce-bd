@@ -1900,9 +1900,7 @@
     <main>
         @yield('content')
     </main>
-
     @include('layouts.footer')
-
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Swiper JS -->
@@ -1920,13 +1918,17 @@
         <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
         <script>
             // Initialize Laravel Echo for real-time broadcasting
-            if (typeof Pusher !== 'undefined' && '{{ config('broadcasting.default') }}' === 'pusher') {
+            if (typeof Pusher !== 'undefined' && '{{ config('
+                                    broadcasting.default ') }}' ===
+                'pusher') {
                 window.Pusher = Pusher;
 
                 window.Echo = new Echo({
                     broadcaster: 'pusher',
-                    key: '{{ config('broadcasting.connections.pusher.key') }}',
-                    cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                    key: '{{ config('
+                                                        broadcasting.connections.pusher.key ') }}',
+                    cluster: '{{ config('
+                                                        broadcasting.connections.pusher.options.cluster ') }}',
                     forceTLS: true,
                     auth: {
                         headers: {
@@ -2076,9 +2078,15 @@
     <script>
         // Global auth enforcement across all pages
         (function() {
-            const IS_AUTH = {{ auth()->check() ? 'true' : 'false' }};
-            const wishlistUrl = '{{ route('wishlist.index') }}';
-            const cartUrl = '{{ route('cart.index') }}';
+            const IS_AUTH = {
+                {
+                    auth() - > check() ? 'true' : 'false'
+                }
+            };
+            const wishlistUrl = '{{ route('
+                                    wishlist.index ') }}';
+            const cartUrl = '{{ route('
+                                    cart.index ') }}';
 
             function requireLoginPrompt() {
                 const loginModalEl = document.getElementById('loginModal');
@@ -2125,7 +2133,8 @@
         // Handle add to cart with login check
         // Add to cart function (use this in all your blade files)
         function addToCart(productId, quantity = 1, attributes = {}) {
-            fetch('{{ route('cart.add') }}', {
+            fetch('{{ route('
+                                            cart.add ') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2191,7 +2200,8 @@
                 </div>
             `;
 
-            fetch('{{ route('cart.data') }}')
+            fetch('{{ route('
+                                            cart.data ') }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.items.length > 0) {
@@ -2395,7 +2405,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Fetch cart count if user is logged in
             @if (auth()->check() && auth()->user()->role === 'customer')
-                updateCartCount({{ auth()->user()->cart()->count() }});
+                updateCartCount({
+                    {
+                        auth() - > user() - > cart() - > count()
+                    }
+                });
             @endif
         });
     </script>
@@ -3107,7 +3121,11 @@
                     return;
                 }
 
-                const currentUserId = {{ auth()->id() }};
+                const currentUserId = {
+                    {
+                        auth() - > id()
+                    }
+                };
 
                 if (chatMessages.length === 0) {
                     container.innerHTML = `
