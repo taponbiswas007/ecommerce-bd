@@ -2193,7 +2193,7 @@
             `;
 
             fetch(
-                    '{{ route('cart.data ') }}'
+                    '{{ route('cart.data') }}'
                 )
                 .then(response => response.json())
                 .then(data => {
