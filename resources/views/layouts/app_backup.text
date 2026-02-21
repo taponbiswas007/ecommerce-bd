@@ -1257,14 +1257,14 @@
                     <div class="marquee-content">
 
                         @php
-                            $ads = \App\Models\Ad::all();
+                        $ads = \App\Models\Ad::all();
                         @endphp
 
                         @foreach ($ads as $ad)
-                            <span class="me-4">
-                                <span class="offer-badge">{{ $ad['badge'] }}</span>
-                                <span class="text-white">{{ $ad['text'] }}</span>
-                            </span>
+                        <span class="me-4">
+                            <span class="offer-badge">{{ $ad['badge'] }}</span>
+                            <span class="text-white">{{ $ad['text'] }}</span>
+                        </span>
                         @endforeach
                     </div>
                 </div>
@@ -1366,13 +1366,13 @@
                 <div class="col-lg-2 col-md-3 col-2">
                     <a href="{{ route('home') }}" class="logo d-flex align-items-center">
                         @php
-                            $companyLogo = \App\Models\User::whereNotNull('company_logo')->value('company_logo');
+                        $companyLogo = \App\Models\User::whereNotNull('company_logo')->value('company_logo');
                         @endphp
                         @if ($companyLogo)
-                            <img class="img-fluid" src="{{ asset('storage/' . $companyLogo) }}" alt="Company Logo"
-                                height="50">
+                        <img class="img-fluid" src="{{ asset('storage/' . $companyLogo) }}" alt="Company Logo"
+                            height="50">
                         @else
-                            <img class="img-fluid" src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
+                        <img class="img-fluid" src="{{ asset('logo.webp') }}" alt="Ecommerce BD" height="50">
                         @endif
                     </a>
                 </div>
@@ -1404,12 +1404,12 @@
                             class="header-icon wishlistIcon position-relative {{ request()->routeIs('wishlist.index') ? 'active' : '' }}">
                             <i class="far fa-heart"></i>
                             @auth
-                                @php
-                                    $wishlistCount = auth()->user()->wishlists()->count();
-                                @endphp
-                                @if ($wishlistCount > 0)
-                                    <span class="wishlist-count">{{ $wishlistCount }}</span>
-                                @endif
+                            @php
+                            $wishlistCount = auth()->user()->wishlists()->count();
+                            @endphp
+                            @if ($wishlistCount > 0)
+                            <span class="wishlist-count">{{ $wishlistCount }}</span>
+                            @endif
                             @endauth
                         </a>
 
@@ -1418,77 +1418,77 @@
                             class="header-icon cartIcon position-relative {{ request()->routeIs('cart.index') ? 'active' : '' }}">
                             <i class="fas fa-shopping-cart"></i>
                             @php
-                                $cartCount = \App\Models\Cart::count();
+                            $cartCount = \App\Models\Cart::count();
                             @endphp
                             @if ($cartCount > 0)
-                                <span class="cart-count">{{ $cartCount }}</span>
+                            <span class="cart-count">{{ $cartCount }}</span>
                             @endif
                         </a>
 
                         <!-- User Account -->
                         @auth
-                            <div class="dropdown profileArea">
-                                <a href="#"
-                                    class="d-flex align-items-center text-decoration-none {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="header-icon">
-                                        <i class="fas fa-user-circle"></i>
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                                    @if (auth()->user()->role === 'admin')
-                                        <li>
-                                            <a class="dropdown-item dropdown-item-custom"
-                                                href="{{ route('admin.dashboard') }}">
-                                                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                    @endif
-                                    <li>
-                                        <a class="dropdown-item dropdown-item-custom" href="{{ route('dashboard') }}">
-                                            <i class="fas fa-user me-2"></i>My Account
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item dropdown-item-custom" href="{{ route('orders.index') }}">
-                                            <i class="fas fa-box me-2"></i>My Orders
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item dropdown-item-custom"
-                                            href="{{ route('wishlist.index') }}">
-                                            <i class="fas fa-heart me-2"></i>Wishlist
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item dropdown-item-custom">
-                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
+                        <div class="dropdown profileArea">
+                            <a href="#"
+                                class="d-flex align-items-center text-decoration-none {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="header-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                                @if (auth()->user()->role === 'admin')
+                                <li>
+                                    <a class="dropdown-item dropdown-item-custom"
+                                        href="{{ route('admin.dashboard') }}">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                @endif
+                                <li>
+                                    <a class="dropdown-item dropdown-item-custom" href="{{ route('dashboard') }}">
+                                        <i class="fas fa-user me-2"></i>My Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item dropdown-item-custom" href="{{ route('orders.index') }}">
+                                        <i class="fas fa-box me-2"></i>My Orders
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item dropdown-item-custom"
+                                        href="{{ route('wishlist.index') }}">
+                                        <i class="fas fa-heart me-2"></i>Wishlist
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item dropdown-item-custom">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                         @else
-                            <!-- Login and Register Buttons with Modals -->
-                            <div class="d-flex gap-2 authArea">
-                                <button type="button" class="btn btn-sm btn-outline-primary d-none "
-                                    data-bs-toggle="modal" data-bs-target="#loginModal">
-                                    <i class="fas fa-sign-in-alt me-1"></i> <span
-                                        class="d-md-inline-block d-none">Login</span>
-                                </button>
-                                <a type="button" class=" authLoginBtn header-icon " data-bs-toggle="modal"
-                                    data-bs-target="#registerModal">
-                                    <i class="fas fa-user-plus"></i>
-                                </a>
-                            </div>
+                        <!-- Login and Register Buttons with Modals -->
+                        <div class="d-flex gap-2 authArea">
+                            <button type="button" class="btn btn-sm btn-outline-primary d-none "
+                                data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="fas fa-sign-in-alt me-1"></i> <span
+                                    class="d-md-inline-block d-none">Login</span>
+                            </button>
+                            <a type="button" class=" authLoginBtn header-icon " data-bs-toggle="modal"
+                                data-bs-target="#registerModal">
+                                <i class="fas fa-user-plus"></i>
+                            </a>
+                        </div>
                         @endauth
 
                         <!-- Mobile Menu Toggle -->
@@ -1528,35 +1528,35 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-custom">
                         @php
-                            $categories = \App\Models\Category::whereNull('parent_id')
-                                ->where('is_active', true)
-                                ->with('children')
-                                ->limit(8)
-                                ->get();
+                        $categories = \App\Models\Category::whereNull('parent_id')
+                        ->where('is_active', true)
+                        ->with('children')
+                        ->limit(8)
+                        ->get();
                         @endphp
 
                         @foreach ($categories as $category)
-                            <li>
-                                <a class="dropdown-item dropdown-item-custom"
-                                    href="{{ route('category.show', $category->slug) }}">
-                                    <i class="fas fa-folder me-2"></i> {{ $category->name }}
-                                </a>
-                            </li>
-                            @if ($category->children->isNotEmpty())
-                                @foreach ($category->children as $child)
-                                    <li>
-                                        <a class="dropdown-item dropdown-item-custom ps-4"
-                                            href="{{ route('category.show', $child->slug) }}">
-                                            <i class="fas fa-angle-right me-2"></i> {{ $child->name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            @endif
-                            @if (!$loop->last)
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                            @endif
+                        <li>
+                            <a class="dropdown-item dropdown-item-custom"
+                                href="{{ route('category.show', $category->slug) }}">
+                                <i class="fas fa-folder me-2"></i> {{ $category->name }}
+                            </a>
+                        </li>
+                        @if ($category->children->isNotEmpty())
+                        @foreach ($category->children as $child)
+                        <li>
+                            <a class="dropdown-item dropdown-item-custom ps-4"
+                                href="{{ route('category.show', $child->slug) }}">
+                                <i class="fas fa-angle-right me-2"></i> {{ $child->name }}
+                            </a>
+                        </li>
+                        @endforeach
+                        @endif
+                        @if (!$loop->last)
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
                         @endforeach
 
                         <li>
@@ -1628,35 +1628,35 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-custom">
                         @php
-                            $categories = \App\Models\Category::whereNull('parent_id')
-                                ->where('is_active', true)
-                                ->with('children')
-                                ->limit(8)
-                                ->get();
+                        $categories = \App\Models\Category::whereNull('parent_id')
+                        ->where('is_active', true)
+                        ->with('children')
+                        ->limit(8)
+                        ->get();
                         @endphp
 
                         @foreach ($categories as $category)
-                            <li>
-                                <a class="dropdown-item dropdown-item-custom"
-                                    href="{{ route('category.show', $category->slug) }}">
-                                    <i class="fas fa-folder me-2"></i> {{ $category->name }}
-                                </a>
-                            </li>
-                            @if ($category->children->isNotEmpty())
-                                @foreach ($category->children as $child)
-                                    <li>
-                                        <a class="dropdown-item dropdown-item-custom ps-4"
-                                            href="{{ route('category.show', $child->slug) }}">
-                                            <i class="fas fa-angle-right me-2"></i> {{ $child->name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            @endif
-                            @if (!$loop->last)
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                            @endif
+                        <li>
+                            <a class="dropdown-item dropdown-item-custom"
+                                href="{{ route('category.show', $category->slug) }}">
+                                <i class="fas fa-folder me-2"></i> {{ $category->name }}
+                            </a>
+                        </li>
+                        @if ($category->children->isNotEmpty())
+                        @foreach ($category->children as $child)
+                        <li>
+                            <a class="dropdown-item dropdown-item-custom ps-4"
+                                href="{{ route('category.show', $child->slug) }}">
+                                <i class="fas fa-angle-right me-2"></i> {{ $child->name }}
+                            </a>
+                        </li>
+                        @endforeach
+                        @endif
+                        @if (!$loop->last)
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @endif
                         @endforeach
 
                         <li>
@@ -1723,7 +1723,7 @@
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                 id="login_email" name="email" value="{{ old('email') }}" required autofocus>
                             @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -1732,7 +1732,7 @@
                             <input type="password" class="form-control @error('password') is-invalid @enderror"
                                 id="login_password" name="password" required>
                             @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -1799,7 +1799,7 @@
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
                                     id="name" name="name" value="{{ old('name') }}" required>
                                 @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -1808,7 +1808,7 @@
                                 <input type="tel" class="form-control @error('phone') is-invalid @enderror"
                                     id="phone" name="phone" value="{{ old('phone') }}">
                                 @error('phone')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -1818,7 +1818,7 @@
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                 id="email" name="email" value="{{ old('email') }}" required>
                             @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -1828,7 +1828,7 @@
                                 <input type="password" class="form-control @error('password') is-invalid @enderror"
                                     id="password" name="password" required>
                                 @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -1900,9 +1900,7 @@
     <main>
         @yield('content')
     </main>
-
     @include('layouts.footer')
-
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Swiper JS -->
@@ -1916,105 +1914,108 @@
 
     <!-- Pusher & Laravel Echo for Real-Time Chat -->
     @auth
-        <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
-        <script>
-            // Initialize Laravel Echo for real-time broadcasting
-            if (typeof Pusher !== 'undefined' && '{{ config('broadcasting.default') }}' === 'pusher') {
-                window.Pusher = Pusher;
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
+    <script>
+        // Initialize Laravel Echo for real-time broadcasting
+        if (typeof Pusher !== 'undefined' && '{{ config('
+            broadcasting.default ') }}' === 'pusher') {
+            window.Pusher = Pusher;
 
-                window.Echo = new Echo({
-                    broadcaster: 'pusher',
-                    key: '{{ config('broadcasting.connections.pusher.key') }}',
-                    cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
-                    forceTLS: true,
-                    auth: {
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
+            window.Echo = new Echo({
+                broadcaster: 'pusher',
+                key: '{{ config('
+                broadcasting.connections.pusher.key ') }}',
+                cluster: '{{ config('
+                broadcasting.connections.pusher.options.cluster ') }}',
+                forceTLS: true,
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
-                });
+                }
+            });
 
-                // Function to setup chat listener after chatId is available
-                window.setupChatListener = function(chatId) {
-                    if (!chatId || !window.Echo) {
-                        return;
-                    }
+            // Function to setup chat listener after chatId is available
+            window.setupChatListener = function(chatId) {
+                if (!chatId || !window.Echo) {
+                    return;
+                }
 
-                    // Leave previous channel if exists
-                    if (window.activeChatChannel) {
-                        window.Echo.leave(window.activeChatChannel);
-                    }
+                // Leave previous channel if exists
+                if (window.activeChatChannel) {
+                    window.Echo.leave(window.activeChatChannel);
+                }
 
-                    // Setup new chat channel listener
-                    window.activeChatChannel = `chat.${chatId}`;
+                // Setup new chat channel listener
+                window.activeChatChannel = `chat.${chatId}`;
 
-                    Echo.private(window.activeChatChannel)
-                        .listen('.message.sent', (e) => {
-                            // Check if message already exists
-                            const exists = chatMessages.some(m => m.id === e.id);
-                            if (!exists) {
-                                // Add message to chat
-                                chatMessages.push({
-                                    id: e.id,
-                                    chat_id: e.chat_id,
-                                    user_id: e.user_id,
-                                    message: e.message,
-                                    created_at: e.created_at || new Date().toISOString(),
-                                    user: {
-                                        name: e.user_name
-                                    }
-                                });
-
-                                // Render messages
-                                renderMessages();
-                            }
-
-                            // Update unread count
-                            fetchUnreadCount();
-
-                            // Play notification sound
-                            playNotificationSound();
-
-                            // Show browser notification if available
-                            if (Notification.permission === 'granted' && !isDialogOpen) {
-                                new Notification('New Message', {
-                                    body: e.message,
-                                    icon: '/favicon.ico'
-                                });
-                            }
-                        });
-                };
-
-                // Listen for user-specific notifications (fallback for all chats)
-                Echo.private(`user.{{ auth()->id() }}`)
+                Echo.private(window.activeChatChannel)
                     .listen('.message.sent', (e) => {
-                        // If this is the current active chat, add message to UI
-                        if (chatId && e.chat_id === chatId) {
-                            // Check if message already exists (avoid duplicates)
-                            const exists = chatMessages.some(m => m.id === e.id);
-                            if (!exists) {
-                                chatMessages.push({
-                                    id: e.id,
-                                    chat_id: e.chat_id,
-                                    user_id: e.user_id,
-                                    message: e.message,
-                                    created_at: e.created_at || new Date().toISOString(),
-                                    user: {
-                                        name: e.user_name
-                                    }
-                                });
+                        // Check if message already exists
+                        const exists = chatMessages.some(m => m.id === e.id);
+                        if (!exists) {
+                            // Add message to chat
+                            chatMessages.push({
+                                id: e.id,
+                                chat_id: e.chat_id,
+                                user_id: e.user_id,
+                                message: e.message,
+                                created_at: e.created_at || new Date().toISOString(),
+                                user: {
+                                    name: e.user_name
+                                }
+                            });
 
-                                // Render messages
-                                renderMessages();
-                            }
+                            // Render messages
+                            renderMessages();
                         }
 
-                        // Always update unread count
+                        // Update unread count
                         fetchUnreadCount();
+
+                        // Play notification sound
+                        playNotificationSound();
+
+                        // Show browser notification if available
+                        if (Notification.permission === 'granted' && !isDialogOpen) {
+                            new Notification('New Message', {
+                                body: e.message,
+                                icon: '/favicon.ico'
+                            });
+                        }
                     });
-            }
-        </script>
+            };
+
+            // Listen for user-specific notifications (fallback for all chats)
+            Echo.private(`user.{{ auth()->id() }}`)
+                .listen('.message.sent', (e) => {
+                    // If this is the current active chat, add message to UI
+                    if (chatId && e.chat_id === chatId) {
+                        // Check if message already exists (avoid duplicates)
+                        const exists = chatMessages.some(m => m.id === e.id);
+                        if (!exists) {
+                            chatMessages.push({
+                                id: e.id,
+                                chat_id: e.chat_id,
+                                user_id: e.user_id,
+                                message: e.message,
+                                created_at: e.created_at || new Date().toISOString(),
+                                user: {
+                                    name: e.user_name
+                                }
+                            });
+
+                            // Render messages
+                            renderMessages();
+                        }
+                    }
+
+                    // Always update unread count
+                    fetchUnreadCount();
+                });
+        }
+    </script>
     @endauth
 
     @yield('scripts')
@@ -2076,9 +2077,15 @@
     <script>
         // Global auth enforcement across all pages
         (function() {
-            const IS_AUTH = {{ auth()->check() ? 'true' : 'false' }};
-            const wishlistUrl = '{{ route('wishlist.index') }}';
-            const cartUrl = '{{ route('cart.index') }}';
+            const IS_AUTH = {
+                {
+                    auth() - > check() ? 'true' : 'false'
+                }
+            };
+            const wishlistUrl = '{{ route('
+            wishlist.index ') }}';
+            const cartUrl = '{{ route('
+            cart.index ') }}';
 
             function requireLoginPrompt() {
                 const loginModalEl = document.getElementById('loginModal');
@@ -2125,18 +2132,19 @@
         // Handle add to cart with login check
         // Add to cart function (use this in all your blade files)
         function addToCart(productId, quantity = 1, attributes = {}) {
-            fetch('{{ route('cart.add') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        quantity: quantity,
-                        attributes: attributes
+            fetch('{{ route('
+                    cart.add ') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            quantity: quantity,
+                            attributes: attributes
+                        })
                     })
-                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -2191,7 +2199,8 @@
                 </div>
             `;
 
-            fetch('{{ route('cart.data') }}')
+            fetch('{{ route('
+                    cart.data ') }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.items.length > 0) {
@@ -2394,8 +2403,12 @@
         // Initialize cart count on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Fetch cart count if user is logged in
-            @if (auth()->check() && auth()->user()->role === 'customer')
-                updateCartCount({{ auth()->user()->cart()->count() }});
+            @if(auth() - > check() && auth() - > user() - > role === 'customer')
+            updateCartCount({
+                {
+                    auth() - > user() - > cart() - > count()
+                }
+            });
             @endif
         });
     </script>
@@ -2816,14 +2829,14 @@
             }
 
             // Show modal on authentication errors
-            @if ($errors->has('email') || $errors->has('password'))
-                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
+            @if($errors - > has('email') || $errors - > has('password'))
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
             @endif
 
-            @if ($errors->has('name') || $errors->has('email') || $errors->has('password'))
-                const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
-                registerModal.show();
+            @if($errors - > has('name') || $errors - > has('email') || $errors - > has('password'))
+            const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+            registerModal.show();
             @endif
         });
     </script>
@@ -2850,21 +2863,23 @@
 
     <!-- Flash Messages -->
     @if (session('success'))
-        <script>
-            Toast.fire({
-                icon: 'success',
-                title: '{{ session('success') }}'
-            });
-        </script>
+    <script>
+        Toast.fire({
+            icon: 'success',
+            title: '{{ session('
+            success ') }}'
+        });
+    </script>
     @endif
 
     @if (session('error'))
-        <script>
-            Toast.fire({
-                icon: 'error',
-                title: '{{ session('error') }}'
-            });
-        </script>
+    <script>
+        Toast.fire({
+            icon: 'error',
+            title: '{{ session('
+            error ') }}'
+        });
+    </script>
     @endif
 
     <script>
@@ -2918,216 +2933,220 @@
 
     <!-- Chat Widget (Only for authenticated users) -->
     @auth
-        <div id="chatWidget" class="chat-widget">
-            <!-- Chat Button -->
-            <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
-                <i class="fas fa-comments"></i>
-                <span class="chat-unread-badge" id="chatUnreadBadge" style="display: none;">0</span>
-            </button>
+    <div id="chatWidget" class="chat-widget">
+        <!-- Chat Button -->
+        <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>
+            <span class="chat-unread-badge" id="chatUnreadBadge" style="display: none;">0</span>
+        </button>
 
-            <!-- Chat Dialog -->
-            <div class="chat-dialog" id="chatDialog" style="display: none;">
-                <div class="chat-header">
-                    <div class="chat-header-title">
-                        <i class="fas fa-headset"></i>
-                        <span>Customer Support</span>
-                    </div>
-                    <button class="chat-close-btn" onclick="toggleChat()">
-                        <i class="fas fa-times"></i>
-                    </button>
+        <!-- Chat Dialog -->
+        <div class="chat-dialog" id="chatDialog" style="display: none;">
+            <div class="chat-header">
+                <div class="chat-header-title">
+                    <i class="fas fa-headset"></i>
+                    <span>Customer Support</span>
                 </div>
+                <button class="chat-close-btn" onclick="toggleChat()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
-                <div class="chat-body" id="chatBody">
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="text-center py-4">
-                            <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
-                        </div>
+            <div class="chat-body" id="chatBody">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="text-center py-4">
+                        <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
                     </div>
-                </div>
-
-                <div class="chat-footer">
-                    <form id="chatMessageForm" onsubmit="sendMessage(event)">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="chatMessageInput"
-                                placeholder="Type your message..." required maxlength="5000">
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
+
+            <div class="chat-footer">
+                <form id="chatMessageForm" onsubmit="sendMessage(event)">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="chatMessageInput"
+                            placeholder="Type your message..." required maxlength="5000">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+    </div>
 
 
 
-        <!-- Chat JavaScript -->
-        <script>
-            let chatId = null;
-            let chatMessages = [];
-            let isDialogOpen = false;
+    <!-- Chat JavaScript -->
+    <script>
+        let chatId = null;
+        let chatMessages = [];
+        let isDialogOpen = false;
 
-            // Global functions (accessible from onclick handlers)
-            function toggleChat() {
-                const dialog = document.getElementById('chatDialog');
-                const btn = document.getElementById('chatToggleBtn');
+        // Global functions (accessible from onclick handlers)
+        function toggleChat() {
+            const dialog = document.getElementById('chatDialog');
+            const btn = document.getElementById('chatToggleBtn');
 
-                isDialogOpen = !isDialogOpen;
+            isDialogOpen = !isDialogOpen;
 
-                if (isDialogOpen) {
-                    dialog.style.display = 'flex';
-                    btn.style.display = 'none';
-                    if (chatId) {
-                        loadMessages();
-                    }
-                } else {
-                    dialog.style.display = 'none';
-                    btn.style.display = 'flex';
+            if (isDialogOpen) {
+                dialog.style.display = 'flex';
+                btn.style.display = 'none';
+                if (chatId) {
+                    loadMessages();
                 }
+            } else {
+                dialog.style.display = 'none';
+                btn.style.display = 'flex';
+            }
+        }
+
+        async function sendMessage(event) {
+            event.preventDefault();
+
+            if (!chatId) {
+                await initializeChat();
             }
 
-            async function sendMessage(event) {
-                event.preventDefault();
+            const input = document.getElementById('chatMessageInput');
+            const message = input.value.trim();
 
-                if (!chatId) {
-                    await initializeChat();
+            if (!message) return;
+
+            try {
+                const response = await fetch(`/chat/${chatId}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        message
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Ensure created_at field exists
+                    if (!data.message.created_at) {
+                        data.message.created_at = new Date().toISOString();
+                    }
+                    chatMessages.push(data.message);
+                    renderMessages();
+                    input.value = '';
                 }
-
-                const input = document.getElementById('chatMessageInput');
-                const message = input.value.trim();
-
-                if (!message) return;
-
-                try {
-                    const response = await fetch(`/chat/${chatId}/send`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            message
-                        })
+            } catch (error) {
+                console.error('Error sending message:', error);
+                if (window.Toast) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Failed to send message'
                     });
+                }
+            }
+        }
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        // Ensure created_at field exists
-                        if (!data.message.created_at) {
-                            data.message.created_at = new Date().toISOString();
-                        }
-                        chatMessages.push(data.message);
-                        renderMessages();
-                        input.value = '';
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateUnreadBadge(count) {
+            const badge = document.getElementById('chatUnreadBadge');
+            if (count > 0) {
+                badge.textContent = count > 9 ? '9+' : count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function playNotificationSound() {
+            const audio = new Audio(
+                'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZizcIG2m98OScTgwOUKXh8LJnHAU7ktjxzn0wAy+Fzvjf'
+            );
+            audio.play().catch(e => console.log('Audio play failed:', e));
+        }
+
+        async function initializeChat() {
+            try {
+                const response = await fetch('/chat/get-or-create', {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
-                } catch (error) {
-                    console.error('Error sending message:', error);
-                    if (window.Toast) {
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'Failed to send message'
-                        });
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    chatId = data.chat.id;
+                    chatMessages = data.chat.messages || [];
+                    renderMessages();
+                    updateUnreadBadge(data.unread_count);
+
+                    // Setup real-time listener for this chat
+                    if (typeof window.setupChatListener === 'function') {
+                        window.setupChatListener(chatId);
                     }
                 }
+            } catch (error) {
+                console.error('Error initializing chat:', error);
             }
+        }
 
-            function escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
+        async function loadMessages() {
+            if (!chatId) return;
 
-            function updateUnreadBadge(count) {
-                const badge = document.getElementById('chatUnreadBadge');
-                if (count > 0) {
-                    badge.textContent = count > 9 ? '9+' : count;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            }
-
-            function playNotificationSound() {
-                const audio = new Audio(
-                    'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZizcIG2m98OScTgwOUKXh8LJnHAU7ktjxzn0wAy+Fzvjf'
-                );
-                audio.play().catch(e => console.log('Audio play failed:', e));
-            }
-
-            async function initializeChat() {
-                try {
-                    const response = await fetch('/chat/get-or-create', {
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        chatId = data.chat.id;
-                        chatMessages = data.chat.messages || [];
-                        renderMessages();
-                        updateUnreadBadge(data.unread_count);
-
-                        // Setup real-time listener for this chat
-                        if (typeof window.setupChatListener === 'function') {
-                            window.setupChatListener(chatId);
-                        }
+            try {
+                const response = await fetch(`/chat/${chatId}/messages`, {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
-                } catch (error) {
-                    console.error('Error initializing chat:', error);
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    chatMessages = data.messages;
+                    renderMessages();
+                    updateUnreadBadge(0);
                 }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('chatMessages');
+            if (!container) {
+                console.error('❌ Chat messages container not found!');
+                return;
             }
 
-            async function loadMessages() {
-                if (!chatId) return;
-
-                try {
-                    const response = await fetch(`/chat/${chatId}/messages`, {
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        chatMessages = data.messages;
-                        renderMessages();
-                        updateUnreadBadge(0);
-                    }
-                } catch (error) {
-                    console.error('Error loading messages:', error);
+            const currentUserId = {
+                {
+                    auth() - > id()
                 }
-            }
+            };
 
-            function renderMessages() {
-                const container = document.getElementById('chatMessages');
-                if (!container) {
-                    console.error('❌ Chat messages container not found!');
-                    return;
-                }
-
-                const currentUserId = {{ auth()->id() }};
-
-                if (chatMessages.length === 0) {
-                    container.innerHTML = `
+            if (chatMessages.length === 0) {
+                container.innerHTML = `
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-comments fa-2x mb-2"></i>
                         <p>No messages yet. Start a conversation!</p>
                     </div>
                 `;
-                    return;
-                }
+                return;
+            }
 
-                container.innerHTML = chatMessages.map(msg => {
-                    const isSent = msg.user_id === currentUserId;
-                    const initials = msg.user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                    const time = new Date(msg.created_at).toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+            container.innerHTML = chatMessages.map(msg => {
+                const isSent = msg.user_id === currentUserId;
+                const initials = msg.user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                const time = new Date(msg.created_at).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
 
-                    return `
+                return `
                     <div class="chat-message ${isSent ? 'sent' : ''}">
                         <div class="chat-message-avatar">${initials}</div>
                         <div class="chat-message-content">
@@ -3136,52 +3155,52 @@
                         </div>
                     </div>
                 `;
-                }).join('');
+            }).join('');
 
-                // Scroll the BODY container (not the messages container)
-                const chatBody = document.getElementById('chatBody');
-                if (chatBody) {
-                    // Force scroll immediately
+            // Scroll the BODY container (not the messages container)
+            const chatBody = document.getElementById('chatBody');
+            if (chatBody) {
+                // Force scroll immediately
+                chatBody.scrollTop = chatBody.scrollHeight;
+                // Also with slight delay for DOM render
+                setTimeout(() => {
                     chatBody.scrollTop = chatBody.scrollHeight;
-                    // Also with slight delay for DOM render
-                    setTimeout(() => {
-                        chatBody.scrollTop = chatBody.scrollHeight;
-                    }, 100);
-                    // Extra safety scroll
-                    setTimeout(() => {
-                        chatBody.scrollTop = chatBody.scrollHeight;
-                    }, 300);
-                } else {
-                    console.error('❌ chatBody container not found!');
-                }
+                }, 100);
+                // Extra safety scroll
+                setTimeout(() => {
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, 300);
+            } else {
+                console.error('❌ chatBody container not found!');
             }
+        }
 
-            async function fetchUnreadCount() {
-                try {
-                    const response = await fetch('/chat/unread-count', {
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        updateUnreadBadge(data.unread_count);
+        async function fetchUnreadCount() {
+            try {
+                const response = await fetch('/chat/unread-count', {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
-                } catch (error) {
-                    console.error('Error fetching unread count:', error);
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateUnreadBadge(data.unread_count);
                 }
+            } catch (error) {
+                console.error('Error fetching unread count:', error);
             }
+        }
 
-            // Initialize chat on page load
-            document.addEventListener('DOMContentLoaded', function() {
-                initializeChat();
-                fetchUnreadCount();
+        // Initialize chat on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChat();
+            fetchUnreadCount();
 
-                // Poll for new messages every 5 seconds (fallback)
-                setInterval(fetchUnreadCount, 5000);
-            });
-        </script>
+            // Poll for new messages every 5 seconds (fallback)
+            setInterval(fetchUnreadCount, 5000);
+        });
+    </script>
     @endauth
 
 </body>
