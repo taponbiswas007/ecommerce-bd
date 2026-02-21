@@ -1919,17 +1919,13 @@
         <script>
             // Initialize Laravel Echo for real-time broadcasting
             if (typeof Pusher !== 'undefined' &&
-                '{{ config('
-                                                                                                                    broadcasting.default ') }}' ===
-                'pusher') {
+                '{{ config('broadcasting.default') }}' === 'pusher') {
                 window.Pusher = Pusher;
 
                 window.Echo = new Echo({
                     broadcaster: 'pusher',
-                    key: '{{ config('
-                                                                                                                                                            broadcasting.connections.pusher.key ') }}',
-                    cluster: '{{ config('
-                                                                                                                                                            broadcasting.connections.pusher.options.cluster ') }}',
+                    key: '{{ config('broadcasting.connections.pusher.key ') }}',
+                    cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
                     forceTLS: true,
                     auth: {
                         headers: {
@@ -2130,8 +2126,7 @@
         // Handle add to cart with login check
         // Add to cart function (use this in all your blade files)
         function addToCart(productId, quantity = 1, attributes = {}) {
-            fetch('{{ route('
-                                                                                                        cart.add ') }}', {
+            fetch('{{ route('cart.add') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2198,9 +2193,8 @@
             `;
 
             fetch(
-                    '{{ route('
-                                                                                                                        cart.data ') }}'
-                    )
+                    '{{ route('cart.data ') }}'
+                )
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.items.length > 0) {
@@ -3196,7 +3190,7 @@
                 fetchUnreadCount();
 
                 // Poll for new messages every 5 seconds (fallback)
-                setInterval(fetchUnreadCount, 5000);
+                setInterval(fetchUnbodyCount, 5000);
             });
         </script>
     @endauth
