@@ -3043,20 +3043,34 @@
 
                 if (!message) return;
 
+                // Disable input and button while sending
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                const originalHtml = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
                 try {
+                    // Get fresh CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+                    console.log('Sending message with chatId:', chatId); // Debug log
+
                     const response = await fetch(`/chat/${chatId}/send`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'X-Requested-With': 'XMLHttpRequest', // Add this for Laravel
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest',
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({
                             message
                         }),
-                        credentials: 'same-origin' // Important for cookies/session
+                        credentials: 'include', // Important: send cookies
+                        referrerPolicy: 'strict-origin-when-cross-origin'
                     });
+
+                    console.log('Response status:', response.status); // Debug log
 
                     if (response.ok) {
                         const data = await response.json();
@@ -3070,44 +3084,33 @@
                         chatMessages.push(data.message);
                         renderMessages();
 
-                        // Clear input AFTER successful send
+                        // Clear input after successful send
                         input.value = '';
 
-                    } else if (response.status === 403) {
-                        // Handle CSRF/403 error specifically
-                        console.error('403 Forbidden - CSRF token might be invalid');
+                        console.log('Message sent successfully'); // Debug log
+
+                    } else if (response.status === 403 || response.status === 419) {
+                        // Handle CSRF/419 error
+                        console.error('CSRF/419 error detected');
 
                         // Try to get error details
-                        const errorData = await response.json().catch(() => ({}));
-                        console.error('Error details:', errorData);
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
 
-                        // Show user-friendly error
+                        // Show user-friendly message
                         if (window.Toast) {
                             Toast.fire({
-                                icon: 'error',
-                                title: 'Session expired. Please refresh the page.'
+                                icon: 'warning',
+                                title: 'Session expired. Refreshing...'
                             });
                         }
 
-                        // Optionally refresh CSRF token
-                        await refreshCsrfToken();
-
-                    } else if (response.status === 419) {
-                        // Page expired (CSRF token timeout)
-                        console.error('419 Page Expired - CSRF token timeout');
-
-                        if (window.Toast) {
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Session expired. Refreshing page...'
-                            });
-                        }
-
-                        // Refresh the page after a short delay
-                        setTimeout(() => location.reload(), 2000);
+                        // Reload the page after a short delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
 
                     } else {
-                        // Handle other errors
                         const errorData = await response.json().catch(() => ({}));
                         console.error('Error sending message:', errorData);
 
@@ -3119,13 +3122,17 @@
                         }
                     }
                 } catch (error) {
-                    console.error('Error sending message:', error);
+                    console.error('Fetch error:', error);
                     if (window.Toast) {
                         Toast.fire({
                             icon: 'error',
                             title: 'Network error. Please try again.'
                         });
                     }
+                } finally {
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
                 }
             }
 
@@ -3175,16 +3182,44 @@
                 audio.play().catch(e => console.log('Audio play failed:', e));
             }
 
+            // async function initializeChat() {
+            //     try {
+            //         const response = await fetch('/chat/get-or-create', {
+            //             headers: {
+            //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            //             }
+            //         });
+
+            //         if (response.ok) {
+            //             const data = await response.json();
+            //             chatId = data.chat.id;
+            //             chatMessages = data.chat.messages || [];
+            //             renderMessages();
+            //             updateUnreadBadge(data.unread_count);
+
+            //             // Setup real-time listener for this chat
+            //             if (typeof window.setupChatListener === 'function') {
+            //                 window.setupChatListener(chatId);
+            //             }
+            //         }
+            //     } catch (error) {
+            //         console.error('Error initializing chat:', error);
+            //     }
+            // }
             async function initializeChat() {
                 try {
                     const response = await fetch('/chat/get-or-create', {
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'include' // Important: send cookies
                     });
 
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('Chat initialized:', data); // Debug log
                         chatId = data.chat.id;
                         chatMessages = data.chat.messages || [];
                         renderMessages();
@@ -3194,6 +3229,8 @@
                         if (typeof window.setupChatListener === 'function') {
                             window.setupChatListener(chatId);
                         }
+                    } else {
+                        console.error('Failed to initialize chat:', response.status);
                     }
                 } catch (error) {
                     console.error('Error initializing chat:', error);
