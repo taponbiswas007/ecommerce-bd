@@ -286,7 +286,10 @@ Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/unread-count', [App\Http\Controllers\ChatController::class, 'getUnreadCount'])->name('unread-count');
     Route::post('/{chat}/mark-read', [App\Http\Controllers\ChatController::class, 'markAsRead'])->name('mark-read');
 });
-
+// Add this route to refresh CSRF token
+Route::get('/refresh-csrf', function () {
+    return response()->json(['token' => csrf_token()]);
+})->middleware('web');
 /*
 |--------------------------------------------------------------------------
 | Auth Routes (From Laravel Breeze)

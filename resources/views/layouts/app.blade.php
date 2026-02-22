@@ -2984,6 +2984,53 @@
                 }
             }
 
+            // async function sendMessage(event) {
+            //     event.preventDefault();
+
+            //     if (!chatId) {
+            //         await initializeChat();
+            //     }
+
+            //     const input = document.getElementById('chatMessageInput');
+            //     const message = input.value.trim();
+
+            //     if (!message) return;
+
+            //     try {
+            //         const response = await fetch(`/chat/${chatId}/send`, {
+            //             method: 'POST',
+            //             headers: {
+            //                 'Content-Type': 'application/json',
+            //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            //             },
+            //             body: JSON.stringify({
+            //                 message
+            //             })
+            //         });
+
+            //         if (response.ok) {
+            //             const data = await response.json();
+            //             // Ensure created_at field exists
+            //             if (!data.message.created_at) {
+            //                 data.message.created_at = new Date().toISOString();
+            //             }
+            //             // chatMessages.push(data.message);
+            //             // renderMessages();
+            //             // input.value = '';
+            //             if (response.ok) {
+            //                 input.value = '';
+            //             }
+            //         }
+            //     } catch (error) {
+            //         console.error('Error sending message:', error);
+            //         if (window.Toast) {
+            //             Toast.fire({
+            //                 icon: 'error',
+            //                 title: 'Failed to send message'
+            //             });
+            //         }
+            //     }
+            // }
             async function sendMessage(event) {
                 event.preventDefault();
 
@@ -3001,24 +3048,74 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest', // Add this for Laravel
+                            'Accept': 'application/json'
                         },
                         body: JSON.stringify({
                             message
-                        })
+                        }),
+                        credentials: 'same-origin' // Important for cookies/session
                     });
 
                     if (response.ok) {
                         const data = await response.json();
+
                         // Ensure created_at field exists
                         if (!data.message.created_at) {
                             data.message.created_at = new Date().toISOString();
                         }
-                        // chatMessages.push(data.message);
-                        // renderMessages();
-                        // input.value = '';
-                        if (response.ok) {
-                            input.value = '';
+
+                        // Add message to array and render
+                        chatMessages.push(data.message);
+                        renderMessages();
+
+                        // Clear input AFTER successful send
+                        input.value = '';
+
+                    } else if (response.status === 403) {
+                        // Handle CSRF/403 error specifically
+                        console.error('403 Forbidden - CSRF token might be invalid');
+
+                        // Try to get error details
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error('Error details:', errorData);
+
+                        // Show user-friendly error
+                        if (window.Toast) {
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'Session expired. Please refresh the page.'
+                            });
+                        }
+
+                        // Optionally refresh CSRF token
+                        await refreshCsrfToken();
+
+                    } else if (response.status === 419) {
+                        // Page expired (CSRF token timeout)
+                        console.error('419 Page Expired - CSRF token timeout');
+
+                        if (window.Toast) {
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'Session expired. Refreshing page...'
+                            });
+                        }
+
+                        // Refresh the page after a short delay
+                        setTimeout(() => location.reload(), 2000);
+
+                    } else {
+                        // Handle other errors
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error('Error sending message:', errorData);
+
+                        if (window.Toast) {
+                            Toast.fire({
+                                icon: 'error',
+                                title: errorData.message || 'Failed to send message'
+                            });
                         }
                     }
                 } catch (error) {
@@ -3026,9 +3123,32 @@
                     if (window.Toast) {
                         Toast.fire({
                             icon: 'error',
-                            title: 'Failed to send message'
+                            title: 'Network error. Please try again.'
                         });
                     }
+                }
+            }
+
+            // Add this helper function to refresh CSRF token
+            async function refreshCsrfToken() {
+                try {
+                    const response = await fetch('/refresh-csrf', {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Update meta tag with new token
+                        const metaTag = document.querySelector('meta[name="csrf-token"]');
+                        if (metaTag) {
+                            metaTag.content = data.token;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to refresh CSRF token:', error);
                 }
             }
 
