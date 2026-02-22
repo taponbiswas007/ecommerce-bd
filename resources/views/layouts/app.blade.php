@@ -1918,13 +1918,12 @@
         <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
         <script>
             // Initialize Laravel Echo for real-time broadcasting
-            if (typeof Pusher !== 'undefined' &&
-                '{{ config('broadcasting.default') }}' === 'pusher') {
+            if (typeof Pusher !== 'undefined' && '{{ config('broadcasting.default') }}' === 'pusher') {
                 window.Pusher = Pusher;
 
                 window.Echo = new Echo({
                     broadcaster: 'pusher',
-                    key: '{{ config('broadcasting.connections.pusher.key ') }}',
+                    key: '{{ config('broadcasting.connections.pusher.key') }}',
                     cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
                     forceTLS: true,
                     auth: {
@@ -2075,9 +2074,7 @@
     <script>
         // Global auth enforcement across all pages
         (function() {
-            const IS_AUTH = {
-                auth: {{ auth()->check() ? 'true' : 'false' }}
-            };
+            const IS_AUTH = {{ auth()->check() ? 'true' : 'false' }};
             const wishlistUrl = '{{ route('wishlist.index') }}';
             const cartUrl = '{{ route('cart.index') }}';
 
@@ -2192,9 +2189,7 @@
                 </div>
             `;
 
-            fetch(
-                    '{{ route('cart.data') }}'
-                )
+            fetch('{{ route('cart.data') }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.items.length > 0) {
@@ -2227,7 +2222,7 @@
                                                 <div class="d-flex align-items-center gap-2">
                                                     <button class="btn btn-sm btn-outline-secondary"
                                                             style="padding: 2px 8px;"
-                                                            onclick="updateCartQuantity('${item.hashid}', ${item.quantity - 1})"
+                                                           onclick="updateCartQuantity('${item.hashid}', Math.max(1, ${item.quantity - 1}))"
                                                             ${item.quantity <= 1 ? 'disabled' : ''}>
                                                         <i class="fas fa-minus" style="font-size: 10px;"></i>
                                                     </button>
@@ -2398,11 +2393,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Fetch cart count if user is logged in
             @if (auth()->check() && auth()->user()->role === 'customer')
-                updateCartCount({
-                    {
-                        auth() - > user() - > cart() - > count()
-                    }
-                });
+                updateCartCount({{ auth()->user()->cart()->count() }});
             @endif
         });
     </script>
@@ -3023,9 +3014,12 @@
                         if (!data.message.created_at) {
                             data.message.created_at = new Date().toISOString();
                         }
-                        chatMessages.push(data.message);
-                        renderMessages();
-                        input.value = '';
+                        // chatMessages.push(data.message);
+                        // renderMessages();
+                        // input.value = '';
+                        if (response.ok) {
+                            input.value = '';
+                        }
                     }
                 } catch (error) {
                     console.error('Error sending message:', error);
@@ -3114,11 +3108,7 @@
                     return;
                 }
 
-                const currentUserId = {
-                    {
-                        auth() - > id()
-                    }
-                };
+                const currentUserId = {{ auth()->id() }};
 
                 if (chatMessages.length === 0) {
                     container.innerHTML = `
@@ -3190,7 +3180,7 @@
                 fetchUnreadCount();
 
                 // Poll for new messages every 5 seconds (fallback)
-                setInterval(fetchUnbodyCount, 5000);
+                setInterval(fetchUnreadCount, 5000);
             });
         </script>
     @endauth
