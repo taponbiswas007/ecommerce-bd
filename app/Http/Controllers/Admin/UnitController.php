@@ -196,4 +196,35 @@ class UnitController extends Controller
             return back()->with('error', 'Error performing bulk action: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Quick add unit via AJAX
+     */
+    public function quickAdd(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:units,name,NULL,id',
+            'short_code' => 'required|string|max:10',
+        ]);
+        try {
+            $unit = \App\Models\Unit::create([
+                'name' => $request->name,
+                'symbol' => $request->short_code, // Use short_code as symbol for DB
+                'is_active' => true,
+            ]);
+            return response()->json([
+                'success' => true,
+                'unit' => [
+                    'id' => $unit->id,
+                    'name' => $unit->name,
+                    'short_code' => $unit->symbol, // Return symbol as short_code for frontend
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
 }

@@ -11,7 +11,6 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">
     <style>
         .image-preview-container {
             display: flex;
@@ -84,16 +83,23 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="category_id" class="form-label">Category *</label>
-                                    <select class="form-select @error('category_id') is-invalid @enderror" id="category_id"
-                                        name="category_id" required>
-                                        <option value="">Select Category</option>
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}"
-                                                {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <div class="input-group flex-nowrap border-1 rounded"
+                                        style="border: var(--bs-border-width) solid var(--bs-border-color);">
+                                        <select
+                                            class="form-select searchable-select @error('category_id') is-invalid @enderror"
+                                            id="category_id" name="category_id" required>
+                                            <option value="">Select Category</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}"
+                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary text-nowrap"
+                                            id="addCategoryBtn" data-bs-toggle="modal" data-bs-target="#addCategoryModal">+
+                                            Add</button>
+                                    </div>
                                     @error('category_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -102,16 +108,21 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="unit_id" class="form-label">Unit *</label>
-                                    <select class="form-select @error('unit_id') is-invalid @enderror" id="unit_id"
-                                        name="unit_id" required>
-                                        <option value="">Select Unit</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}"
-                                                {{ old('unit_id') == $unit->id ? 'selected' : '' }}>
-                                                {{ $unit->name }} ({{ $unit->short_code }})
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <div class="input-group flex-nowrap border-1 rounded"
+                                        style="border: var(--bs-border-width) solid var(--bs-border-color);">
+                                        <select class="form-select searchable-select @error('unit_id') is-invalid @enderror"
+                                            id="unit_id" name="unit_id" required>
+                                            <option value="">Select Unit</option>
+                                            @foreach ($units as $unit)
+                                                <option value="{{ $unit->id }}"
+                                                    {{ old('unit_id') == $unit->id ? 'selected' : '' }}>
+                                                    {{ $unit->name }} ({{ $unit->short_code }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary text-nowrap" id="addUnitBtn"
+                                            data-bs-toggle="modal" data-bs-target="#addUnitModal">+ Add</button>
+                                    </div>
                                     @error('unit_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -402,7 +413,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Summernote for description
@@ -490,6 +500,150 @@
                 if (name) {
                     // You can add slug generation here if needed
                 }
+            });
+
+            // Save new category
+            $('#saveCategoryBtn').on('click', function() {
+                var name = $('#newCategoryName').val().trim();
+                if (!name) {
+                    alert('Category name required');
+                    return;
+                }
+                // AJAX to backend to save category
+                $.post("{{ route('admin.categories.quickAdd') }}", {
+                    name: name,
+                    _token: '{{ csrf_token() }}'
+                }, function(data) {
+                    if (data.success && data.category) {
+                        var option = new Option(data.category.name, data.category.id, true, true);
+                        $('#category_id').append(option).trigger('change');
+                        $('#addCategoryModal').modal('hide');
+                        $('#newCategoryName').val('');
+                    } else {
+                        alert(data.message || 'Failed to add category');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+
+<!-- Add Unit Modal -->
+<div class="modal fade" id="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUnitModalLabel">Add New Unit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newUnitName" class="form-label">Unit Name</label>
+                    <input type="text" class="form-control" id="newUnitName" placeholder="Enter unit name">
+                </div>
+                <div class="mb-3">
+                    <label for="newUnitShortCode" class="form-label">Short Code</label>
+                    <input type="text" class="form-control" id="newUnitShortCode" placeholder="Enter short code">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveUnitBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            // Save new unit
+            $('#saveUnitBtn').on('click', function() {
+                var name = $('#newUnitName').val().trim();
+                var shortCode = $('#newUnitShortCode').val().trim();
+                if (!name || !shortCode) {
+                    alert('Unit name and short code required');
+                    return;
+                }
+                // AJAX to backend to save unit
+                $.post("{{ route('admin.units.quickAdd') }}", {
+                    name: name,
+                    short_code: shortCode,
+                    _token: '{{ csrf_token() }}'
+                }, function(data) {
+                    if (data.success && data.unit) {
+                        var option = new Option(data.unit.name + ' (' + data.unit.short_code + ')',
+                            data.unit.id, true, true);
+                        $('#unit_id').append(option).trigger('change');
+                        $('#addUnitModal').modal('hide');
+                        $('#newUnitName').val('');
+                        $('#newUnitShortCode').val('');
+                    } else {
+                        alert(data.message || 'Failed to add unit');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newCategoryName" class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="newCategoryName"
+                        placeholder="Enter category name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Enable Select2 for all searchable selects
+            $('.searchable-select').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Select',
+                allowClear: true
+            });
+
+            // Save new category
+            $('#saveCategoryBtn').on('click', function() {
+                var name = $('#newCategoryName').val().trim();
+                if (!name) {
+                    alert('Category name required');
+                    return;
+                }
+                // AJAX to backend to save category
+                $.post("{{ route('admin.categories.quickAdd') }}", {
+                    name: name,
+                    _token: '{{ csrf_token() }}'
+                }, function(data) {
+                    if (data.success && data.category) {
+                        var option = new Option(data.category.name, data.category.id, true, true);
+                        $('#category_id').append(option).trigger('change');
+                        $('#addCategoryModal').modal('hide');
+                        $('#newCategoryName').val('');
+                    } else {
+                        alert(data.message || 'Failed to add category');
+                    }
+                });
             });
         });
     </script>

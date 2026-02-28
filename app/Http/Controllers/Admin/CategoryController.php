@@ -573,4 +573,38 @@ class CategoryController extends Controller
             return back()->with('error', 'Error deleting categories: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Quick add category via AJAX
+     */
+    public function quickAdd(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,NULL,id,deleted_at,NULL',
+        ]);
+        try {
+            $slug = \Illuminate\Support\Str::slug($request->name);
+            $slugCount = \App\Models\Category::where('slug', $slug)->count();
+            if ($slugCount > 0) {
+                $slug = $slug . '-' . ($slugCount + 1);
+            }
+            $category = \App\Models\Category::create([
+                'name' => $request->name,
+                'slug' => $slug,
+                'is_active' => true,
+            ]);
+            return response()->json([
+                'success' => true,
+                'category' => [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
 }

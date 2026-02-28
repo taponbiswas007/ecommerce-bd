@@ -210,6 +210,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/categories/bulk-restore', [CategoryController::class, 'bulkRestore'])->name('categories.bulk-restore');
     Route::post('/categories/bulk-force-delete', [CategoryController::class, 'bulkForceDelete'])->name('categories.bulk-force-delete');
 
+    // Quick add routes for category and unit
+    Route::post('/categories/quick-add', [CategoryController::class, 'quickAdd'])->name('categories.quickAdd');
+    Route::post('/units/quick-add', [UnitController::class, 'quickAdd'])->name('units.quickAdd');
+
     // Brand Management
     Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class);
     Route::post('/brands/{id}/status', [\App\Http\Controllers\Admin\BrandController::class, 'updateStatus'])->name('brands.update-status')->where('id', '[0-9]+');
@@ -271,6 +275,43 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+
+    // AI Management
+    Route::prefix('ai')->name('ai.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AIController::class, 'index'])->name('index');
+
+        // AI Chat
+        Route::get('/chat', [\App\Http\Controllers\Admin\AIController::class, 'chat'])->name('chat');
+        Route::post('/chat/send', [\App\Http\Controllers\Admin\AIController::class, 'sendMessage'])->name('chat.send');
+
+        // Product Description Generator
+        Route::get('/product-description', [\App\Http\Controllers\Admin\AIController::class, 'productDescription'])->name('product-description');
+        Route::post('/product-description/generate', [\App\Http\Controllers\Admin\AIController::class, 'generateProductDescription'])->name('product-description.generate');
+        Route::post('/product-description/apply', [\App\Http\Controllers\Admin\AIController::class, 'applyProductDescription'])->name('product-description.apply');
+
+        // Category Description Generator
+        Route::get('/category-description', [\App\Http\Controllers\Admin\AIController::class, 'categoryDescription'])->name('category-description');
+        Route::post('/category-description/generate', [\App\Http\Controllers\Admin\AIController::class, 'generateCategoryDescription'])->name('category-description.generate');
+        Route::post('/category-description/apply', [\App\Http\Controllers\Admin\AIController::class, 'applyCategoryDescription'])->name('category-description.apply');
+
+        // Sales Analysis
+        Route::get('/sales-analysis', [\App\Http\Controllers\Admin\AIController::class, 'salesAnalysis'])->name('sales-analysis');
+        Route::post('/sales-analysis/analyze', [\App\Http\Controllers\Admin\AIController::class, 'analyzeSales'])->name('sales-analysis.analyze');
+
+        // Product Recommendations
+        Route::get('/recommendations', [\App\Http\Controllers\Admin\AIController::class, 'recommendations'])->name('recommendations');
+        Route::post('/recommendations/get', [\App\Http\Controllers\Admin\AIController::class, 'getRecommendations'])->name('recommendations.get');
+
+        // SEO Generator
+        Route::get('/seo-generator', [\App\Http\Controllers\Admin\AIController::class, 'seoGenerator'])->name('seo-generator');
+        Route::post('/seo-generator/generate', [\App\Http\Controllers\Admin\AIController::class, 'generateSeo'])->name('seo-generator.generate');
+        Route::post('/seo-generator/apply', [\App\Http\Controllers\Admin\AIController::class, 'applySeo'])->name('seo-generator.apply');
+
+        // Settings
+        Route::get('/settings', [\App\Http\Controllers\Admin\AIController::class, 'settings'])->name('settings');
+        Route::post('/test-connection', [\App\Http\Controllers\Admin\AIController::class, 'testConnection'])->name('test-connection');
+    });
 });
 
 /*

@@ -31,6 +31,8 @@
     <!-- SimpleBar (custom scrollbar) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.css" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/style.css') }}">
 
@@ -237,6 +239,22 @@
             transition: width 0.3s ease;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+
+        .select2-container {
+            display: flex !important;
+            justify-content: start !important;
+            align-items: center !important;
+        }
+
+        .select2-container .selection {
+            width: 100% !important;
+        }
+
+        .select2-selection--single {
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+        }
     </style>
 
     @stack('styles')
@@ -426,6 +444,41 @@
                             <i class="fas fa-percent"></i>
                             <span class="menu-text">VAT & AIT</span>
                         </a>
+                    </li>
+
+                    <!-- AI Assistant -->
+                    <li class="has-submenu {{ request()->routeIs('admin.ai.*') ? 'open' : '' }}">
+                        <a href="#">
+                            <i class="fas fa-robot"></i>
+                            <span class="menu-text">AI Assistant</span>
+                            <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                        <ul class="submenu {{ request()->routeIs('admin.ai.*') ? 'show' : '' }}">
+                            <li class="{{ request()->routeIs('admin.ai.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.index') }}">Dashboard</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.chat') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.chat') }}">AI Chat</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.product-description') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.product-description') }}">Product Description</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.category-description') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.category-description') }}">Category Description</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.sales-analysis') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.sales-analysis') }}">Sales Analysis</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.recommendations') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.recommendations') }}">Recommendations</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.seo-generator') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.seo-generator') }}">SEO Generator</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.ai.settings') ? 'active' : '' }}">
+                                <a href="{{ route('admin.ai.settings') }}">Settings</a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="has-submenu">
@@ -733,7 +786,8 @@
 
     <!-- SimpleBar JS -->
     <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         // Preloader functionality
