@@ -64,7 +64,7 @@
         }
 
         .card-header-tabs {
-            margin-bottom: -1rem;
+            margin-bottom: -0.5rem;
         }
     </style>
 @endpush
@@ -220,7 +220,7 @@
                                         <label class="form-label small">Percentage (%)</label>
                                         <div class="input-group input-group-sm">
                                             <select id="percentageDirection" class="form-select"
-                                                style="max-width: 100px;">
+                                                style="max-width: 125px;">
                                                 <option value="increase">Increase</option>
                                                 <option value="decrease">Decrease</option>
                                             </select>
@@ -243,7 +243,7 @@
                                         <label class="form-label small">Amount
                                             ({{ config('app.currency_symbol') }})</label>
                                         <div class="input-group input-group-sm">
-                                            <select id="formulaTypeSelect" class="form-select" style="max-width: 100px;">
+                                            <select id="formulaTypeSelect" class="form-select" style="max-width: 145px;">
                                                 <option value="increase">Add (+)</option>
                                                 <option value="decrease">Subtract (-)</option>
                                             </select>
@@ -254,7 +254,7 @@
                                 </div>
                             </div>
 
-                            <div class="mt-3">
+                            <div class="mt-3 d-flex gap-2 flex-wrap">
                                 <button type="button" id="updatePricesBtn" class="btn btn-success">
                                     <i class="fas fa-check me-2"></i> Update Selected Products
                                 </button>
@@ -287,7 +287,7 @@
                                 </div>
                             </div>
 
-                            <div class="mt-3">
+                            <div class="mt-3 d-flex gap-2 flex-wrap">
                                 <button type="button" id="applyDiscountBtn" class="btn btn-warning">
                                     <i class="fas fa-percent me-2"></i> Apply Discount to Selected
                                 </button>
@@ -333,7 +333,7 @@
                                 <ul id="tierList" class="mb-0 mt-2"></ul>
                             </div>
 
-                            <div class="mt-3">
+                            <div class="mt-3 d-flex gap-2 flex-wrap">
                                 <button type="button" id="applyTiersBtn" class="btn btn-success">
                                     <i class="fas fa-check me-2"></i> Apply Tiers to Selected
                                 </button>
@@ -348,13 +348,13 @@
 
             <!-- Products List -->
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h6 class="card-title mb-0">
                         <i class="fas fa-boxes me-2"></i>Products to Update
                         <span class="badge bg-info" id="productCount">0</span>
                         <span class="badge bg-success" id="selectedCount">0 selected</span>
                     </h6>
-                    <div>
+                    <div class="d-flex justify-content-end align-items-center gap-4 flex-wrap">
                         <button type="button" id="selectAllBtn" class="btn btn-outline-secondary btn-sm">
                             <i class="fas fa-check-double me-1"></i> Select All
                         </button>
@@ -375,11 +375,11 @@
                         <div class="table-responsive">
                             <table class="table table-hover table-sm">
                                 <thead>
-                                    <tr>
+                                    <tr class=" text-nowrap">
                                         <th width="50">
                                             <input type="checkbox" id="bulkCheckAll" class="form-check-input">
                                         </th>
-                                        <th>Product</th>
+                                        <th style="min-width: 200px">Product</th>
                                         <th>SKU</th>
                                         <th>Base Price</th>
                                         <th>Discount Price</th>
@@ -597,18 +597,18 @@
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         ${paginated.prev_page_url ? `
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="${paginated.current_page - 1}">Previous</a>
-                                        </li>
-                                    ` : `<li class="page-item disabled"><span class="page-link">Previous</span></li>`}
+                                                                                            <li class="page-item">
+                                                                                                <a class="page-link" href="#" data-page="${paginated.current_page - 1}">Previous</a>
+                                                                                            </li>
+                                                                                        ` : `<li class="page-item disabled"><span class="page-link">Previous</span></li>`}
 
                         <li class="page-item"><span class="page-link">Page ${paginated.current_page} of ${paginated.last_page}</span></li>
 
                         ${paginated.next_page_url ? `
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="${paginated.current_page + 1}">Next</a>
-                                        </li>
-                                    ` : `<li class="page-item disabled"><span class="page-link">Next</span></li>`}
+                                                                                            <li class="page-item">
+                                                                                                <a class="page-link" href="#" data-page="${paginated.current_page + 1}">Next</a>
+                                                                                            </li>
+                                                                                        ` : `<li class="page-item disabled"><span class="page-link">Next</span></li>`}
                     </ul>
                 </nav>
             `;

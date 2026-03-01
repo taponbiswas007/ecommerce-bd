@@ -1384,7 +1384,7 @@
                                             @endphp
                                             <div class="price-marquee" data-price-marquee>
                                                 <div class="price-marquee-inner">
-                                                    @if ($product->has_discount)
+                                                    @if ($product->discount_price)
                                                         <span
                                                             class="price-chip main">৳{{ number_format($product->discount_price, 0) }}</span>
                                                         <span
