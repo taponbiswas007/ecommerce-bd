@@ -13,8 +13,11 @@
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
         <i class="fas fa-plus me-2"></i> Add New Product
     </a>
+    <a href="{{ route('admin.bulk-price.index') }}" class="btn btn-info">
+        <i class="fas fa-dollar-sign me-2"></i> Bulk Price Update
+    </a>
     <a href="{{ route('admin.products.trash') }}" class="btn btn-warning ms-2">
-        <i class="fas fa-trash-alt me-2"></i> Trashed Products
+        <i class="fas fa-trash-alt me-2"></i> Trashed
     </a>
 @endsection
 
@@ -36,6 +39,18 @@
             color: #6c757d;
             font-size: 0.9em;
         }
+
+        .search-highlight {
+            background-color: #fff3cd;
+        }
+
+        .bulk-actions-section {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
     </style>
 @endpush
 
@@ -44,62 +59,66 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">All Products</h5>
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 200px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search"
-                                id="searchInput">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-default" id="searchBtn">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="card-title mb-0">
+                                All Products
+                                <span class="badge bg-info ms-2" id="totalProducts">{{ $products->total() }}</span>
+                            </h5>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="liveSearch" class="form-control" placeholder="Search by name..."
+                                    value="{{ request('search') }}">
+                                <button class="btn btn-outline-secondary" type="button" id="searchBtn">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <!-- Bulk Actions -->
-                    <div class="row mb-3">
+
+                <!-- Bulk Actions Section -->
+                <div class="bulk-actions-section" id="bulkActionsSection" style="display: none;">
+                    <div class="row align-items-center">
                         <div class="col-md-6">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-                                    Bulk Actions
+                            <span id="selectedCount" class="badge bg-primary">0 selected</span>
+                            <div class="btn-group ms-3" role="group">
+                                <button type="button" class="btn btn-sm btn-success"
+                                    onclick="performBulkAction('activate')" title="Activate selected products">
+                                    <i class="fas fa-eye me-1"></i> Activate
                                 </button>
-                                <div class="dropdown-menu">
-                                    <button class="dropdown-item" onclick="bulkAction('activate')">
-                                        <i class="fas fa-check-circle text-success me-2"></i> Activate
-                                    </button>
-                                    <button class="dropdown-item" onclick="bulkAction('deactivate')">
-                                        <i class="fas fa-times-circle text-danger me-2"></i> Deactivate
-                                    </button>
-                                    <button class="dropdown-item" onclick="bulkAction('featured')">
-                                        <i class="fas fa-star text-warning me-2"></i> Mark as Featured
-                                    </button>
-                                    <button class="dropdown-item" onclick="bulkAction('unfeatured')">
-                                        <i class="fas fa-star text-muted me-2"></i> Remove Featured
-                                    </button>
-                                    <div class="dropdown-divider"></div>
-                                    <button class="dropdown-item text-danger" onclick="bulkAction('delete')">
-                                        <i class="fas fa-trash me-2"></i> Delete
-                                    </button>
-                                </div>
+                                <button type="button" class="btn btn-sm btn-warning"
+                                    onclick="performBulkAction('deactivate')" title="Deactivate selected products">
+                                    <i class="fas fa-eye-slash me-1"></i> Deactivate
+                                </button>
+                                <button type="button" class="btn btn-sm btn-info" onclick="performBulkAction('featured')"
+                                    title="Mark as featured">
+                                    <i class="fas fa-star me-1"></i> Featured
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="performBulkAction('delete')"
+                                    title="Delete selected">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </button>
                             </div>
                         </div>
                         <div class="col-md-6 text-end">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="selectAll">
-                                <label class="form-check-label" for="selectAll">Select All</label>
-                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
+                                <i class="fas fa-times me-1"></i> Clear Selection
+                            </button>
                         </div>
                     </div>
+                </div>
 
+                <div class="card-body">
                     <!-- Products Table -->
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead>
+                            <thead class="table-light">
                                 <tr>
                                     <th width="50">
-                                        <input type="checkbox" class="form-check-input" id="checkAll">
+                                        <input type="checkbox" class="form-check-input" id="selectAll"
+                                            title="Select all products on this page">
                                     </th>
                                     <th style="min-width: 400px">Product</th>
                                     <th>Category</th>
@@ -109,12 +128,12 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="productsTableBody">
                                 @forelse($products as $product)
-                                    <tr data-id="{{ $product->id }}">
+                                    <tr data-id="{{ $product->id }}" class="product-row">
                                         <td>
                                             <input type="checkbox" class="form-check-input product-checkbox"
-                                                value="{{ $product->id }}">
+                                                value="{{ $product->id }}" data-name="{{ $product->name }}">
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -130,12 +149,13 @@
                                                     @endif
                                                 </div>
                                                 <div class="flex-grow-1 ms-3">
-                                                    <h6 class="mb-0">{{ $product->name }}</h6>
+                                                    <h6 class="mb-0 product-name">{{ $product->name }}</h6>
                                                     @if ($product->is_featured)
                                                         <span class="badge bg-warning badge-sm">Featured</span>
                                                     @endif
-                                                    <small class="text-muted d-block">
-                                                        SKU: {{ $product->sku ?? 'N/A' }}
+                                                    <small class="text-muted d-block product-sku">
+                                                        ID: {{ $product->id }} | Slug:
+                                                        {{ Str::limit($product->slug, 20) }}
                                                     </small>
                                                     @if ($product->short_description)
                                                         <p class="text-muted mb-0 small">
@@ -164,7 +184,8 @@
                                                         ({{ $product->discount_percentage }}% off)
                                                     </small>
                                                 @else
-                                                    <span class="fw-bold">
+                                                    <span class="fw-bold product-price"
+                                                        data-price="{{ $product->base_price }}">
                                                         {{ config('app.currency_symbol') }}{{ number_format($product->base_price, 2) }}
                                                     </span>
                                                 @endif
@@ -189,62 +210,41 @@
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input status-toggle" type="checkbox"
                                                     data-id="{{ $product->id }}"
+                                                    data-product-name="{{ $product->name }}"
                                                     {{ $product->is_active ? 'checked' : '' }}>
-                                                <label class="form-check-label">
+                                                <label class="form-check-label status-label">
                                                     {{ $product->is_active ? 'Active' : 'Inactive' }}
                                                 </label>
                                             </div>
                                         </td>
-                                        {{-- <td>
-                                            <div class="btn-group">
-                                                <a href="{{ route('admin.products.show', $product->id) }}"
-                                                    class="btn btn-sm btn-info" title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('admin.products.edit', $product->id) }}"
-                                                    class="btn btn-sm btn-primary" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-danger confirm-delete"
-                                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                                    title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td> --}}
                                         <td>
-                                            <div class="btn-group">
+                                            <div class="btn-group" role="group">
                                                 <a href="{{ route('admin.products.show', $product->id) }}"
-                                                    class="btn btn-sm btn-info" title="View">
+                                                    class="btn btn-sm btn-info" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a href="{{ route('admin.products.edit', $product->id) }}"
-                                                    class="btn btn-sm btn-primary" title="Edit">
+                                                    class="btn btn-sm btn-primary" title="Edit Product">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-
-                                                <!-- New Image Management Button -->
                                                 <a href="{{ route('admin.products.images.index', $product->id) }}"
                                                     class="btn btn-sm btn-warning" title="Manage Images">
                                                     <i class="fas fa-images"></i>
                                                 </a>
-
-                                                <!-- New Price Management Button -->
                                                 <a href="{{ route('admin.products.prices.index', $product->id) }}"
                                                     class="btn btn-sm btn-success" title="Manage Prices">
                                                     <i class="fas fa-tags"></i>
                                                 </a>
-
                                                 <button type="button" class="btn btn-sm btn-danger confirm-delete"
                                                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                                    title="Delete">
+                                                    title="Delete Product">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr>
+                                    <tr id="emptyState">
                                         <td colspan="7" class="text-center py-4">
                                             <i class="fas fa-boxes fa-3x text-muted mb-3"></i>
                                             <h4>No Products Found</h4>
@@ -261,14 +261,14 @@
 
                     <!-- Pagination -->
                     @if ($products->hasPages())
-                        <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="d-flex justify-content-between align-items-center mt-4">
                             <div class="text-muted">
                                 Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of
                                 {{ $products->total() }} entries
                             </div>
-                            <div>
+                            <nav>
                                 {{ $products->links() }}
-                            </div>
+                            </nav>
                         </div>
                     @endif
                 </div>
@@ -276,13 +276,10 @@
         </div>
     </div>
 
-
-
     <!-- Bulk Action Form -->
-    <form id="bulkActionForm" method="POST" action="{{ route('admin.products.bulk-action') }}">
+    <form id="bulkActionForm" method="POST" action="{{ route('admin.products.bulk-action') }}" style="display: none;">
         @csrf
-        <input type="hidden" name="action" id="bulkAction">
-        <input type="hidden" name="ids" id="bulkIds">
+        <input type="hidden" name="action" id="actionType">
     </form>
 @endsection
 
@@ -293,7 +290,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to delete <strong id="deleteProductName"></strong>?</p>
@@ -301,7 +298,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" method="POST">
+                    <form id="deleteForm" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Delete</button>
@@ -314,109 +311,163 @@
 
 @push('scripts')
     <script>
+        const searchInput = document.getElementById('liveSearch');
+        const searchBtn = document.getElementById('searchBtn');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const bulkActionsSection = document.getElementById('bulkActionsSection');
+        const selectedCountBadge = document.getElementById('selectedCount');
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Select all checkboxes
-            document.getElementById('selectAll')?.addEventListener('change', function() {
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            // Select all checkbox
+            selectAllCheckbox?.addEventListener('change', function() {
                 const checkboxes = document.querySelectorAll('.product-checkbox');
                 checkboxes.forEach(checkbox => {
                     checkbox.checked = this.checked;
                 });
+                updateSelectedCount();
             });
 
-            // Individual checkbox changes
+            // Individual product checkboxes
             document.querySelectorAll('.product-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     updateSelectAllCheckbox();
+                    updateSelectedCount();
                 });
             });
 
-            function updateSelectAllCheckbox() {
-                const checkboxes = document.querySelectorAll('.product-checkbox');
-                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-                const selectAll = document.getElementById('selectAll');
-                if (selectAll) {
-                    selectAll.checked = allChecked;
-                }
-            }
-
-            // Status toggle
+            // Status toggles
             document.querySelectorAll('.status-toggle').forEach(toggle => {
                 toggle.addEventListener('change', function() {
-                    const productId = this.getAttribute('data-id');
-                    const status = this.checked ? 1 : 0;
-
-                    fetch(`/admin/products/${productId}/status`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: JSON.stringify({
-                                status: status
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                const label = this.nextElementSibling;
-                                if (label) {
-                                    label.textContent = status ? 'Active' : 'Inactive';
-                                }
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Status updated successfully!'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            this.checked = !this.checked;
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Error updating status'
-                            });
-                        });
+                    toggleProductStatus(this);
                 });
             });
 
-            // Delete confirmation
+            // Delete buttons
             document.querySelectorAll('.confirm-delete').forEach(button => {
                 button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-id');
-                    const productName = this.getAttribute('data-name');
-
-                    document.getElementById('deleteProductName').textContent = productName;
-                    document.getElementById('deleteForm').action =
-                        `/admin/products/${productId}`;
-
-                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                    deleteModal.show();
+                    showDeleteModal(this.getAttribute('data-id'), this.getAttribute('data-name'));
                 });
             });
 
             // Search functionality
-            document.getElementById('searchBtn')?.addEventListener('click', function() {
-                const searchValue = document.getElementById('searchInput').value;
-                if (searchValue.trim()) {
-                    window.location.href = '{{ route('admin.products.index') }}?search=' +
-                        encodeURIComponent(searchValue);
-                }
-            });
-
-            document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+            searchBtn?.addEventListener('click', performSearch);
+            searchInput?.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    const searchValue = this.value;
-                    if (searchValue.trim()) {
-                        window.location.href = '{{ route('admin.products.index') }}?search=' +
-                            encodeURIComponent(searchValue);
-                    }
+                    performSearch();
                 }
             });
-        });
+        }
 
-        // Bulk actions
-        function bulkAction(action) {
+        function updateSelectAllCheckbox() {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = checkedCount > 0 && checkedCount === checkboxes.length;
+                selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+            }
+        }
+
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            if (checkedCount > 0) {
+                bulkActionsSection.style.display = 'block';
+                selectedCountBadge.textContent = checkedCount + ' selected';
+            } else {
+                bulkActionsSection.style.display = 'none';
+            }
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            }
+            bulkActionsSection.style.display = 'none';
+        }
+
+        function toggleProductStatus(toggle) {
+            const productId = toggle.getAttribute('data-id');
+            const productName = toggle.getAttribute('data-product-name');
+            const newStatus = toggle.checked ? 1 : 0;
+            const oldStatus = !toggle.checked ? 1 : 0;
+            const label = toggle.nextElementSibling;
+
+            // Disable toggle during request
+            toggle.disabled = true;
+
+            fetch(`/admin/products/${productId}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: newStatus
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Update label
+                        if (label) {
+                            label.textContent = newStatus ? 'Active' : 'Inactive';
+                        }
+
+                        // Show success message
+                        if (typeof Toast !== 'undefined') {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Status updated successfully!'
+                            });
+                        }
+                    } else {
+                        // Revert checkbox on failure
+                        toggle.checked = oldStatus;
+                        if (typeof Toast !== 'undefined') {
+                            Toast.fire({
+                                icon: 'error',
+                                title: data.message || 'Error updating status'
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Revert checkbox on error
+                    toggle.checked = oldStatus;
+
+                    if (typeof Toast !== 'undefined') {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Error updating status. Please try again.'
+                        });
+                    } else {
+                        alert('Error updating status. Please try again.');
+                    }
+                })
+                .finally(() => {
+                    // Re-enable toggle
+                    toggle.disabled = false;
+                });
+        }
+
+        function performBulkAction(action) {
             const selectedIds = [];
             document.querySelectorAll('.product-checkbox:checked').forEach(checkbox => {
                 selectedIds.push(checkbox.value);
@@ -430,29 +481,85 @@
                 return;
             }
 
-            if (action === 'delete') {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will delete " + selectedIds.length + " product(s). This action cannot be undone!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete them!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        performBulkAction(action, selectedIds);
-                    }
-                });
-            } else {
-                performBulkAction(action, selectedIds);
+            let title = '';
+            let message = '';
+
+            switch (action) {
+                case 'activate':
+                    title = 'Activate Products';
+                    message = `Activate ${selectedIds.length} product(s)?`;
+                    break;
+                case 'deactivate':
+                    title = 'Deactivate Products';
+                    message = `Deactivate ${selectedIds.length} product(s)?`;
+                    break;
+                case 'featured':
+                    title = 'Mark as Featured';
+                    message = `Mark ${selectedIds.length} product(s) as featured?`;
+                    break;
+                case 'delete':
+                    Swal.fire({
+                        title: 'Delete Products',
+                        text: `Delete ${selectedIds.length} product(s)? This cannot be undone!`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete!'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            submitBulkAction(action);
+                        }
+                    });
+                    return;
+            }
+
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Continue'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    submitBulkAction(action);
+                }
+            });
+        }
+
+        function submitBulkAction(action) {
+            const form = document.getElementById('bulkActionForm');
+            const oldIdInputs = form.querySelectorAll('input[name="ids[]"]');
+            oldIdInputs.forEach(input => input.remove());
+
+            document.getElementById('actionType').value = action;
+
+            const selectedIds = [];
+            document.querySelectorAll('.product-checkbox:checked').forEach(checkbox => {
+                selectedIds.push(checkbox.value);
+            });
+
+            selectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            form.submit();
+        }
+
+        function performSearch() {
+            const searchValue = searchInput.value.trim();
+            if (searchValue) {
+                window.location.href = '{{ route('admin.products.index') }}?search=' + encodeURIComponent(searchValue);
             }
         }
 
-        function performBulkAction(action, ids) {
-            document.getElementById('bulkAction').value = action;
-            document.getElementById('bulkIds').value = JSON.stringify(ids);
-            document.getElementById('bulkActionForm').submit();
+        function showDeleteModal(id, name) {
+            document.getElementById('deleteProductName').textContent = name;
+            document.getElementById('deleteForm').action = `/admin/products/${id}`;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
         }
     </script>
 @endpush

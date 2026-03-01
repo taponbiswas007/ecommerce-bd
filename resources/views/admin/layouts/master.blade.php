@@ -326,19 +326,23 @@
                     </li>
 
                     <li
-                        class="has-submenu {{ request()->routeIs('admin.products.*') || request()->routeIs('admin.brands.*') ? 'open' : '' }}">
+                        class="has-submenu {{ request()->routeIs('admin.products.*') || request()->routeIs('admin.bulk-price.*') || request()->routeIs('admin.brands.*') ? 'open' : '' }}">
                         <a href="#">
                             <i class="fas fa-box"></i>
                             <span class="menu-text">Products</span>
                             <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
                         </a>
                         <ul
-                            class="submenu {{ request()->routeIs('admin.products.*') || request()->routeIs('admin.brands.*') ? 'show' : '' }}">
+                            class="submenu {{ request()->routeIs('admin.products.*') || request()->routeIs('admin.bulk-price.*') || request()->routeIs('admin.brands.*') ? 'show' : '' }}">
                             <li class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
                                 <a href="{{ route('admin.products.index') }}">All Products</a>
                             </li>
                             <li class="{{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
                                 <a href="{{ route('admin.products.create') }}">Add New</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.bulk-price.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.bulk-price.index') }}">Bulk Price Management
+                                </a>
                             </li>
                             <li class="{{ request()->routeIs('admin.brands.index') ? 'active' : '' }}">
                                 <a href="{{ route('admin.brands.index') }}">Brands</a>
@@ -501,10 +505,16 @@
                             <span class="menu-arrow"><i class="fas fa-chevron-right"></i></span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="#">General</a></li>
+                            {{-- <li><a href="#">General</a></li>
                             <li><a href="#">Payment</a></li>
                             <li><a href="#">Shipping</a></li>
-                            <li><a href="#">Email</a></li>
+                            <li><a href="#">Email</a></li> --}}
+                            <li class="{{ request()->routeIs('admin.terms.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.terms.index') }}">Terms & Conditions</a>
+                            </li>
+                            <li class="{{ request()->routeIs('admin.privacy-policy.*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.privacy-policy.index') }}">Privacy Policy</a>
+                            </li>
                         </ul>
                     </li>
 
@@ -634,64 +644,53 @@
                     <div class="dropdown">
                         <div class="header-icon" data-bs-toggle="dropdown">
                             <i class="fas fa-envelope"></i>
-                            <span class="badge-count">3</span>
+                            @php
+                                $unreadMessages = \App\Models\ContactMessage::where('is_read', false)->count();
+                            @endphp
+                            <span class="badge-count">{{ $unreadMessages }}</span>
                         </div>
                         <div class="dropdown-menu dropdown-menu-end p-0" style="width: 300px;">
                             <div class="dropdown-header bg-info text-white py-3">
-                                <h6 class="mb-0">Messages (3)</h6>
+                                <h6 class="mb-0">Messages ({{ $unreadMessages }})</h6>
                             </div>
                             <div class="dropdown-body" style="max-height: 300px;" data-simplebar>
-                                <a href="#" class="dropdown-item py-3 border-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="rounded-circle bg-primary p-2">
-                                                <span class="text-white">JD</span>
+                                @php
+                                    $recentMessages = \App\Models\ContactMessage::orderBy('created_at', 'desc')
+                                        ->limit(5)
+                                        ->get();
+                                @endphp
+                                @forelse ($recentMessages as $msg)
+                                    <a href="{{ route('admin.contact-messages.show', $msg->id) }}"
+                                        class="dropdown-item py-3 border-bottom {{ !$msg->is_read ? 'fw-bold' : '' }}">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="rounded-circle p-2"
+                                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                    <span
+                                                        class="text-white small fw-bold">{{ $msg->getInitials() }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6 class="mb-0">{{ Str::limit($msg->name, 20) }}</h6>
+                                                <small class="text-muted {{ !$msg->is_read ? 'fw-bold' : '' }}">
+                                                    {{ Str::limit($msg->subject, 30) }}
+                                                </small>
+                                            </div>
+                                            <div class="flex-shrink-0">
+                                                <small
+                                                    class="text-muted">{{ $msg->created_at->diffForHumans() }}</small>
                                             </div>
                                         </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-0">John Doe</h6>
-                                            <small class="text-muted">When will my order ship?</small>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <small class="text-muted">2 min ago</small>
-                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="text-center py-4">
+                                        <p class="text-muted small">No messages yet</p>
                                     </div>
-                                </a>
-                                <a href="#" class="dropdown-item py-3 border-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="rounded-circle bg-success p-2">
-                                                <span class="text-white">SM</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-0">Sarah Miller</h6>
-                                            <small class="text-muted">Product quality issue</small>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <small class="text-muted">1 hour ago</small>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <div class="rounded-circle bg-warning p-2">
-                                                <span class="text-white">RJ</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-0">Robert Johnson</h6>
-                                            <small class="text-muted">Return request #12345</small>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <small class="text-muted">3 hours ago</small>
-                                        </div>
-                                    </div>
-                                </a>
+                                @endforelse
                             </div>
                             <div class="dropdown-footer text-center py-2">
-                                <a href="#" class="text-primary">View All Messages</a>
+                                <a href="{{ route('admin.contact-messages.index') }}" class="text-primary">View All
+                                    Messages</a>
                             </div>
                         </div>
                     </div>

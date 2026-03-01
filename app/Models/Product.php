@@ -61,6 +61,7 @@ class Product extends Model
         'dimensions',
         'is_featured',
         'is_active',
+        'hide_from_frontend',
         'is_deal',
         'deal_end_at',
         'view_count',
@@ -75,6 +76,7 @@ class Product extends Model
     protected $casts = [
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
+        'hide_from_frontend' => 'boolean',
         'base_price' => 'decimal:2',
         'discount_price' => 'decimal:2',
         'average_rating' => 'decimal:2',

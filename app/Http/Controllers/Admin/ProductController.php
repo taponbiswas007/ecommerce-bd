@@ -18,11 +18,34 @@ class ProductController extends Controller
  */
 
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'unit', 'images'])
-            ->latest()
-            ->paginate(15);
+        $query = Product::with(['category', 'unit', 'images']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $products = $query->latest()->paginate(15)->appends($request->query());
 
         return view('admin.products.index', compact('products'));
     }

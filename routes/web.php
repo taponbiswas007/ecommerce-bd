@@ -9,10 +9,14 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ProductPriceController;
+use App\Http\Controllers\Admin\BulkProductPriceController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\VatAitController;
+use App\Http\Controllers\Admin\TermsController;
+use App\Http\Controllers\Admin\PrivacyPolicyController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Auth\SocialLoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -22,6 +26,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PoliciesController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ChatController;
@@ -51,8 +56,8 @@ Route::get('/services', [PageController::class, 'services'])->name('services');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PageController::class, 'contactSubmit'])->name('contact.submit');
 Route::get('/offers', [PageController::class, 'offers'])->name('offers');
-Route::get('/terms', [PageController::class, 'terms'])->name('terms');
-Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [PoliciesController::class, 'terms'])->name('terms');
+Route::get('/privacy', [PoliciesController::class, 'privacy'])->name('privacy');
 
 // Social Login Routes
 Route::get('/auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('login.google');
@@ -235,6 +240,35 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('coupons/generate-code', [CouponController::class, 'generateCode'])->name('coupons.generate-code');
     Route::resource('coupons', CouponController::class);
 
+    // Contact Messages Management
+    Route::get('contact-messages/recent', [ContactMessageController::class, 'getRecentMessages'])->name('contact-messages.recent');
+    Route::post('contact-messages/{id}/mark-read', [ContactMessageController::class, 'markAsRead'])->name('contact-messages.mark-read');
+    Route::post('contact-messages/bulk-delete', [ContactMessageController::class, 'bulkDelete'])->name('contact-messages.bulk-delete');
+    Route::resource('contact-messages', ContactMessageController::class);
+
+    // Bulk Price Update Management
+    Route::prefix('bulk-price')->name('bulk-price.')->group(function () {
+        Route::get('/', [BulkProductPriceController::class, 'index'])->name('index');
+        Route::get('/get-products', [BulkProductPriceController::class, 'getProducts'])->name('get-products');
+        Route::post('/update-prices', [BulkProductPriceController::class, 'updatePrices'])->name('update-prices');
+        Route::post('/toggle-visibility', [BulkProductPriceController::class, 'toggleStockVisibility'])->name('toggle-visibility');
+
+        // Discount Management
+        Route::post('/apply-discount', [BulkProductPriceController::class, 'applyDiscount'])->name('apply-discount');
+        Route::post('/remove-discount', [BulkProductPriceController::class, 'removeDiscount'])->name('remove-discount');
+
+        // Tier Pricing
+        Route::post('/apply-tiers', [BulkProductPriceController::class, 'applyTiers'])->name('apply-tiers');
+
+        // AI Features
+        Route::post('/ai-suggest', [BulkProductPriceController::class, 'aiSuggest'])->name('ai-suggest');
+        Route::post('/ai-optimize', [BulkProductPriceController::class, 'aiOptimize'])->name('ai-optimize');
+        Route::post('/ai-market', [BulkProductPriceController::class, 'aiMarket'])->name('ai-market');
+
+        // Export
+        Route::get('/export', [BulkProductPriceController::class, 'exportPrices'])->name('export');
+    });
+
     // Delivery Charge Management
     Route::resource('delivery-charges', DeliveryChargeController::class);
     // AJAX route to get upazilas for a district
@@ -272,6 +306,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Settings Management
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Terms & Conditions Management
+    Route::resource('terms', TermsController::class);
+
+    // Privacy Policy Management
+    Route::resource('privacy-policy', PrivacyPolicyController::class);
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
