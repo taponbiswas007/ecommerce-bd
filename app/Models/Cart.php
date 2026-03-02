@@ -209,13 +209,13 @@ class Cart extends Model
         return round($cost, 2);
     }
 
-    public static function grandTotal($couponCode = null, $district = null, $upazila = null)
+    public static function grandTotal($couponCode = null, $district = null, $upazila = null, $transportCompanyId = null, $method = 'transport')
     {
         $subtotal = self::subtotal();
         $discount = self::discount($couponCode);
         $taxSummary = self::taxSummary($discount);
         $tax = $taxSummary['total_tax'];
-        $shipping = self::shipping($district, $upazila);
+        $shipping = self::shipping($district, $upazila, $transportCompanyId, $method);
         return $subtotal - $discount + $tax + $shipping;
     }
 

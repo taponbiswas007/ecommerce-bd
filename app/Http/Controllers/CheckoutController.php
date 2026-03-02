@@ -37,7 +37,7 @@ class CheckoutController extends Controller
         }
         $taxSummary = Cart::taxSummary($discount);
         $tax = $taxSummary['total_tax'];
-        $total = Cart::grandTotal($couponCode, $district, $upazila);
+        $total = Cart::grandTotal($couponCode, $district, $upazila, null, 'transport');
 
         // Transport companies from DB (optional)
         $transports = \App\Models\TransportCompany::where('is_active', true)->pluck('name', 'id')->toArray();
@@ -128,7 +128,13 @@ class CheckoutController extends Controller
         $taxSummary = Cart::taxSummary($discount);
         $tax = $taxSummary['total_tax'];
         $shipping = Cart::shipping($request->shipping_district, $request->shipping_upazila, $request->transport_company_id ?? null, $request->shipping_method ?? 'transport');
-        $total = Cart::grandTotal($couponCode, $request->shipping_district, $request->shipping_upazila);
+        $total = Cart::grandTotal(
+            $couponCode,
+            $request->shipping_district,
+            $request->shipping_upazila,
+            $request->transport_company_id ?? null,
+            $request->shipping_method ?? 'transport'
+        );
 
         $order = Order::create([
             'order_number' => strtoupper('ORD-' . Str::random(10)),
