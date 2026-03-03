@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -42,7 +43,7 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
     ];
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
@@ -64,7 +65,7 @@ class User extends Authenticatable
     }
 
     // Relationships
-    public function carts()
+    public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);
     }
@@ -72,17 +73,17 @@ class User extends Authenticatable
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<Wishlist>
      */
-    public function wishlists()
+    public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class);
     }
 
-    public function orders()
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
 
-    public function reviews()
+    public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
@@ -92,7 +93,7 @@ class User extends Authenticatable
     //     return $this->hasMany(Notification::class);
     // }
     // Add this method to your User model
-    public function cart()
+    public function cart(): HasMany
     {
         return $this->hasMany(Cart::class);
     }
