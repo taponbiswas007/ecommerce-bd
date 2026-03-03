@@ -8,7 +8,13 @@
                 <i class="fas fa-shopping-bag me-2" style="color: var(--primary-color);"></i>
                 Complete Your Order
             </h1>
-            <p class="checkout-subtitle">Fill in your shipping details to place your order</p>
+            <p class="checkout-subtitle">Request your order. Final amount will be confirmed after admin negotiation.</p>
+        </div>
+
+        <div class="trust-notice">
+            <h4><i class="fas fa-shield-heart me-2"></i>Transparent Wholesale/Retail Flow</h4>
+            <p>Cash on Delivery is not available. You will pay via bKash, Rocket, or Bank Transfer after admin confirms
+                transport, carrying, transfer, and any order-specific charges.</p>
         </div>
 
         @if (session('success'))
@@ -255,13 +261,24 @@
                             </label>
                             <div class="payment-methods">
                                 <label class="payment-option">
-                                    <input type="radio" name="payment_method" value="cod"
-                                        {{ old('payment_method') == 'cod' ? 'checked' : '' }}>
+                                    <input type="radio" name="payment_method" value="bkash"
+                                        {{ old('payment_method') == 'bkash' ? 'checked' : '' }}>
                                     <div class="payment-card">
-                                        <i class="fas fa-money-bill-wave"></i>
+                                        <i class="fas fa-mobile-alt"></i>
                                         <div>
-                                            <h4>Cash on Delivery</h4>
-                                            <p>Pay when you receive</p>
+                                            <h4>bKash</h4>
+                                            <p>Send payment after quote confirmation</p>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="payment_method" value="rocket"
+                                        {{ old('payment_method') == 'rocket' ? 'checked' : '' }}>
+                                    <div class="payment-card">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <div>
+                                            <h4>Rocket</h4>
+                                            <p>Send payment after quote confirmation</p>
                                         </div>
                                     </div>
                                 </label>
@@ -272,11 +289,13 @@
                                         <i class="fas fa-university"></i>
                                         <div>
                                             <h4>Bank Transfer</h4>
-                                            <p>Pay via bank account</p>
+                                            <p>Pay after final quote and instructions</p>
                                         </div>
                                     </div>
                                 </label>
                             </div>
+                            <small class="text-muted d-block mt-2">Order submit করার পর admin chat/order page থেকে final
+                                payable amount জানাবে।</small>
                             @error('payment_method')
                                 <div class="error-message">{{ $message }}</div>
                             @enderror
@@ -308,7 +327,7 @@
 
                         <button type="submit" class="btn-submit">
                             <i class="fas fa-check-circle me-2"></i>
-                            Place Order
+                            Submit Order Request
                         </button>
                     </form>
                 </div>
@@ -489,16 +508,16 @@
         }
 
         /* * {
-                                                margin: 0;
-                                                padding: 0;
-                                                box-sizing: border-box;
-                                            }
+                                                    margin: 0;
+                                                    padding: 0;
+                                                    box-sizing: border-box;
+                                                }
 
-                                            body {
-                                                background: linear-gradient(135deg, #f1f5f9 0%, #e6eef9 100%);
-                                                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-                                                min-height: 100vh;
-                                            } */
+                                                body {
+                                                    background: linear-gradient(135deg, #f1f5f9 0%, #e6eef9 100%);
+                                                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                                                    min-height: 100vh;
+                                                } */
 
         .checkout-container {
             max-width: 1400px;
@@ -525,6 +544,27 @@
             color: var(--gray-500);
             font-size: 1.1rem;
             font-weight: 400;
+        }
+
+        .trust-notice {
+            margin-bottom: 2rem;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-left: 4px solid var(--primary-color);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+        }
+
+        .trust-notice h4 {
+            margin: 0 0 0.4rem;
+            font-size: 1rem;
+            color: var(--gray-900);
+        }
+
+        .trust-notice p {
+            margin: 0;
+            color: var(--gray-700);
+            font-size: 0.92rem;
         }
 
         /* Modern Alerts */

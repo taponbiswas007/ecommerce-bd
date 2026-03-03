@@ -53,7 +53,11 @@
                     <td>
                         {{ $order->transportCompany ? $order->transportCompany->name : $order->transport_name ?? '-' }}
                     </td>
-                    <td>৳{{ number_format($order->total_amount, 2) }}</td>
+                    <td>
+                        <div>৳{{ number_format($order->payable_amount, 2) }}</div>
+                        <small
+                            class="text-muted">{{ ucwords(str_replace('_', ' ', $order->negotiation_status ?? 'open')) }}</small>
+                    </td>
                     <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
                     <td>
                         <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-primary">View</a>
@@ -62,7 +66,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted">No orders found.</td>
+                    <td colspan="7" class="text-center text-muted">No orders found.</td>
                 </tr>
             @endforelse
         </tbody>

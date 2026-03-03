@@ -13,7 +13,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::where('user_id', Auth::id())
-            ->with(['items.product.images'])
+            ->with(['items.product.images', 'paymentAccount'])
             ->latest()
             ->paginate(10);
         return view('customer.orders.index', compact('orders'));
@@ -26,7 +26,7 @@ class OrderController extends Controller
             abort(403, 'Unauthorized access to this order.');
         }
 
-        $order->load(['items.product.images', 'statusHistories.updatedBy']);
+        $order->load(['items.product.images', 'statusHistories.updatedBy', 'paymentAccount']);
         return view('customer.orders.show', compact('order'));
     }
 
@@ -40,7 +40,7 @@ class OrderController extends Controller
             abort(403, 'Unauthorized access to this order.');
         }
 
-        $order->load(['statusHistories.updatedBy', 'items.product']);
+        $order->load(['statusHistories.updatedBy', 'items.product', 'paymentAccount']);
         return view('customer.orders.tracking', compact('order'));
     }
 

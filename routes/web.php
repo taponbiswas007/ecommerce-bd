@@ -233,8 +233,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Admin Order Management
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
     Route::post('orders/{order}/update-status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::post('orders/{order}/update-negotiation', [\App\Http\Controllers\Admin\OrderController::class, 'updateNegotiation'])->name('orders.update-negotiation');
     Route::post('orders/{order}/upload-document', [\App\Http\Controllers\Admin\OrderController::class, 'uploadDocument'])->name('orders.upload-document');
     Route::get('orders/{order}/tracking-history', [\App\Http\Controllers\Admin\OrderController::class, 'trackingHistory'])->name('orders.tracking-history');
+
+    // Payment Account Management
+    Route::resource('payment-accounts', \App\Http\Controllers\Admin\PaymentAccountController::class);
 
     // Coupon Management
     Route::get('coupons/generate-code', [CouponController::class, 'generateCode'])->name('coupons.generate-code');

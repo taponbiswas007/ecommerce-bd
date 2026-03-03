@@ -366,14 +366,15 @@
                             </div>
                             <div>
                                 <h6 class="text-muted mb-1">Total Spent</h6>
-                                <h3 class="fw-bold mb-0">৳{{ number_format($orders->sum('total_amount'), 2) }}</h3>
+                                <h3 class="fw-bold mb-0">
+                                    ৳{{ number_format($orders->sum(fn($order) => $order->payable_amount), 2) }}</h3>
                             </div>
                         </div>
                         <div class="mt-3 pt-3 border-top">
                             <small class="text-muted">
                                 <i class="fas fa-credit-card me-1"></i>
                                 Avg. order:
-                                ৳{{ $orders->count() > 0 ? number_format($orders->avg('total_amount'), 2) : '0.00' }}
+                                ৳{{ $orders->count() > 0 ? number_format($orders->avg(fn($order) => $order->payable_amount), 2) : '0.00' }}
                             </small>
                         </div>
                     </div>
@@ -496,7 +497,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <small class="text-muted d-block">Amount</small>
-                                                <div class="amount">৳{{ number_format($order->total_amount, 2) }}</div>
+                                                <div class="amount">৳{{ number_format($order->payable_amount, 2) }}</div>
                                             </div>
                                         </div>
 
@@ -629,7 +630,7 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div class="amount">৳{{ number_format($order->total_amount, 2) }}
+                                                    <div class="amount">৳{{ number_format($order->payable_amount, 2) }}
                                                     </div>
                                                     <div class="payment-method">
                                                         <i class="fas fa-credit-card me-1"></i>

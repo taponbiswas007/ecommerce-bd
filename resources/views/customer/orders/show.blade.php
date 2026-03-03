@@ -199,6 +199,20 @@
 
 @section('content')
     <div class="container py-4">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <!-- Order Header -->
         <div class="row mb-4">
             <div class="col-12">
@@ -308,6 +322,14 @@
                                                     <i class="fas fa-clock me-1"></i> Pending
                                                 </span>
                                             @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <div class="info-label">Negotiation Status</div>
+                                        <div class="info-value">
+                                            <span class="badge bg-info">
+                                                {{ ucwords(str_replace('_', ' ', $order->negotiation_status ?? 'open')) }}
+                                            </span>
                                         </div>
                                     </div>
                                     @if ($order->tracking_number)
@@ -614,22 +636,42 @@
                             </div>
                             <div class="col-6 text-end">
                                 <span
-                                    class="fw-semibold">৳{{ number_format($order->subtotal ??$order->items->sum(function ($item) {return $item->price * $item->quantity;}),2) }}</span>
+                                    class="fw-semibold">৳{{ number_format($order->subtotal ??$order->items->sum(function ($item) {return $item->unit_price * $item->quantity;}),2) }}</span>
                             </div>
                         </div>
 
-                        @if ($order->shipping_cost > 0)
+                        @if ($order->shipping_charge > 0)
                             <div class="row mb-2">
                                 <div class="col-6">
                                     <span class="text-muted">Shipping:</span>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <span class="fw-semibold">৳{{ number_format($order->shipping_cost, 2) }}</span>
+                                    <span class="fw-semibold">৳{{ number_format($order->shipping_charge, 2) }}</span>
                                 </div>
                             </div>
                         @endif
 
-                        @if ($order->tax_amount > 0)
+                        @if (($order->vat_amount ?? 0) > 0)
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <span class="text-muted">VAT:</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span class="fw-semibold">৳{{ number_format($order->vat_amount, 2) }}</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if (($order->ait_amount ?? 0) > 0)
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <span class="text-muted">AIT:</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span class="fw-semibold">৳{{ number_format($order->ait_amount, 2) }}</span>
+                                </div>
+                            </div>
+                        @elseif ($order->tax_amount > 0)
                             <div class="row mb-2">
                                 <div class="col-6">
                                     <span class="text-muted">Tax:</span>
@@ -652,14 +694,49 @@
                             </div>
                         @endif
 
+                        @if (($order->total_adjustments ?? 0) != 0)
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <span class="text-muted">Negotiation Adjustments:</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span class="fw-semibold">৳{{ number_format($order->total_adjustments, 2) }}</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="row mt-3 mb-2">
+                            <div class="col-12">
+                                <span class="fw-bold text-muted">Negotiation Breakdown</span>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-7"><span class="text-muted">+ Carrying Cost</span></div>
+                            <div class="col-5 text-end">৳{{ number_format($order->additional_carrying_cost ?? 0, 2) }}
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-7"><span class="text-muted">+ Transfer Cost</span></div>
+                            <div class="col-5 text-end">৳{{ number_format($order->bank_transfer_cost ?? 0, 2) }}</div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-7"><span class="text-muted">+ Other Cost</span></div>
+                            <div class="col-5 text-end">৳{{ number_format($order->additional_other_cost ?? 0, 2) }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-7"><span class="text-muted">- Admin Discount</span></div>
+                            <div class="col-5 text-end text-success">
+                                -৳{{ number_format($order->admin_discount_amount ?? 0, 2) }}</div>
+                        </div>
+
                         <hr>
                         <div class="row mt-3">
                             <div class="col-6">
-                                <span class="fw-bold">Total Amount:</span>
+                                <span class="fw-bold">Final Payable:</span>
                             </div>
                             <div class="col-6 text-end">
-                                <div class="total-amount">৳{{ number_format($order->total_amount, 2) }}</div>
-                                <small class="text-muted">Including all charges</small>
+                                <div class="total-amount">৳{{ number_format($order->payable_amount, 2) }}</div>
+                                <small class="text-muted">After admin negotiation updates</small>
                             </div>
                         </div>
 
@@ -672,6 +749,51 @@
                                         <p class="mb-0">This order has been paid in full.</p>
                                     </div>
                                 </div>
+                            </div>
+                        @endif
+
+                        @if ($order->paymentAccount)
+                            <div class="alert alert-light border mt-3">
+                                <h6 class="mb-2">Assigned Payment Account</h6>
+                                <div><strong>{{ $order->paymentAccount->account_name }}</strong></div>
+                                <div><strong>Account No:</strong> {{ $order->paymentAccount->account_number }}</div>
+                                <div><strong>Holder:</strong> {{ $order->paymentAccount->account_holder ?: 'N/A' }}</div>
+                                <div><strong>Branch:</strong> {{ $order->paymentAccount->branch ?: 'N/A' }}</div>
+
+                                @if ($order->paymentAccount->instructions)
+                                    <div class="mt-2">
+                                        <strong>Instructions:</strong><br>
+                                        {!! nl2br(e($order->paymentAccount->instructions)) !!}
+                                    </div>
+                                @endif
+
+                                @if ($order->payment_reference)
+                                    <div class="mt-2"><strong>Transaction ID:</strong> {{ $order->payment_reference }}
+                                    </div>
+                                @endif
+
+                                @if ($order->payment_proof_path)
+                                    <div class="mt-2">
+                                        <a href="{{ asset('storage/' . $order->payment_proof_path) }}" target="_blank"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-alt me-1"></i> View Submitted Proof
+                                        </a>
+                                    </div>
+                                @endif
+
+                                @if (in_array($order->negotiation_status, ['awaiting_customer_payment', 'proof_submitted']) &&
+                                        $order->payment_status !== 'paid')
+                                    <div class="mt-3">
+                                        <a href="{{ route('payment.show', $order) }}" class="btn btn-primary">
+                                            <i class="fas fa-money-check-alt me-2"></i>
+                                            {{ $order->payment_proof_path ? 'Update Payment Proof' : 'Submit Payment Proof' }}
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        @elseif ($order->negotiation_status === 'awaiting_customer_payment')
+                            <div class="alert alert-warning mt-3">
+                                Admin will assign payment account details soon. Please check again shortly.
                             </div>
                         @endif
                     </div>

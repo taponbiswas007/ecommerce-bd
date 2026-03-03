@@ -26,6 +26,15 @@
             flex-direction: column;
         }
 
+        .product-card::after {
+            content: 'মূল্য চূড়ান্ত নয়';
+            display: block;
+            font-size: 11px;
+            color: #b45309;
+            padding: 0 12px 10px;
+            font-weight: 600;
+        }
+
         .product-card:hover {
             transform: translateY(-15px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);

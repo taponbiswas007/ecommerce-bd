@@ -12,7 +12,7 @@ class CustomerDashboardController extends Controller
         $user = auth()->user();
         $orders = $user->orders()->latest()->take(5)->get();
         $ordersCount = $user->orders()->count();
-        $ordersTotal = $user->orders()->sum('total_amount');
+        $ordersTotal = $user->orders()->selectRaw('COALESCE(SUM(COALESCE(negotiated_total_amount, total_amount)),0) as total')->value('total');
         $wishlistCount = $user->wishlists()->count();
         $profile = [
             'name' => $user->name,

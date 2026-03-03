@@ -354,6 +354,13 @@
                     <x-admin.sidebar-item route="admin.orders.index" :activeRoutes="['admin.orders.*']" icon="fas fa-shopping-cart"
                         text="Orders" :badge="\App\Models\Order::where('order_status', 'pending')->count()" badgeClass="bg-danger" />
 
+                    <li class="{{ request()->routeIs('admin.payment-accounts.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.payment-accounts.index') }}">
+                            <i class="fas fa-university"></i>
+                            <span class="menu-text">Account Information</span>
+                        </a>
+                    </li>
+
                     <li class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.customers.index') }}">
                             <i class="fas fa-users"></i>

@@ -9,6 +9,9 @@
 @endsection
 
 @section('page-actions')
+    <a href="{{ route('admin.payment-accounts.index') }}" class="btn btn-outline-primary me-2">
+        <i class="fas fa-university me-2"></i> Payment Accounts
+    </a>
     <button class="btn btn-primary">
         <i class="fas fa-plus me-2"></i> Add New Product
     </button>

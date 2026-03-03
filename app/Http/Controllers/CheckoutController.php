@@ -7,9 +7,15 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Coupon;
+use App\Models\Chat;
+use App\Models\ChatMessage;
+use App\Models\OrderStatusHistory;
+use App\Models\User;
+use App\Mail\NewOrderRequestMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -79,13 +85,13 @@ class CheckoutController extends Controller
             'shipping_method' => 'required|in:transport,own,pickup',
             'transport_company_id' => 'nullable|exists:transport_companies,id',
             'transport_name' => 'nullable|string|max:255',
-            'payment_method' => 'required|in:cod,bank_transfer',
+            'payment_method' => 'required|in:bkash,rocket,bank_transfer',
             'terms_accepted' => 'accepted',
         ]);
 
 
         // Update user info if changed
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $userChanged = false;
         if ($user) {
             if ($user->name !== $request->shipping_name) {
@@ -127,6 +133,8 @@ class CheckoutController extends Controller
         $discount = Cart::discount($couponCode);
         $taxSummary = Cart::taxSummary($discount);
         $tax = $taxSummary['total_tax'];
+        $vatAmount = $taxSummary['vat_amount'] ?? 0;
+        $aitAmount = $taxSummary['ait_amount'] ?? 0;
         $shipping = Cart::shipping($request->shipping_district, $request->shipping_upazila, $request->transport_company_id ?? null, $request->shipping_method ?? 'transport');
         $total = Cart::grandTotal(
             $couponCode,
@@ -143,10 +151,13 @@ class CheckoutController extends Controller
             'discount_amount' => $discount,
             'shipping_charge' => $shipping,
             'tax_amount' => $tax,
+            'vat_amount' => $vatAmount,
+            'ait_amount' => $aitAmount,
             'total_amount' => $total,
             'payment_method' => $request->payment_method,
             'payment_status' => 'pending',
             'order_status' => 'pending',
+            'negotiation_status' => 'open',
             'shipping_name' => $request->shipping_name,
             'shipping_phone' => $request->shipping_phone,
             'shipping_email' => $request->shipping_email,
@@ -158,6 +169,8 @@ class CheckoutController extends Controller
             'shipping_method' => $request->shipping_method ?? 'transport',
             'terms_accepted' => $request->has('terms_accepted'),
             'customer_notes' => $request->customer_notes ?? null,
+            'is_self_delivery_risk' => ($request->shipping_method === 'pickup'),
+            'negotiation_updated_at' => now(),
         ]);
 
         foreach ($cartItems as $item) {
@@ -192,7 +205,10 @@ class CheckoutController extends Controller
         // Clear cart
         Cart::clear();
 
-        return redirect()->route('payment.show', $order->id)->with('success', 'Order placed successfully.');
+        $this->createInitialNegotiationContext($order);
+        $this->notifyAdminsForNewOrder($order);
+
+        return redirect()->route('payment.show', $order->id)->with('success', 'Order request submitted. Admin will share final quote soon.');
     }
 
     /**
@@ -213,5 +229,52 @@ class CheckoutController extends Controller
         }
 
         return response()->json($res);
+    }
+
+    private function createInitialNegotiationContext(Order $order): void
+    {
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'status' => 'pending',
+            'previous_status' => null,
+            'notes' => 'Order request received. Price and logistics costs will be finalized after admin negotiation.',
+            'updated_by' => null,
+            'status_date' => now(),
+        ]);
+
+        $chat = Chat::firstOrCreate(
+            ['customer_id' => $order->user_id],
+            ['status' => 'active']
+        );
+
+        $admin = User::where('role', 'admin')->orderBy('id')->first();
+        if ($admin && !$chat->admin_id) {
+            $chat->update(['admin_id' => $admin->id]);
+        }
+
+        if ($admin) {
+            ChatMessage::create([
+                'chat_id' => $chat->id,
+                'user_id' => $admin->id,
+                'message' => "Order #{$order->order_number} request received. We will confirm transport, carrying and transfer costs shortly.",
+            ]);
+        }
+    }
+
+    private function notifyAdminsForNewOrder(Order $order): void
+    {
+        $order->loadMissing(['user', 'items']);
+
+        $emails = User::where('role', 'admin')
+            ->whereNotNull('email')
+            ->pluck('email')
+            ->unique()
+            ->values();
+
+        if ($emails->isEmpty()) {
+            return;
+        }
+
+        Mail::to($emails->all())->send(new NewOrderRequestMail($order));
     }
 }

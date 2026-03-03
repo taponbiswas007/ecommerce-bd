@@ -222,10 +222,17 @@
                             <i class="fas fa-money-bill-wave fa-2x"></i>
                         </div>
                         <h6 class="text-muted mb-1">Total Amount</h6>
-                        <p class="fw-bold mb-0">৳{{ number_format($order->total_amount, 2) }}</p>
+                        <p class="fw-bold mb-0">৳{{ number_format($order->payable_amount, 2) }}</p>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="alert alert-info mb-4">
+            <strong>Negotiation:</strong> {{ ucwords(str_replace('_', ' ', $order->negotiation_status ?? 'open')) }}
+            @if ($order->payment_instructions)
+                <br><strong>Instructions:</strong> {!! nl2br(e($order->payment_instructions)) !!}
+            @endif
         </div>
 
         <!-- Tracking Timeline -->

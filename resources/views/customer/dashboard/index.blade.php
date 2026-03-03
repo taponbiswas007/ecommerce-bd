@@ -403,7 +403,7 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <strong>৳{{ number_format($order->total_amount, 2) }}</strong>
+                                                    <strong>৳{{ number_format($order->payable_amount, 2) }}</strong>
                                                 </td>
                                                 <td class="pe-4 text-end">
                                                     <a href="{{ route('customer.orders.show', $order->id) }}"
